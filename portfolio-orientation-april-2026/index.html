@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Enablement Team — Portfolio Orientation · April 2026</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
+  <style>
+    /* =============================================
+       CSS CUSTOM PROPERTIES — FOURTH MIDNIGHT PALETTE
+       Change these to retheme the whole deck
+    ============================================= */
+    :root {
+      --bg-base:        #07091E;
+      --bg-surface:     #0D1229;
+      --bg-elevated:    #141836;
+      --bg-card:        #111530;
+      --border:         rgba(255,255,255,0.07);
+      --border-bright:  rgba(255,255,255,0.14);
+
+      --text-primary:   #EEF2FF;
+      --text-secondary: #8892B0;
+      --text-muted:     #4A5580;
+
+      /* Fourth accent colours */
+      --teal:    #00D4C8;
+      --orange:  #FF8C42;
+      --purple:  #7B6FF0;
+      --blue:    #3B9EFF;
+
+      /* Status colours */
+      --status-active:  #F59E0B;
+      --status-planned: #3B9EFF;
+      --status-blocked: #EF4444;
+      --status-done:    #22C55E;
+
+      --font-display: 'Clash Display', sans-serif;
+      --font-body:    'Satoshi', sans-serif;
+
+      --slide-pad: clamp(2.5rem, 6vw, 5rem);
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* =============================================
+       BASE
+    ============================================= */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       PROGRESS BAR
+    ============================================= */
+    #progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--purple));
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.2s ease;
+    }
+
+    /* =============================================
+       NAV DOTS
+    ============================================= */
+    #nav-dots {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      z-index: 999;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .dot.active {
+      background: var(--teal);
+      transform: scale(1.6);
+    }
+
+    /* =============================================
+       SLIDE BASE
+    ============================================= */
+    .slide {
+      min-height: 100vh;
+      padding: var(--slide-pad);
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle grid overlay on all slides */
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* =============================================
+       REVEAL ANIMATIONS
+    ============================================= */
+    .r {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+    .r.up {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .r:nth-child(1)  { transition-delay: 0.05s; }
+    .r:nth-child(2)  { transition-delay: 0.12s; }
+    .r:nth-child(3)  { transition-delay: 0.19s; }
+    .r:nth-child(4)  { transition-delay: 0.26s; }
+    .r:nth-child(5)  { transition-delay: 0.33s; }
+    .r:nth-child(6)  { transition-delay: 0.40s; }
+    .r:nth-child(7)  { transition-delay: 0.47s; }
+    .r:nth-child(8)  { transition-delay: 0.54s; }
+    .r:nth-child(9)  { transition-delay: 0.61s; }
+    .r:nth-child(10) { transition-delay: 0.68s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .r { transition: none; opacity: 1; transform: none; }
+    }
+
+    /* =============================================
+       UTILITY
+    ============================================= */
+    .eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.7rem;
+      border-radius: 100px;
+    }
+    .badge-active  { background: rgba(245,158,11,0.12); color: var(--status-active);  border: 1px solid rgba(245,158,11,0.25); }
+    .badge-planned { background: rgba(59,158,255,0.12); color: var(--status-planned); border: 1px solid rgba(59,158,255,0.25); }
+    .badge-blocked { background: rgba(239,68,68,0.12);  color: var(--status-blocked); border: 1px solid rgba(239,68,68,0.25); }
+    .badge-done    { background: rgba(34,197,94,0.12);  color: var(--status-done);    border: 1px solid rgba(34,197,94,0.25); }
+
+    .badge::before {
+      content: '';
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* =============================================
+       SLIDE 1 — TITLE
+    ============================================= */
+    #s1 {
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(0,212,200,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 20% 80%, rgba(123,111,240,0.07) 0%, transparent 50%),
+        var(--bg-base);
+    }
+
+    #s1 .title-wrap {
+      max-width: 780px;
+    }
+
+    #s1 .main-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.2rem;
+    }
+
+    #s1 .main-title span {
+      background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 60%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #s1 .subtitle {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-bottom: 2.5rem;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    #s1 .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    #s1 .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    #s1 .meta-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    #s1 .meta-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    #s1 .meta-sep {
+      width: 1px;
+      height: 2rem;
+      background: var(--border-bright);
+    }
+
+    #s1 .slide-count {
+      position: absolute;
+      bottom: var(--slide-pad);
+      right: var(--slide-pad);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+    }
+
+    #s1 .accent-line {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+      border-radius: 2px;
+      margin-bottom: 2rem;
+    }
+
+    /* =============================================
+       SLIDE 2 — HOW TO READ THIS REPORT
+    ============================================= */
+    #s2 {
+      background:
+        radial-gradient(ellipse 60% 60% at 30% 50%, rgba(59,158,255,0.05) 0%, transparent 60%),
+        var(--bg-base);
+    }
+
+    .orient-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .orient-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .orient-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .orient-card:nth-child(1)::before { background: var(--teal); }
+    .orient-card:nth-child(2)::before { background: var(--orange); }
+    .orient-card:nth-child(3)::before { background: var(--purple); }
+
+    .orient-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .orient-card:nth-child(1) .orient-icon { background: rgba(0,212,200,0.1); }
+    .orient-card:nth-child(2) .orient-icon { background: rgba(255,140,66,0.1); }
+    .orient-card:nth-child(3) .orient-icon { background: rgba(123,111,240,0.1); }
+
+    .orient-card h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .orient-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .orient-note {
+      margin-top: 2rem;
+      padding: 1rem 1.5rem;
+      background: rgba(0,212,200,0.04);
+      border: 1px solid rgba(0,212,200,0.12);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .orient-note strong {
+      color: var(--teal);
+    }
+
+    /* =============================================
+       SLIDE 3 — PORTFOLIO OVERVIEW
+    ============================================= */
+    #s3 {
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(123,111,240,0.04) 0%, transparent 60%),
+        var(--bg-base);
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .portfolio-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: default;
+    }
+
+    .portfolio-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+    }
+
+    .portfolio-card .p-num {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .portfolio-card .p-name {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      line-height: 1.3;
+    }
+
+    .portfolio-card .p-one {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    /* Accent top borders cycling through 4 colours */
+    .portfolio-card:nth-child(1) { border-top: 2px solid var(--teal); }
+    .portfolio-card:nth-child(2) { border-top: 2px solid var(--orange); }
+    .portfolio-card:nth-child(3) { border-top: 2px solid var(--purple); }
+    .portfolio-card:nth-child(4) { border-top: 2px solid var(--blue); }
+    .portfolio-card:nth-child(5) { border-top: 2px solid var(--teal); }
+    .portfolio-card:nth-child(6) { border-top: 2px solid var(--orange); }
+    .portfolio-card:nth-child(7) { border-top: 2px solid var(--purple); }
+
+    /* =============================================
+       PROJECT SLIDES (s4–s10)
+    ============================================= */
+    .project-slide {
+      background: var(--bg-base);
+    }
+
+    .project-slide.accent-teal {
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(0,212,200,0.05) 0%, transparent 55%), var(--bg-base);
+    }
+    .project-slide.accent-orange {
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(255,140,66,0.05) 0%, transparent 55%), var(--bg-base);
+    }
+    .project-slide.accent-purple {
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(123,111,240,0.05) 0%, transparent 55%), var(--bg-base);
+    }
+    .project-slide.accent-blue {
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(59,158,255,0.05) 0%, transparent 55%), var(--bg-base);
+    }
+
+    .project-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 3rem;
+      align-items: start;
+      max-width: 1100px;
+    }
+
+    .project-number {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .project-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .project-tagline {
+      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      max-width: 520px;
+    }
+
+    .why-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .why-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .why-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .why-text strong {
+      color: var(--text-primary);
+    }
+
+    /* Right panel */
+    .project-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+    }
+
+    .panel-card .pc-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .panel-card .pc-value {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .panel-card .pc-value strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .fact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .fact-list li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .fact-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .highlight-fact {
+      color: var(--text-primary) !important;
+      font-weight: 500;
+    }
+
+    .highlight-fact::before {
+      background: var(--teal) !important;
+    }
+
+    .warn-fact::before {
+      background: var(--status-blocked) !important;
+    }
+
+    /* Accent line per project */
+    .acl-teal   { background: var(--teal);   }
+    .acl-orange { background: var(--orange); }
+    .acl-purple { background: var(--purple); }
+    .acl-blue   { background: var(--blue);   }
+
+    .project-accent-line {
+      width: 40px;
+      height: 3px;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* =============================================
+       SLIDE 11 — DECISIONS & NEXT
+    ============================================= */
+    #s11 {
+      background:
+        radial-gradient(ellipse 60% 60% at 15% 60%, rgba(239,68,68,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 50% at 85% 30%, rgba(0,212,200,0.04) 0%, transparent 50%),
+        var(--bg-base);
+    }
+
+    .decisions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .decision-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .decision-card.urgent {
+      border-color: rgba(239,68,68,0.3);
+      background: rgba(239,68,68,0.03);
+    }
+
+    .decision-card.watch {
+      border-color: rgba(245,158,11,0.3);
+      background: rgba(245,158,11,0.03);
+    }
+
+    .dc-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .dc-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .dc-body {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .dc-action {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .dc-action.red    { background: rgba(239,68,68,0.12); color: var(--status-blocked); }
+    .dc-action.amber  { background: rgba(245,158,11,0.12); color: var(--status-active); }
+    .dc-action.teal   { background: rgba(0,212,200,0.10); color: var(--teal); }
+
+    .next-steps {
+      margin-top: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .next-title {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .next-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .next-list li {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding-left: 1.2rem;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .next-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--teal);
+      font-size: 0.75rem;
+    }
+
+    /* =============================================
+       SLIDE COUNTER (bottom right)
+    ============================================= */
+    .slide-label {
+      position: absolute;
+      bottom: 2rem;
+      right: var(--slide-pad);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      letter-spacing: 0.08em;
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 900px) {
+      .project-layout { grid-template-columns: 1fr; }
+      .portfolio-grid  { grid-template-columns: repeat(2, 1fr); }
+      .orient-grid     { grid-template-columns: 1fr; }
+      .decisions-grid  { grid-template-columns: 1fr; }
+      #nav-dots        { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .portfolio-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress"></div>
+
+<!-- NAV DOTS (generated by JS) -->
+<div id="nav-dots"></div>
+
+<!-- =============================================
+     SLIDE 1 — TITLE
+============================================= -->
+<section class="slide" id="s1">
+  <div class="title-wrap">
+    <p class="eyebrow r">Fourth AI Enablement Team</p>
+    <div class="accent-line r"></div>
+    <h1 class="main-title r">
+      Portfolio<br><span>Orientation</span>
+    </h1>
+    <p class="subtitle r">
+      A high-level view of every active AI initiative I am working on across Fourth — what we're building, why it exists, and where we are.
+    </p>
+    <div class="meta-row r">
+      <div class="meta-item">
+        <span class="meta-label">Prepared for</span>
+        <span class="meta-value">Carly Hodges</span>
+      </div>
+      <div class="meta-sep"></div>
+      <div class="meta-item">
+        <span class="meta-label">Role</span>
+        <span class="meta-value">VP Enterprise Transformation &amp; Technology</span>
+      </div>
+      <div class="meta-sep"></div>
+      <div class="meta-item">
+        <span class="meta-label">Period</span>
+        <span class="meta-value">April 2026 · Week 15</span>
+      </div>
+      <div class="meta-sep"></div>
+      <div class="meta-item">
+        <span class="meta-label">Prepared by</span>
+        <span class="meta-value">David Hayes</span>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">01 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 2 — HOW TO READ THIS REPORT
+============================================= -->
+<section class="slide" id="s2">
+  <p class="eyebrow r">About This Report</p>
+  <h2 class="r" style="font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:0.4rem;">
+    This is your first AI Enablement update.
+  </h2>
+  <p class="r" style="font-size:0.95rem;color:var(--text-secondary);max-width:560px;line-height:1.6;margin-bottom:0.5rem;">
+    Going forward, you'll receive a weekly briefing covering the full portfolio. This first edition orients you to the work — one slide per project, no jargon.
+  </p>
+
+  <div class="orient-grid r">
+    <div class="orient-card">
+      <div class="orient-icon">📊</div>
+      <h3>Portfolio Health</h3>
+      <p>Every active project with its current status — active, planned, or blocked. At a glance, you'll know what's moving and what needs attention.</p>
+    </div>
+    <div class="orient-card">
+      <div class="orient-icon">🚀</div>
+      <h3>What's Shipping</h3>
+      <p>The tangible things being built each week — features live, milestones hit, pilots running. Written in plain English, not engineering language.</p>
+    </div>
+    <div class="orient-card">
+      <div class="orient-icon">🎯</div>
+      <h3>Decisions Needed</h3>
+      <p>Open questions that need VP-level input. Blockers that require escalation. This is where your time matters most each week.</p>
+    </div>
+  </div>
+
+  <div class="orient-note r">
+    <strong>Today's agenda:</strong> We'll walk through all 7 active projects — what each is, why it exists, and current status. Expect ~2 minutes per project. Future reports will zoom in on progress and flag decisions.
+  </div>
+
+  <span class="slide-label">02 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 3 — PORTFOLIO OVERVIEW
+============================================= -->
+<section class="slide" id="s3">
+  <p class="eyebrow r">April 2026 · Portfolio</p>
+  <h2 class="r" style="font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:0.4rem;">
+    7 active projects. All in motion.
+  </h2>
+  <p class="r" style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.3rem;">All scoped to the Fourth AI bucket. Managed in Notion.</p>
+
+  <div class="portfolio-grid r">
+    <div class="portfolio-card">
+      <div class="p-num">01</div>
+      <div class="p-name">EBR Presentation Suite</div>
+      <div class="p-one">AI automates Executive Business Review creation for CSMs — raw data in, polished deck out.</div>
+      <span class="badge badge-active">In Review</span>
+    </div>
+    <div class="portfolio-card">
+      <div class="p-num">02</div>
+      <div class="p-name">Marketing / Enterprise Brain</div>
+      <div class="p-one">Centralised AI knowledge base + GTM tool suite for Sales, CS, and Marketing.</div>
+      <span class="badge badge-active">In Progress</span>
+    </div>
+    <div class="portfolio-card">
+      <div class="p-num">03</div>
+      <div class="p-name">Fourth Connect</div>
+      <div class="p-one">HTML presentation hosting platform — shareable URLs, live commenting, no PowerPoint.</div>
+      <span class="badge badge-active">In Progress</span>
+    </div>
+    <div class="portfolio-card">
+      <div class="p-num">04</div>
+      <div class="p-name">Salesforce MCP Connector</div>
+      <div class="p-one">Per-user Salesforce access inside Claude — built on Azure, first in a series of enterprise connectors.</div>
+      <span class="badge badge-active">In Progress</span>
+    </div>
+    <div class="portfolio-card">
+      <div class="p-num">05</div>
+      <div class="p-name">Agent-Arch Platform</div>
+      <div class="p-one">Project management app for Fourth's Microsoft Agent Ecosystem — agents, tasks, governance in one place.</div>
+      <span class="badge badge-done">Live</span>
+    </div>
+    <div class="portfolio-card">
+      <div class="p-num">06</div>
+      <div class="p-name">AI Tool Standardization</div>
+      <div class="p-one">Governance and distribution strategy for AI tooling across Fourth. Deadline: April 30.</div>
+      <span class="badge badge-active">In Progress</span>
+    </div>
+    <div class="portfolio-card">
+      <div class="p-num">07</div>
+      <div class="p-name">Fourth Workbook</div>
+      <div class="p-one">Executive intelligence workbook — AI-powered insight layer for senior leadership.</div>
+      <span class="badge badge-active">In Progress</span>
+    </div>
+  </div>
+
+  <span class="slide-label">03 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 4 — EBR PRESENTATION SUITE
+============================================= -->
+<section class="slide project-slide accent-teal" id="s4">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 01 of 07</p>
+      <div class="project-accent-line acl-teal r"></div>
+      <h2 class="project-title r">EBR Presentation<br>Suite</h2>
+      <p class="project-tagline r">
+        A CSM types "prep EBR for Torchy's" — and the system handles everything. Raw data in, polished, on-brand HTML presentation out.
+      </p>
+      <span class="badge badge-active r" style="margin-bottom:1.5rem;display:inline-flex;">In Progress</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">CSMs currently spend <strong>15+ hours per EBR</strong>. This project automates the entire process — pulling from raw data sources, researching live market signals, and weaving the story together in a polished, client-specific presentation. No data warehouse required.</div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">Current Status</div>
+        <div class="pc-value"><strong>Torchy's pilot active.</strong> Slide-by-slide review completed Apr 6 — deck described as "super sleek." Data accuracy corrections underway before Thursday dry run with Syndi.</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Key Facts</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">4 data streams: SQL usage, Zendesk tickets, Gong calls, LMS training</li>
+          <li>Rollout: US Enterprise → EMEA → Emerging → SMB one-pagers</li>
+          <li>EBR structure redesigned: client-first narrative, not 7 slides about Fourth</li>
+        </ul>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Core Team</div>
+        <div class="pc-value">David (AI) · Caleb (CS Ops) · Syndi (Enterprise CS sponsor) · Ryan &amp; Evan (CSM pilots) · Jeff (support data)</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">04 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 5 — MARKETING / ENTERPRISE BRAIN
+============================================= -->
+<section class="slide project-slide accent-orange" id="s5">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 02 of 07</p>
+      <div class="project-accent-line acl-orange r"></div>
+      <h2 class="project-title r">Marketing /<br>Enterprise Brain</h2>
+      <p class="project-tagline r">
+        A centralised AI knowledge base for Sales, CS, and Marketing — single source of truth for messaging, imagery, playbooks — with a growing suite of GTM tools built on top.
+      </p>
+      <span class="badge badge-active r" style="margin-bottom:1.5rem;display:inline-flex;">In Progress</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">Sales reps build decks in days. AI with the right knowledge builds them in <strong>minutes</strong>. The Brain ensures every tool — deck builder, RFP accelerator, brand voice — pulls from one approved source of truth. No hallucinated product names.</div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">Current Status</div>
+        <div class="pc-value"><strong>Deck builder is first leadership deliverable.</strong> V1 HotSchedules pitch deck targeting this week's review. Enterprise Brain on Azure DB + MCP connectors (works across Claude, Copilot, Teams, ChatGPT).</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Tool Suite Being Built</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">Deck builder — on-brand SMB + ENT pitch decks in minutes</li>
+          <li>RFP process accelerator</li>
+          <li>Product brochure generation (full product base)</li>
+          <li>Brand tone-of-voice tools (emails, scripts, voicemails)</li>
+          <li>Fourth Translator — brand voice scoring + rewriting (modular, attached to Brain)</li>
+        </ul>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">AI Tools Task Force</div>
+        <div class="pc-value">David · Mike Calo (PMM Director) · Nick (Brand) · Barry (UK &amp; Sales) — weekly Wednesdays 10am ET</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">05 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 6 — FOURTH CONNECT
+============================================= -->
+<section class="slide project-slide accent-purple" id="s6">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 03 of 07</p>
+      <div class="project-accent-line acl-purple r"></div>
+      <h2 class="project-title r">Fourth Connect</h2>
+      <p class="project-tagline r">
+        A presentation hosting platform for Fourth. Upload an HTML presentation, get a shareable URL. Clients and team members can comment on specific slides, in real time — no more emailing PowerPoint files.
+      </p>
+      <span class="badge badge-active r" style="margin-bottom:1.5rem;display:inline-flex;">In Progress</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">The EBR Builder and Marketing Brain both produce <strong>HTML presentations</strong> — Fourth Connect is where they live. It replaces PowerPoint with shareable, version-controlled, commentable presentations. Think Figma, but for slide decks.</div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">Current Status</div>
+        <div class="pc-value"><strong>Phase 1 MVP in progress</strong> — 6–8 week build. Target: upload → share → comment. PDF download and light mode completing this week for pilot readiness.</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Key Capabilities</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">Shareable URLs — internal &amp; client-facing</li>
+          <li>Figma-style threaded comments, anchored to specific slides</li>
+          <li>Microsoft SSO for internal users, magic link for clients</li>
+          <li>RBAC: Admin / Editor / Viewer / Guest</li>
+          <li>Containerised on Railway → migrating to Azure</li>
+        </ul>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Phasing</div>
+        <div class="pc-value">
+          <strong>Phase 1:</strong> Upload → share → comment (MVP)<br>
+          <strong>Phase 2:</strong> CLI publish, auto-publish from skills<br>
+          <strong>Phase 3:</strong> Presenter mode, analytics, custom domain
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">06 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 7 — SALESFORCE MCP CONNECTOR
+============================================= -->
+<section class="slide project-slide accent-blue" id="s7">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 04 of 07</p>
+      <div class="project-accent-line acl-blue r"></div>
+      <h2 class="project-title r">Salesforce MCP<br>Connector</h2>
+      <p class="project-tagline r">
+        Per-user Salesforce access inside Claude — built on Azure with Microsoft Entra ID identity. This is the proof-of-concept that unlocks every future enterprise connector Fourth builds.
+      </p>
+      <span class="badge badge-planned r" style="margin-bottom:1.5rem;display:inline-flex;">Planned · Build Underway</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">Most AI tools use a <strong>shared service account</strong> — one login that sees everything. This connector uses per-user identity so every Salesforce query runs under the user's own credentials. <strong>Real audit trails. Permission-aware. Proper governance from day one.</strong></div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">Current Status</div>
+        <div class="pc-value"><strong>Architecture finalised.</strong> Token exchange flow via Entra ID confirmed. FastMCP framework selected. IT ticket for Entra ID app creation submitted and marked urgent — this is the critical path item.</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Technical Decisions</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">FastMCP — used by 70% of all MCP servers globally</li>
+          <li>Token exchange via Microsoft Entra ID (not JWT / service account)</li>
+          <li>Deployed to Azure — aligns with IT governance</li>
+          <li class="warn-fact">BLOCKER: IT Entra ID app creation ticket — everything gates on this</li>
+        </ul>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Strategic Significance</div>
+        <div class="pc-value">Salesforce is Connector #1. Once this pattern is validated, it becomes the template for <strong>every future MCP connector</strong> — Zendesk, HubSpot, ServiceNow, internal APIs. The architecture decision here compounds.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">07 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 8 — AGENT-ARCH PLATFORM
+============================================= -->
+<section class="slide project-slide accent-teal" id="s8">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 05 of 07</p>
+      <div class="project-accent-line acl-teal r"></div>
+      <h2 class="project-title r">Agent-Arch<br>Platform</h2>
+      <p class="project-tagline r">
+        A live platform for Fourth's AI Architect Team — tracking agents, tasks, decisions, and governance across the Microsoft Agent Ecosystem. Also serves as the centralised registry for MCPs, Skills, and Plugins across the organisation.
+      </p>
+      <span class="badge badge-active r" style="margin-bottom:1.5rem;display:inline-flex;">In Progress</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">As Fourth's agent portfolio grows across teams and platforms, there's no central place to see what's deployed, what's planned, and what decisions have been made. <strong>Agent-Arch is that coordination layer</strong> — purpose-built for the AI architecture function.</div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">Current Status</div>
+        <div class="pc-value"><strong>Maintenance and stabilisation phase.</strong> Major cleanup session completed March 21 — CI pipeline fixed, 29 ESLint errors resolved, all stale branches deleted. Repo is clean. 3 dependency upgrades remaining.</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">What It Tracks</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">Deployed agents across Microsoft ecosystem</li>
+          <li>Meeting notes and decision log (rich text editor)</li>
+          <li>MCP Servers dashboard + Knowledge Library</li>
+          <li>Tasks, owners, governance documentation</li>
+        </ul>
+      </div>
+      <div class="panel-card r" style="border-left: 3px solid #FF8C42;">
+        <div class="pc-label" style="color: #FF8C42;">⚠ Blocker</div>
+        <div class="pc-value">IT authorisation pending for subscription-level access — required to surface AI Tool spend reporting inside the platform. Component is built; awaiting IT ticket resolution.</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Stack</div>
+        <div class="pc-value">Next.js + FastAPI + Azure Cosmos DB + Azure SQL · Hosted on Azure Static Web Apps + Container Apps (West Europe)</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">08 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 9 — AI TOOL STANDARDIZATION
+============================================= -->
+<section class="slide project-slide accent-orange" id="s9">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 06 of 07</p>
+      <div class="project-accent-line acl-orange r"></div>
+      <h2 class="project-title r">AI Tool<br>Standardization</h2>
+      <p class="project-tagline r">
+        Establishing how Fourth builds, versions, distributes, and governs AI tools — for both developer teams and business users. The governance framework that makes everything else scale.
+      </p>
+      <span class="badge badge-active r" style="margin-bottom:1.5rem;display:inline-flex;">In Progress · Deadline Apr 30</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">Without a framework, every team builds their own AI tools their own way — <strong>no reuse, no governance, no security standards</strong>. This project sets the rules of the road so the AI programme can scale without becoming a liability.</div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">What's Been Decided</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">GitHub as single source of truth for all AI tooling</li>
+          <li>Two-repo architecture: ai-artifactory (engineering) + fourth-ai-toolkit (business)</li>
+          <li>Claude as primary dev platform — port to others as they mature</li>
+          <li>MCP servers hosted in Azure AI Landing Zone</li>
+          <li>Project-level plugin distribution (not enterprise-wide push)</li>
+        </ul>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Two Audiences, Two Strategies</div>
+        <div class="pc-value">
+          <strong>Business users</strong> (Sales, CS, Marketing) — pre-built tools, no GitHub required. Tools are discoverable and distributed via the <strong>Agent-Arch Platform</strong>.<br><br>
+          <strong>Developer users</strong> — fine-grained control, tools versioned in GitHub (ai-artifactory), opt-in per project
+        </div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Participants</div>
+        <div class="pc-value">David · Edward Becker · Mark Beynon · Georgi Hristov · Boyan Asenov</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">09 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 10 — FOURTH WORKBOOK
+============================================= -->
+<section class="slide project-slide accent-purple" id="s10">
+  <div class="project-layout">
+    <div class="project-left">
+      <p class="project-number r">Project 07 of 07</p>
+      <div class="project-accent-line acl-purple r"></div>
+      <h2 class="project-title r">Fourth Workbook</h2>
+      <p class="project-tagline r">
+        An executive intelligence workbook — an AI-powered layer that gives senior leadership structured insight and decision support, tailored to Fourth's strategic context.
+      </p>
+      <span class="badge badge-active r" style="margin-bottom:1.5rem;display:inline-flex;">In Progress</span>
+      <div class="why-box r">
+        <div class="why-label">Why it exists</div>
+        <div class="why-text">Leaders need intelligence, not just information. The Workbook applies AI to surface the right context, the right analysis, and the right framing — so senior decisions are made with <strong>full picture, not partial data</strong>.</div>
+      </div>
+    </div>
+    <div class="project-panel">
+      <div class="panel-card r">
+        <div class="pc-label">Current Status</div>
+        <div class="pc-value">Project is active. Full brief and scope to be fleshed out in the coming sprint. Will be a standing agenda item in future weekly reports once detail is populated in Notion.</div>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Connections to Other Projects</div>
+        <ul class="fact-list">
+          <li class="highlight-fact">Fourth Connect — delivery vehicle for workbook outputs</li>
+          <li>Enterprise Brain — knowledge source feeding executive context</li>
+          <li>Agent-Arch Platform — governance visibility</li>
+        </ul>
+      </div>
+      <div class="panel-card r">
+        <div class="pc-label">Next Step</div>
+        <div class="pc-value">Define the brief, scope, and owner in Notion. Add to next report with full project detail.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-label">10 / 11</span>
+</section>
+
+<!-- =============================================
+     SLIDE 11 — DECISIONS & NEXT STEPS
+============================================= -->
+<section class="slide" id="s11">
+  <p class="eyebrow r">Action Required</p>
+  <h2 class="r" style="font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:0.4rem;">
+    Open decisions &amp; what's next.
+  </h2>
+  <p class="r" style="font-size:0.9rem;color:var(--text-secondary);max-width:560px;line-height:1.6;margin-bottom:0.3rem;">
+    Items requiring VP-level attention, escalation, or awareness this week.
+  </p>
+
+  <div class="decisions-grid r">
+    <div class="decision-card urgent">
+      <div class="dc-header">
+        <div class="dc-title">Salesforce Connector: IT Blocker</div>
+        <span class="badge badge-blocked">Urgent</span>
+      </div>
+      <p class="dc-body">IT ticket for Entra ID app creation has been submitted and marked urgent. Everything about the Salesforce MCP Connector — and every future enterprise connector — gates on this response. The architecture is ready; we're waiting on IT.</p>
+      <span class="dc-action red">Awaiting IT — flag if needed</span>
+    </div>
+    <div class="decision-card watch">
+      <div class="dc-header">
+        <div class="dc-title">AI Tool Standardization — April 30 Deadline</div>
+        <span class="badge badge-active">22 Days</span>
+      </div>
+      <p class="dc-body">The governance framework for all AI tooling across Fourth is due April 30. Key open items: single vs. multi-container for MCPs, enterprise-level push policy, and AI Foundry integration approach. Cross-functional sign-off needed before deadline.</p>
+      <span class="dc-action amber">Review open items before Apr 30</span>
+    </div>
+    <div class="decision-card">
+      <div class="dc-header">
+        <div class="dc-title">EBR Pilot: Thursday Dry Run</div>
+        <span class="badge badge-active">This Week</span>
+      </div>
+      <p class="dc-body">Torchy's EBR dry run is Thursday. Evan walks through the full EBR process. Last 15 minutes: align with Syndi on the next pilot customer and confirm the path to formalising this as an official project vs. continuing as a pilot.</p>
+      <span class="dc-action amber">Thursday — Syndi alignment needed</span>
+    </div>
+    <div class="decision-card">
+      <div class="dc-header">
+        <div class="dc-title">Enterprise Brain V1 Leadership Demo</div>
+        <span class="badge badge-planned">This Week</span>
+      </div>
+      <p class="dc-body">V1 HotSchedules pitch deck is the first deliverable from the Marketing/Enterprise Brain — targeting review at this week's AI Tools Task Force call. The deck builder is positioned as the "universal appeal" demo to leadership.</p>
+      <span class="dc-action teal">Review V1 deck when ready</span>
+    </div>
+  </div>
+
+  <div class="next-steps r">
+    <div class="next-title">Looking ahead</div>
+    <ul class="next-list">
+      <li>EBR: Torchy's internal dry run → friendly customer pilot → CSM rollout (US Enterprise first)</li>
+      <li>Enterprise Brain: V1 deck → leadership demo → training via Megan (sales enablement)</li>
+      <li>Fourth Connect: Phase 1 MVP → Phase 2 CLI publish tool → auto-publish from skills</li>
+      <li>Salesforce MCP: IT approval → token exchange build → Ivan pilot → marketing sign-off → rollout</li>
+    </ul>
+  </div>
+
+  <span class="slide-label">11 / 11</span>
+</section>
+
+<!-- =============================================
+     JAVASCRIPT — NAVIGATION & ANIMATIONS
+============================================= -->
+<script>
+  /* =============================================
+     SLIDE CONTROLLER
+     Handles: scroll-snap nav, keyboard, dots, progress bar, reveal animations
+  ============================================= */
+  class SlideController {
+    constructor() {
+      this.slides   = Array.from(document.querySelectorAll('.slide'));
+      this.progress = document.getElementById('progress');
+      this.navWrap  = document.getElementById('nav-dots');
+      this.current  = 0;
+      this.total    = this.slides.length;
+
+      this.buildDots();
+      this.bindKeys();
+      this.bindScroll();
+      this.bindTouchSwipe();
+      this.observe();
+    }
+
+    /* Build navigation dots */
+    buildDots() {
+      this.slides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.title = `Slide ${i + 1}`;
+        dot.addEventListener('click', () => this.goTo(i));
+        this.navWrap.appendChild(dot);
+      });
+      this.dots = Array.from(this.navWrap.querySelectorAll('.dot'));
+    }
+
+    /* Go to a specific slide index */
+    goTo(index) {
+      if (index < 0 || index >= this.total) return;
+      this.slides[index].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* Keyboard navigation */
+    bindKeys() {
+      document.addEventListener('keydown', e => {
+        if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) {
+          e.preventDefault();
+          this.goTo(this.current + 1);
+        } else if (['ArrowUp', 'ArrowLeft'].includes(e.key)) {
+          e.preventDefault();
+          this.goTo(this.current - 1);
+        }
+      });
+    }
+
+    /* Update progress bar + active dot on scroll */
+    bindScroll() {
+      window.addEventListener('scroll', () => {
+        const scrollTop  = window.scrollY;
+        const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+        const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        this.progress.style.width = `${pct}%`;
+
+        // Determine current slide
+        this.slides.forEach((slide, i) => {
+          const rect = slide.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.5) {
+            if (this.current !== i) {
+              this.current = i;
+              this.dots.forEach((d, j) => d.classList.toggle('active', j === i));
+            }
+          }
+        });
+      }, { passive: true });
+    }
+
+    /* Touch / swipe support */
+    bindTouchSwipe() {
+      let startY = 0;
+      document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener('touchend', e => {
+        const dy = startY - e.changedTouches[0].clientY;
+        if (Math.abs(dy) > 50) this.goTo(dy > 0 ? this.current + 1 : this.current - 1);
+      });
+    }
+
+    /* Intersection Observer triggers reveal animations */
+    observe() {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const elements = entry.target.querySelectorAll('.r');
+            elements.forEach(el => el.classList.add('up'));
+          }
+        });
+      }, { threshold: 0.15 });
+
+      this.slides.forEach(slide => io.observe(slide));
+    }
+  }
+
+  // Boot
+  document.addEventListener('DOMContentLoaded', () => new SlideController());
+</script>
+</body>
+</html>

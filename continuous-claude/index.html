@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Claude: The AI Development Environment</title>
+
+    <!-- ===========================================
+         CONTINUOUS CLAUDE SYSTEM OVERVIEW
+         Leadership presentation explaining the 5-pillar architecture
+         Theme: Midnight Executive (dark corporate, teal/gold/purple)
+         =========================================== -->
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Alpine.js for interactivity -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* ===========================================
+           THEME: MIDNIGHT EXECUTIVE
+           Premium dark corporate aesthetic
+           =========================================== */
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: rgba(30, 41, 59, 0.6);
+
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.15);
+            --teal: #00B69F;
+            --teal-glow: rgba(0, 182, 159, 0.15);
+            --purple: #a78bfa;
+            --purple-glow: rgba(167, 139, 250, 0.15);
+
+            --success: #22c55e;
+            --success-glow: rgba(34, 197, 94, 0.15);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.15);
+
+            --border: rgba(148, 163, 184, 0.1);
+            --border-accent: rgba(0, 182, 159, 0.3);
+
+            --font-display: 'Libre Baskerville', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+            --slide-padding: clamp(2rem, 5vw, 6rem);
+            --content-max-width: 1100px;
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-normal: 0.7s;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            font-size: 18px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--accent));
+            width: 0%;
+            z-index: 100;
+            transition: width 0.2s ease-out;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out-expo);
+            opacity: 0.3;
+        }
+
+        .nav-dot:hover {
+            opacity: 0.7;
+            transform: scale(1.3);
+        }
+
+        .nav-dot.active {
+            background: var(--teal);
+            opacity: 1;
+            box-shadow: 0 0 12px var(--teal-glow);
+        }
+
+        /* Slides */
+        .slide {
+            min-height: 100vh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            max-width: var(--content-max-width);
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .title-slide {
+            text-align: center;
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition:
+                opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+
+        /* Typography */
+        .label {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 1rem;
+        }
+
+        .label-amber { color: var(--accent); }
+        .label-purple { color: var(--purple); }
+        .label-danger { color: var(--danger); }
+        .label-success { color: var(--success); }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        h4 {
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            max-width: 700px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+        }
+
+        .meta {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 2rem;
+        }
+
+        /* Decorative */
+        .accent-line {
+            width: 80px;
+            height: 2px;
+            background: var(--teal);
+            margin: 2rem 0;
+        }
+
+        .accent-line-center { margin: 2rem auto; }
+
+        .glow-bg {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .glow-teal { background: var(--teal-glow); }
+        .glow-amber { background: var(--accent-glow); }
+        .glow-purple { background: var(--purple-glow); }
+        .glow-red { background: var(--danger-glow); }
+        .glow-green { background: var(--success-glow); }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-accent {
+            border-color: var(--border-accent);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .card-grid-5 { grid-template-columns: repeat(5, 1fr); }
+
+        /* Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        /* Stats */
+        .stat {
+            font-family: var(--font-display);
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-amber { color: var(--accent); }
+        .stat-purple { color: var(--purple); }
+        .stat-success { color: var(--success); }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Animated counter */
+        .counter {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        /* Icon boxes */
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: var(--teal-glow);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .icon-box-amber { background: var(--accent-glow); }
+        .icon-box-purple { background: var(--purple-glow); }
+        .icon-box-success { background: var(--success-glow); }
+        .icon-box-danger { background: var(--danger-glow); }
+
+        /* Feature items */
+        .feature-item {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-item h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-item p {
+            font-size: 0.9375rem;
+            margin: 0;
+        }
+
+        /* Highlight boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, var(--teal-glow) 0%, transparent 50%);
+            border: 1px solid rgba(0, 182, 159, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .highlight-box-amber {
+            background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 50%);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .highlight-box-purple {
+            background: linear-gradient(135deg, var(--purple-glow) 0%, transparent 50%);
+            border-color: rgba(167, 139, 250, 0.2);
+        }
+
+        .highlight-box-danger {
+            background: linear-gradient(135deg, var(--danger-glow) 0%, transparent 50%);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .highlight-box-success {
+            background: linear-gradient(135deg, var(--success-glow) 0%, transparent 50%);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--duration-fast) ease;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--teal);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: var(--bg-primary);
+        }
+
+        .tab-content {
+            min-height: 200px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--duration-fast) ease;
+            z-index: 200;
+            padding: 2rem;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform var(--duration-fast) var(--ease-out-expo);
+        }
+
+        .modal-overlay.open .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Toggle */
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            position: relative;
+            transition: all var(--duration-fast) ease;
+        }
+
+        .toggle.active .toggle-track {
+            background: var(--teal);
+            border-color: var(--teal);
+        }
+
+        .toggle-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform var(--duration-fast) ease;
+        }
+
+        .toggle.active .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        .toggle-label {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        /* Pillar cards - clickable with glow */
+        .pillar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all var(--duration-fast) ease;
+            text-align: center;
+        }
+
+        .pillar-card:hover {
+            border-color: var(--teal);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 182, 159, 0.15);
+        }
+
+        .pillar-card.active {
+            border-color: var(--teal);
+            background: linear-gradient(135deg, var(--teal-glow) 0%, var(--bg-card) 50%);
+        }
+
+        .pillar-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin: 0 auto 0.75rem;
+        }
+
+        .pillar-card:nth-child(1) .pillar-icon { background: var(--teal-glow); }
+        .pillar-card:nth-child(2) .pillar-icon { background: var(--accent-glow); }
+        .pillar-card:nth-child(3) .pillar-icon { background: var(--purple-glow); }
+        .pillar-card:nth-child(4) .pillar-icon { background: var(--success-glow); }
+        .pillar-card:nth-child(5) .pillar-icon { background: var(--teal-glow); }
+
+        .pillar-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .pillar-stat {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--teal);
+        }
+
+        /* Agent cards */
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all var(--duration-fast) ease;
+        }
+
+        .agent-card:hover {
+            border-color: var(--purple);
+            transform: translateY(-2px);
+        }
+
+        .agent-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--purple-glow);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .agent-name {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        .agent-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 280px;
+            margin-top: 1rem;
+        }
+
+        /* Code block */
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--teal);
+        }
+
+        /* Flow animation */
+        @keyframes flowRight {
+            0% { transform: translateX(-5px); opacity: 0.5; }
+            50% { transform: translateX(5px); opacity: 1; }
+            100% { transform: translateX(-5px); opacity: 0.5; }
+        }
+
+        .flow-animate {
+            animation: flowRight 2s ease-in-out infinite;
+        }
+
+        /* Pulse animation */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Counter animation */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .count-animate {
+            animation: countUp 0.5s ease-out forwards;
+        }
+
+        /* Flow diagram */
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--bg-primary);
+            flex-shrink: 0;
+        }
+
+        .flow-step-content h4 {
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .flow-step-content p {
+            font-size: 0.85rem;
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .flow-arrow {
+            text-align: center;
+            color: var(--teal);
+            font-size: 1.25rem;
+            padding: 0.25rem 0;
+        }
+
+        /* Workflow pipeline */
+        .workflow-pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+
+        .workflow-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .workflow-node.active {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        .workflow-arrow {
+            color: var(--teal);
+            font-size: 1.25rem;
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 2s forwards;
+        }
+
+        .keyboard-hint kbd {
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Lists */
+        ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-secondary);
+        }
+
+        ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.55rem;
+            width: 6px;
+            height: 6px;
+            background: var(--teal);
+            border-radius: 50%;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .two-col,
+            .card-grid-2,
+            .card-grid-3,
+            .card-grid-4,
+            .card-grid-5 {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-pipeline {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-dots,
+            .keyboard-hint {
+                display: none;
+            }
+
+            .slide {
+                padding: 2rem 1.5rem;
+            }
+
+            html {
+                font-size: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                transition: opacity 0.3s ease;
+                transform: none;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+
+            .flow-animate,
+            .pulse {
+                animation: none;
+            }
+        }
+
+        /* Stats row for title slide */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .counter {
+            color: var(--teal);
+        }
+
+        .stat-item:nth-child(2) .counter { color: var(--accent); }
+        .stat-item:nth-child(3) .counter { color: var(--purple); }
+        .stat-item:nth-child(4) .counter { color: var(--success); }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+
+    <!-- Navigation Dots -->
+    <nav class="nav-dots" aria-label="Slide navigation"></nav>
+
+    <!-- =========================================
+         SLIDE 1: TITLE
+         ========================================= -->
+    <section class="slide title-slide" data-slide="0" x-data="{
+        hooks: 0, agents: 0, skills: 0, efficiency: 0,
+        init() {
+            setTimeout(() => this.animateCounters(), 500);
+        },
+        animateCounters() {
+            this.animateValue('hooks', 78, 1500);
+            this.animateValue('agents', 18, 1200);
+            this.animateValue('skills', 150, 1800);
+            this.animateValue('efficiency', 95, 1600);
+        },
+        animateValue(key, target, duration) {
+            const start = 0;
+            const startTime = performance.now();
+            const animate = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                this[key] = Math.floor(eased * target);
+                if (progress < 1) requestAnimationFrame(animate);
+            };
+            requestAnimationFrame(animate);
+        }
+    }">
+        <div class="glow-bg glow-teal" style="top: -20%; left: 50%; transform: translateX(-50%);"></div>
+        <div class="glow-bg glow-purple" style="bottom: -30%; right: -10%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">AI Development Environment</p>
+            <h1 class="reveal">Continuous Claude</h1>
+            <p class="subtitle reveal" style="margin: 0 auto;">Memory. Agents. Workflows. Intelligence that grows.</p>
+            <div class="accent-line reveal" style="margin: 2rem auto;"></div>
+
+            <div class="stats-row reveal">
+                <div class="stat-item">
+                    <div class="counter" x-text="hooks"></div>
+                    <div class="stat-label">Behavioral Hooks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="counter" x-text="agents + '+'"></div>
+                    <div class="stat-label">Specialized Agents</div>
+                </div>
+                <div class="stat-item">
+                    <div class="counter" x-text="skills + '+'"></div>
+                    <div class="stat-label">Pre-built Skills</div>
+                </div>
+                <div class="stat-item">
+                    <div class="counter" x-text="efficiency + '%'"></div>
+                    <div class="stat-label">Token Efficiency</div>
+                </div>
+            </div>
+
+            <p class="meta reveal">The infrastructure that makes AI development reliable</p>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 2: THE PROBLEM
+         ========================================= -->
+    <section class="slide" data-slide="1">
+        <div class="glow-bg glow-red" style="top: 10%; right: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-danger reveal">The Challenge</p>
+            <h2 class="reveal">AI Assistants Without Infrastructure Fail</h2>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-danger">&#128683;</div>
+                        <div>
+                            <h4>Session Amnesia</h4>
+                            <p>Every conversation starts from scratch. Past solutions and learnings are forgotten.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-danger">&#128165;</div>
+                        <div>
+                            <h4>Context Rot</h4>
+                            <p>Errors compound over time. Earlier mistakes pollute later decisions until everything breaks.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-danger">&#128176;</div>
+                        <div>
+                            <h4>Token Waste</h4>
+                            <p>Reading entire files when you need one function. Context windows fill with noise.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-danger">&#129302;</div>
+                        <div>
+                            <h4>One-Size-Fits-All</h4>
+                            <p>Same generalist model for everything. No specialization, no efficiency.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="highlight-box-danger">
+                        <h3 style="color: var(--danger);">Key Insight</h3>
+                        <p style="margin: 0.75rem 0 0 0; color: var(--text-primary); font-size: 1.1rem;">
+                            AI needs <strong>infrastructure</strong> to be effective. An intelligent assistant without memory, specialization, and efficiency tools is like a brilliant engineer with no tools, no notes, and no team.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 3: THE SOLUTION OVERVIEW
+         ========================================= -->
+    <section class="slide" data-slide="2" x-data="{ activePillar: null }">
+        <div class="glow-bg glow-teal" style="top: 20%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">The Solution</p>
+            <h2 class="reveal">Five Pillars of Continuous Intelligence</h2>
+            <p class="reveal">Give Claude memory, specialists, workflows, and efficiency. Click any pillar to learn more.</p>
+
+            <div class="card-grid card-grid-5 reveal" style="margin-top: 2rem;">
+                <div class="pillar-card" :class="{ active: activePillar === 'memory' }" @click="activePillar = activePillar === 'memory' ? null : 'memory'">
+                    <div class="pillar-icon">&#129504;</div>
+                    <div class="pillar-name">Memory</div>
+                    <div class="pillar-stat">1024-dim vectors</div>
+                </div>
+                <div class="pillar-card" :class="{ active: activePillar === 'hooks' }" @click="activePillar = activePillar === 'hooks' ? null : 'hooks'">
+                    <div class="pillar-icon">&#128279;</div>
+                    <div class="pillar-name">Hooks</div>
+                    <div class="pillar-stat">78 interceptors</div>
+                </div>
+                <div class="pillar-card" :class="{ active: activePillar === 'agents' }" @click="activePillar = activePillar === 'agents' ? null : 'agents'">
+                    <div class="pillar-icon">&#127891;</div>
+                    <div class="pillar-name">Agents</div>
+                    <div class="pillar-stat">18+ specialists</div>
+                </div>
+                <div class="pillar-card" :class="{ active: activePillar === 'skills' }" @click="activePillar = activePillar === 'skills' ? null : 'skills'">
+                    <div class="pillar-icon">&#9881;</div>
+                    <div class="pillar-name">Skills</div>
+                    <div class="pillar-stat">150+ workflows</div>
+                </div>
+                <div class="pillar-card" :class="{ active: activePillar === 'efficiency' }" @click="activePillar = activePillar === 'efficiency' ? null : 'efficiency'">
+                    <div class="pillar-icon">&#9889;</div>
+                    <div class="pillar-name">Efficiency</div>
+                    <div class="pillar-stat">95% savings</div>
+                </div>
+            </div>
+
+            <div class="card reveal" style="margin-top: 1.5rem; min-height: 120px;">
+                <div x-show="!activePillar" x-transition>
+                    <p style="margin: 0; text-align: center; color: var(--text-muted);">Click any pillar above to see how it transforms AI development</p>
+                </div>
+                <div x-show="activePillar === 'memory'" x-cloak x-transition>
+                    <h3 style="color: var(--teal);">&#129504; Institutional Memory</h3>
+                    <p style="margin-top: 0.5rem;">PostgreSQL + pgvector stores learnings from every session. Semantic search recalls relevant solutions, failures, and patterns automatically.</p>
+                </div>
+                <div x-show="activePillar === 'hooks'" x-cloak x-transition>
+                    <h3 style="color: var(--accent);">&#128279; Behavioral Hooks</h3>
+                    <p style="margin-top: 0.5rem;">78 TypeScript hooks intercept every action. They don't just monitor - they enforce quality, route to optimal tools, and block mistakes before they happen.</p>
+                </div>
+                <div x-show="activePillar === 'agents'" x-cloak x-transition>
+                    <h3 style="color: var(--purple);">&#127891; Specialized Agents</h3>
+                    <p style="margin-top: 0.5rem;">18+ agents with specific expertise. Kraken for complex implementation, Spark for quick fixes, Scout for research. Right specialist for each task.</p>
+                </div>
+                <div x-show="activePillar === 'skills'" x-cloak x-transition>
+                    <h3 style="color: var(--success);">&#9881; Skills & Workflows</h3>
+                    <p style="margin-top: 0.5rem;">150+ pre-built workflows activated by natural language. Multi-agent pipelines orchestrated automatically with human checkpoints.</p>
+                </div>
+                <div x-show="activePillar === 'efficiency'" x-cloak x-transition>
+                    <h3 style="color: var(--teal);">&#9889; Token Efficiency</h3>
+                    <p style="margin-top: 0.5rem;">TLDR provides AST-based code analysis - structure, relationships, and complexity without reading entire files. 95% token reduction.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 4: PILLAR 1 - INSTITUTIONAL MEMORY
+         ========================================= -->
+    <section class="slide" data-slide="3" x-data="{ showModal: false }">
+        <div class="glow-bg glow-teal" style="bottom: 10%; right: -20%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">Pillar 1</p>
+            <h2 class="reveal">Institutional Memory</h2>
+            <p class="reveal">The system learns from every session. Knowledge accumulates automatically.</p>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box">&#128218;</div>
+                        <div>
+                            <h4>Automatic Extraction</h4>
+                            <p>Learnings captured without manual effort. What worked, what failed, decisions made.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box">&#128269;</div>
+                        <div>
+                            <h4>Semantic Search</h4>
+                            <p>1024-dimension BGE embeddings enable "what you mean" search, not just keyword matching.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box">&#127793;</div>
+                        <div>
+                            <h4>7 Learning Types</h4>
+                            <p>Solutions, failures, decisions, patterns, errors, preferences, open threads - all categorized.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="chart-container" style="height: 220px;">
+                        <canvas id="knowledgeGrowthChart"></canvas>
+                    </div>
+                    <button class="tab-btn" style="margin-top: 1rem;" @click="showModal = true">View Example Learning</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal-overlay" :class="{ open: showModal }" @click.self="showModal = false">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">Example Stored Learning</h3>
+                    <button class="modal-close" @click="showModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);">
+                        <strong style="color: var(--teal);">Type:</strong> WORKING_SOLUTION<br><br>
+                        <strong style="color: var(--teal);">Content:</strong><br>
+                        "TypeScript hooks require npm install in .claude/hooks/ before they work. The build.sh script compiles TS to JS in dist/. Always check dist/ exists after editing src/."<br><br>
+                        <strong style="color: var(--accent);">Context:</strong> hook development and building<br><br>
+                        <strong style="color: var(--purple);">Tags:</strong> hooks, typescript, build, scope:global<br><br>
+                        <strong style="color: var(--success);">Confidence:</strong> HIGH
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 5: MEMORY DEEP DIVE
+         ========================================= -->
+    <section class="slide" data-slide="4" x-data="{ view: 'before' }">
+        <div class="glow-bg glow-amber" style="top: 20%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-amber reveal">Memory Deep Dive</p>
+            <h2 class="reveal">Zero Context Restoration Time</h2>
+            <p class="reveal">Cross-session recall means never explaining the same thing twice.</p>
+
+            <div class="tabs reveal">
+                <button class="tab-btn" :class="{ active: view === 'before' }" @click="view = 'before'">Before: Session Amnesia</button>
+                <button class="tab-btn" :class="{ active: view === 'after' }" @click="view = 'after'">After: Instant Recall</button>
+            </div>
+
+            <div class="tab-content reveal">
+                <div x-show="view === 'before'" x-transition>
+                    <div class="highlight-box-danger">
+                        <h4 style="color: var(--danger);">Traditional AI Sessions</h4>
+                        <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <div class="card" style="flex: 1; min-width: 200px;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128172;</div>
+                                <strong>Session 1</strong>
+                                <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">"The auth token refresh fails because..."</p>
+                            </div>
+                            <div class="card" style="flex: 1; min-width: 200px;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128683;</div>
+                                <strong>Session 2</strong>
+                                <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">"I don't know about any auth issues..."</p>
+                            </div>
+                            <div class="card" style="flex: 1; min-width: 200px;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128553;</div>
+                                <strong>You</strong>
+                                <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">"We literally fixed this yesterday!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="view === 'after'" x-cloak x-transition>
+                    <div class="highlight-box">
+                        <h4 style="color: var(--teal);">With Continuous Claude</h4>
+                        <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <div class="card" style="flex: 1; min-width: 200px;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128172;</div>
+                                <strong>You</strong>
+                                <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">"The auth is failing again"</p>
+                            </div>
+                            <div class="card" style="flex: 1; min-width: 200px;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129504;</div>
+                                <strong>Memory Recall</strong>
+                                <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">"Found 2 relevant learnings about auth..."</p>
+                            </div>
+                            <div class="card" style="flex: 1; min-width: 200px;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#9989;</div>
+                                <strong>Claude</strong>
+                                <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">"Last time this was the token refresh. Checking that first..."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card reveal" style="margin-top: 1.5rem;">
+                <h4>Hybrid RRF Search</h4>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Combines text search (fast keyword matching) with vector search (semantic understanding) using Reciprocal Rank Fusion. Gets the best of both approaches.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 6: PILLAR 2 - BEHAVIORAL HOOKS
+         ========================================= -->
+    <section class="slide" data-slide="5">
+        <div class="glow-bg glow-amber" style="top: 30%; right: -20%;"></div>
+        <div class="slide-content">
+            <p class="label label-amber reveal">Pillar 2</p>
+            <h2 class="reveal">Behavioral Hooks</h2>
+            <p class="reveal">78 hooks intercept every action. They don't just monitor - they enforce.</p>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-amber">&#128736;</div>
+                        <div>
+                            <h4>Lifecycle Coverage</h4>
+                            <p>Session start, tool use, prompt submission, session end - every moment intercepted.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-amber">&#9940;</div>
+                        <div>
+                            <h4>Can Block & Redirect</h4>
+                            <p>Hooks don't just warn - they can deny actions and redirect to better approaches.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-amber">&#128301;</div>
+                        <div>
+                            <h4>Context Injection</h4>
+                            <p>Add relevant information automatically - memory matches, warnings, guidance.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="card-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 0;">
+                        <div class="card" style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128737;</div>
+                            <h4 style="font-size: 0.9rem;">Quality Gates</h4>
+                            <p style="font-size: 0.75rem; margin: 0;">Type check, lint, test validation</p>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128296;</div>
+                            <h4 style="font-size: 0.9rem;">Smart Routing</h4>
+                            <p style="font-size: 0.75rem; margin: 0;">Route to optimal tools/agents</p>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129504;</div>
+                            <h4 style="font-size: 0.9rem;">Memory Inject</h4>
+                            <p style="font-size: 0.75rem; margin: 0;">Surface relevant past learnings</p>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128274;</div>
+                            <h4 style="font-size: 0.9rem;">Safety Guards</h4>
+                            <p style="font-size: 0.75rem; margin: 0;">Block destructive operations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 7: HOOKS DEEP DIVE
+         ========================================= -->
+    <section class="slide" data-slide="6" x-data="{ view: 'prevent' }">
+        <div class="glow-bg glow-teal" style="bottom: 10%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">Hooks Deep Dive</p>
+            <h2 class="reveal">Intelligent Routing in Action</h2>
+
+            <div class="reveal" style="text-align: center; margin: 1.5rem 0;">
+                <div class="toggle" :class="{ active: view === 'enable' }" @click="view = view === 'prevent' ? 'enable' : 'prevent'">
+                    <span class="toggle-label" style="margin-right: 1rem;" :style="{ color: view === 'prevent' ? 'var(--danger)' : 'var(--text-muted)' }">What Hooks Prevent</span>
+                    <div class="toggle-track" style="width: 60px;">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                    <span class="toggle-label" style="margin-left: 1rem;" :style="{ color: view === 'enable' ? 'var(--teal)' : 'var(--text-muted)' }">What Hooks Enable</span>
+                </div>
+            </div>
+
+            <div class="tab-content reveal">
+                <div x-show="view === 'prevent'" x-transition>
+                    <div class="card-grid card-grid-2">
+                        <div class="card">
+                            <h4 style="color: var(--danger);">&#9940; Token Waste</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">File read intercepted → AST analysis instead of raw file. 23K tokens → 1.2K tokens.</p>
+                        </div>
+                        <div class="card">
+                            <h4 style="color: var(--danger);">&#9940; Wrong Tool</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Grep for code patterns → Redirect to AST-grep for structural accuracy.</p>
+                        </div>
+                        <div class="card">
+                            <h4 style="color: var(--danger);">&#9940; Destructive Ops</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Git force push to main blocked. rm -rf requires explicit confirmation.</p>
+                        </div>
+                        <div class="card">
+                            <h4 style="color: var(--danger);">&#9940; Forgotten Context</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Task start → Memory query injected with relevant past learnings.</p>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="view === 'enable'" x-cloak x-transition>
+                    <div class="card-grid card-grid-2">
+                        <div class="card">
+                            <h4 style="color: var(--teal);">&#10003; Smart Context</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">File read returns structure + relationships + complexity analysis, not raw text.</p>
+                        </div>
+                        <div class="card">
+                            <h4 style="color: var(--teal);">&#10003; Optimal Tools</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Search automatically routed to best tool: AST-grep for code, vector for semantic.</p>
+                        </div>
+                        <div class="card">
+                            <h4 style="color: var(--teal);">&#10003; Real-time Validation</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Edit hooks run type check + lint before commit. Errors caught immediately.</p>
+                        </div>
+                        <div class="card">
+                            <h4 style="color: var(--teal);">&#10003; Proactive Memory</h4>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Relevant learnings surface automatically. "I recall from a previous session..."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 8: PILLAR 3 - SPECIALIZED AGENTS
+         ========================================= -->
+    <section class="slide" data-slide="7">
+        <div class="glow-bg glow-purple" style="top: 20%; left: -15%;"></div>
+        <div class="glow-bg glow-teal" style="bottom: 10%; right: -20%;"></div>
+        <div class="slide-content">
+            <p class="label label-purple reveal">Pillar 3</p>
+            <h2 class="reveal">Specialized Agents</h2>
+            <p class="reveal">18+ agents with specific expertise. Right specialist for each task.</p>
+
+            <div class="reveal" style="margin-top: 2rem;">
+                <div class="card-grid card-grid-4" style="gap: 0.75rem;">
+                    <div class="agent-card">
+                        <div class="agent-icon">&#128025;</div>
+                        <div class="agent-name">kraken</div>
+                        <div class="agent-desc">Complex implementation with TDD</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#9889;</div>
+                        <div class="agent-name">spark</div>
+                        <div class="agent-desc">Quick fixes, small changes</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#128270;</div>
+                        <div class="agent-name">scout</div>
+                        <div class="agent-desc">Codebase exploration</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#127760;</div>
+                        <div class="agent-name">oracle</div>
+                        <div class="agent-desc">External research</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#9878;</div>
+                        <div class="agent-name">arbiter</div>
+                        <div class="agent-desc">Unit & integration tests</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#128220;</div>
+                        <div class="agent-name">architect</div>
+                        <div class="agent-desc">Design & planning</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#128269;</div>
+                        <div class="agent-name">sleuth</div>
+                        <div class="agent-desc">Bug investigation</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-icon">&#128736;</div>
+                        <div class="agent-name">phoenix</div>
+                        <div class="agent-desc">Refactoring & migration</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box-purple reveal" style="margin-top: 1.5rem; text-align: center;">
+                <p style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">
+                    <strong>Right model for right task.</strong><br>
+                    <span style="color: var(--text-secondary);">Opus for complex reasoning, Sonnet for fast execution. Each agent knows when to escalate.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 9: AGENTS DEEP DIVE
+         ========================================= -->
+    <section class="slide" data-slide="8" x-data="{ taskType: 'implement', showModal: false, selectedAgent: null }">
+        <div class="glow-bg glow-purple" style="bottom: 20%; right: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-purple reveal">Agents Deep Dive</p>
+            <h2 class="reveal">Task-Based Selection</h2>
+            <p class="reveal">Different tasks need different specialists. The system routes intelligently.</p>
+
+            <div class="tabs reveal">
+                <button class="tab-btn" :class="{ active: taskType === 'implement' }" @click="taskType = 'implement'">Implementation</button>
+                <button class="tab-btn" :class="{ active: taskType === 'test' }" @click="taskType = 'test'">Testing</button>
+                <button class="tab-btn" :class="{ active: taskType === 'fix' }" @click="taskType = 'fix'">Bug Fixes</button>
+                <button class="tab-btn" :class="{ active: taskType === 'research' }" @click="taskType = 'research'">Research</button>
+            </div>
+
+            <div class="tab-content reveal">
+                <div x-show="taskType === 'implement'" x-transition>
+                    <div class="two-col">
+                        <div class="agent-card" style="border-color: var(--purple);">
+                            <div class="agent-icon" style="width: 56px; height: 56px; font-size: 1.75rem;">&#128025;</div>
+                            <div class="agent-name" style="font-size: 1.1rem;">kraken</div>
+                            <div class="agent-desc" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                                Complex, multi-file implementation. TDD workflow with test-first development. Architectural awareness and thorough error handling.
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>Best For:</h4>
+                            <ul style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                <li>New feature components</li>
+                                <li>Multi-file refactors</li>
+                                <li>Complex business logic</li>
+                                <li>API integrations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="taskType === 'test'" x-cloak x-transition>
+                    <div class="two-col">
+                        <div class="agent-card" style="border-color: var(--purple);">
+                            <div class="agent-icon" style="width: 56px; height: 56px; font-size: 1.75rem;">&#9878;</div>
+                            <div class="agent-name" style="font-size: 1.1rem;">arbiter / atlas</div>
+                            <div class="agent-desc" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                                Arbiter handles unit/integration tests with AAA pattern. Atlas runs E2E and acceptance tests.
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>Best For:</h4>
+                            <ul style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                <li>Unit test suites</li>
+                                <li>Integration tests</li>
+                                <li>E2E acceptance tests</li>
+                                <li>Test coverage improvements</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="taskType === 'fix'" x-cloak x-transition>
+                    <div class="two-col">
+                        <div class="agent-card" style="border-color: var(--purple);">
+                            <div class="agent-icon" style="width: 56px; height: 56px; font-size: 1.75rem;">&#9889;</div>
+                            <div class="agent-name" style="font-size: 1.1rem;">spark / sleuth</div>
+                            <div class="agent-desc" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                                Spark for quick fixes under 20 lines. Sleuth for deeper investigation when root cause isn't obvious.
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>Best For:</h4>
+                            <ul style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                <li>Syntax errors (spark)</li>
+                                <li>Type fixes (spark)</li>
+                                <li>Mystery bugs (sleuth)</li>
+                                <li>Root cause analysis (sleuth)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="taskType === 'research'" x-cloak x-transition>
+                    <div class="two-col">
+                        <div class="agent-card" style="border-color: var(--purple);">
+                            <div class="agent-icon" style="width: 56px; height: 56px; font-size: 1.75rem;">&#128270;</div>
+                            <div class="agent-name" style="font-size: 1.1rem;">scout / oracle</div>
+                            <div class="agent-desc" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                                Scout explores codebase internals. Oracle handles external research - docs, APIs, best practices.
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>Best For:</h4>
+                            <ul style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                <li>Understanding existing code (scout)</li>
+                                <li>Finding patterns (scout)</li>
+                                <li>Documentation research (oracle)</li>
+                                <li>External API analysis (oracle)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 10: PILLAR 4 - SKILLS & WORKFLOWS
+         ========================================= -->
+    <section class="slide" data-slide="9" x-data="{ selectedWorkflow: null }">
+        <div class="glow-bg glow-green" style="top: 20%; right: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-success reveal">Pillar 4</p>
+            <h2 class="reveal">Skills & Workflows</h2>
+            <p class="reveal">150+ pre-built workflows. Natural language activation, multi-agent pipelines.</p>
+
+            <div class="card-grid card-grid-3 reveal" style="margin-top: 2rem;">
+                <div class="card" style="cursor: pointer;" @click="selectedWorkflow = selectedWorkflow === 'build' ? null : 'build'" :style="selectedWorkflow === 'build' ? 'border-color: var(--teal)' : ''">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">&#128296;</div>
+                    <h4>/build</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Scout → Architect → Kraken → Arbiter → Commit</p>
+                </div>
+                <div class="card" style="cursor: pointer;" @click="selectedWorkflow = selectedWorkflow === 'fix' ? null : 'fix'" :style="selectedWorkflow === 'fix' ? 'border-color: var(--teal)' : ''">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">&#128295;</div>
+                    <h4>/fix</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Debug-agent → Spark → Arbiter → Commit</p>
+                </div>
+                <div class="card" style="cursor: pointer;" @click="selectedWorkflow = selectedWorkflow === 'explore' ? null : 'explore'" :style="selectedWorkflow === 'explore' ? 'border-color: var(--teal)' : ''">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">&#128269;</div>
+                    <h4>/explore</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Scout + Oracle → Summary → Recommendations</p>
+                </div>
+                <div class="card" style="cursor: pointer;" @click="selectedWorkflow = selectedWorkflow === 'review' ? null : 'review'" :style="selectedWorkflow === 'review' ? 'border-color: var(--teal)' : ''">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">&#128220;</div>
+                    <h4>/review</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Critic → Judge → Principal Reviewer</p>
+                </div>
+                <div class="card" style="cursor: pointer;" @click="selectedWorkflow = selectedWorkflow === 'test' ? null : 'test'" :style="selectedWorkflow === 'test' ? 'border-color: var(--teal)' : ''">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">&#9878;</div>
+                    <h4>/test</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Arbiter → Atlas → Coverage Report</p>
+                </div>
+                <div class="card" style="cursor: pointer;" @click="selectedWorkflow = selectedWorkflow === 'ralph' ? null : 'ralph'" :style="selectedWorkflow === 'ralph' ? 'border-color: var(--teal)' : ''">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">&#127926;</div>
+                    <h4>/ralph</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Full autonomous development cycle</p>
+                </div>
+            </div>
+
+            <div class="card reveal" style="margin-top: 1.5rem; min-height: 80px;" x-show="selectedWorkflow">
+                <div x-show="selectedWorkflow === 'build'" x-cloak x-transition>
+                    <h4 style="color: var(--teal);">/build Workflow Pipeline</h4>
+                    <div class="workflow-pipeline" style="margin: 1rem 0 0 0;">
+                        <div class="workflow-node">scout</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">architect</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">kraken</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">arbiter</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node active">commit</div>
+                    </div>
+                </div>
+                <div x-show="selectedWorkflow === 'fix'" x-cloak x-transition>
+                    <h4 style="color: var(--teal);">/fix Workflow Pipeline</h4>
+                    <div class="workflow-pipeline" style="margin: 1rem 0 0 0;">
+                        <div class="workflow-node">debug-agent</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">spark</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">arbiter</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node active">commit</div>
+                    </div>
+                </div>
+                <div x-show="selectedWorkflow === 'explore'" x-cloak x-transition>
+                    <h4 style="color: var(--teal);">/explore Workflow Pipeline</h4>
+                    <div class="workflow-pipeline" style="margin: 1rem 0 0 0;">
+                        <div class="workflow-node">scout</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">oracle</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node active">summary</div>
+                    </div>
+                </div>
+                <div x-show="selectedWorkflow === 'review'" x-cloak x-transition>
+                    <h4 style="color: var(--teal);">/review Workflow Pipeline</h4>
+                    <div class="workflow-pipeline" style="margin: 1rem 0 0 0;">
+                        <div class="workflow-node">critic</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">judge</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node active">principal-reviewer</div>
+                    </div>
+                </div>
+                <div x-show="selectedWorkflow === 'test'" x-cloak x-transition>
+                    <h4 style="color: var(--teal);">/test Workflow Pipeline</h4>
+                    <div class="workflow-pipeline" style="margin: 1rem 0 0 0;">
+                        <div class="workflow-node">arbiter</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node">atlas</div>
+                        <span class="workflow-arrow flow-animate">→</span>
+                        <div class="workflow-node active">coverage</div>
+                    </div>
+                </div>
+                <div x-show="selectedWorkflow === 'ralph'" x-cloak x-transition>
+                    <h4 style="color: var(--teal);">/ralph - Full Development Cycle</h4>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">PRD → Task Breakdown → Delegation Loop → Verification → Learning Extraction → Merge</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 11: WORKFLOWS DEEP DIVE
+         ========================================= -->
+    <section class="slide" data-slide="10">
+        <div class="glow-bg glow-purple" style="bottom: 10%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-purple reveal">Workflows Deep Dive</p>
+            <h2 class="reveal">Multi-Agent Orchestration</h2>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">1</div>
+                        <div class="flow-step-content">
+                            <h4>Memory Loads Context</h4>
+                            <p>Relevant learnings injected automatically</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow reveal">&#8595;</div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">2</div>
+                        <div class="flow-step-content">
+                            <h4>Scout Explores</h4>
+                            <p>Understands codebase structure & patterns</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow reveal">&#8595;</div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">3</div>
+                        <div class="flow-step-content">
+                            <h4>Architect Designs</h4>
+                            <p>Creates implementation plan</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow reveal">&#8595;</div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">4</div>
+                        <div class="flow-step-content">
+                            <h4>Kraken Implements</h4>
+                            <p>TDD workflow, tests first</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">5</div>
+                        <div class="flow-step-content">
+                            <h4>Hooks Validate</h4>
+                            <p>Type check, lint, security scan</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow reveal">&#8595;</div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">6</div>
+                        <div class="flow-step-content">
+                            <h4>Arbiter Tests</h4>
+                            <p>Full test suite verification</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow reveal">&#8595;</div>
+                    <div class="flow-step reveal">
+                        <div class="flow-step-number">7</div>
+                        <div class="flow-step-content">
+                            <h4>Memory Stores</h4>
+                            <p>New learnings extracted & saved</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow reveal">&#8595;</div>
+                    <div class="flow-step reveal" style="background: linear-gradient(135deg, var(--success-glow) 0%, var(--bg-card) 50%); border-color: var(--success);">
+                        <div class="flow-step-number" style="background: var(--success);">&#10003;</div>
+                        <div class="flow-step-content">
+                            <h4 style="color: var(--success);">Complete</h4>
+                            <p>Verified, tested, documented</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 12: PILLAR 5 - TOKEN EFFICIENCY
+         ========================================= -->
+    <section class="slide" data-slide="11">
+        <div class="glow-bg glow-teal" style="top: 20%; right: -15%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">Pillar 5</p>
+            <h2 class="reveal">Token Efficiency</h2>
+            <p class="reveal">95% token reduction through AST-based code analysis. Structure over raw text.</p>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div class="reveal">
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="tokenComparisonChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box">&#127794;</div>
+                        <div>
+                            <h4>AST Analysis</h4>
+                            <p>Parse code into structure, extract what matters, skip the noise.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box">&#128200;</div>
+                        <div>
+                            <h4>Call Graphs</h4>
+                            <p>Understand relationships between functions without reading every line.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box">&#128270;</div>
+                        <div>
+                            <h4>Smart Slicing</h4>
+                            <p>Extract only the code paths that affect your target.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 13: EFFICIENCY DEEP DIVE
+         ========================================= -->
+    <section class="slide" data-slide="12" x-data="{ view: 'raw' }">
+        <div class="glow-bg glow-amber" style="bottom: 10%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-amber reveal">Efficiency Deep Dive</p>
+            <h2 class="reveal">What Claude Actually Sees</h2>
+
+            <div class="reveal" style="text-align: center; margin: 1.5rem 0;">
+                <div class="toggle" :class="{ active: view === 'structured' }" @click="view = view === 'raw' ? 'structured' : 'raw'">
+                    <span class="toggle-label" style="margin-right: 1rem;" :style="{ color: view === 'raw' ? 'var(--danger)' : 'var(--text-muted)' }">Raw File (23K tokens)</span>
+                    <div class="toggle-track" style="width: 60px;">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                    <span class="toggle-label" style="margin-left: 1rem;" :style="{ color: view === 'structured' ? 'var(--teal)' : 'var(--text-muted)' }">Structured (1.2K tokens)</span>
+                </div>
+            </div>
+
+            <div class="tab-content reveal">
+                <div x-show="view === 'raw'" x-transition>
+                    <div class="card" style="font-family: var(--font-mono); font-size: 0.75rem; max-height: 250px; overflow: auto;">
+                        <pre style="margin: 0; background: transparent; border: none; padding: 0;">import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
+import { toast } from 'sonner';
+// ... 800 more lines of imports, comments, JSX ...
+// ... boilerplate, whitespace, type definitions ...
+// ... every single line of the file ...
+export const Dashboard: React.FC&lt;DashboardProps&gt; = ({
+  user,
+  settings,
+  onUpdate,
+  onLogout,
+  // ... many more props
+}) =&gt; {
+  const [state, setState] = useState(initialState);
+  // ... 600 more lines of component logic ...
+};</pre>
+                        <p style="color: var(--danger); margin: 1rem 0 0 0;">&#9888; 23,000 tokens consumed. Context window filling up.</p>
+                    </div>
+                </div>
+                <div x-show="view === 'structured'" x-cloak x-transition>
+                    <div class="card" style="font-family: var(--font-mono); font-size: 0.75rem;">
+                        <pre style="margin: 0; background: transparent; border: none; padding: 0; color: var(--teal);"># Dashboard Component Structure
+
+## Exports: Dashboard (FC)
+## Props: user, settings, onUpdate, onLogout
+## Hooks: useState(3), useEffect(2), useCallback(1)
+
+## Functions:
+- handleSubmit(data) → calls onUpdate
+- handleLogout() → calls onLogout, redirects
+- validateForm(values) → returns errors
+
+## Dependencies:
+- External: react, next/router, sonner
+- Internal: useAuth, useSettings
+
+## Complexity: Medium (cyclomatic: 8)</pre>
+                        <p style="color: var(--teal); margin: 1rem 0 0 0;">&#9989; 1,200 tokens. 20x more fits in context.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card reveal" style="margin-top: 1.5rem;">
+                <h4>Practical Impact</h4>
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.75rem;">
+                    <div><strong style="color: var(--teal);">20x</strong> <span style="color: var(--text-secondary);">more code in context</span></div>
+                    <div><strong style="color: var(--accent);">95%</strong> <span style="color: var(--text-secondary);">lower API costs</span></div>
+                    <div><strong style="color: var(--purple);">Better</strong> <span style="color: var(--text-secondary);">understanding (structure > lines)</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 14: HOW IT ALL WORKS TOGETHER
+         ========================================= -->
+    <section class="slide" data-slide="13">
+        <div class="glow-bg glow-teal" style="top: 10%; left: -10%;"></div>
+        <div class="glow-bg glow-purple" style="bottom: 10%; right: -10%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">Integration</p>
+            <h2 class="reveal">How It All Works Together</h2>
+            <p class="reveal">Example: "Build authentication for the dashboard"</p>
+
+            <div class="card-grid card-grid-3 reveal" style="margin-top: 1.5rem;">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">&#129504;</div>
+                    <h4 style="color: var(--teal);">1. Memory</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Recalls: "Last auth used JWT + refresh tokens. Token storage in httpOnly cookies worked well."</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">&#128279;</div>
+                    <h4 style="color: var(--accent);">2. Hooks</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Routes to TLDR for efficient context. Injects security patterns. Blocks insecure defaults.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">&#128270;</div>
+                    <h4 style="color: var(--purple);">3. Scout</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Explores existing auth patterns. Finds related components. Maps dependencies.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">&#128220;</div>
+                    <h4 style="color: var(--teal);">4. Architect</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Designs: Auth context, protected routes, token refresh hook. User approves plan.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">&#128025;</div>
+                    <h4 style="color: var(--accent);">5. Kraken</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">Implements with TDD. Tests first, then code. Hooks validate in real-time.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem;">&#128218;</div>
+                    <h4 style="color: var(--purple);">6. Store</h4>
+                    <p style="font-size: 0.85rem; margin: 0;">New learnings extracted: "Dashboard auth uses AuthContext at /contexts/auth"</p>
+                </div>
+            </div>
+
+            <div class="highlight-box reveal" style="margin-top: 1.5rem; text-align: center;">
+                <p style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">
+                    <strong>Components amplify each other.</strong><br>
+                    <span style="color: var(--text-secondary);">Memory informs agents. Hooks optimize everything. Efficiency enables scale.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 15: BEFORE VS AFTER
+         ========================================= -->
+    <section class="slide" data-slide="14" x-data="{ approach: 'after' }">
+        <div class="glow-bg glow-teal" style="bottom: 20%; left: -15%;"></div>
+        <div class="glow-bg glow-red" style="top: 10%; right: -10%; opacity: 0.2;"></div>
+        <div class="slide-content">
+            <p class="label reveal">The Difference</p>
+            <h2 class="reveal">Before vs. After</h2>
+
+            <div class="reveal" style="text-align: center; margin: 1.5rem 0;">
+                <div class="toggle" :class="{ active: approach === 'after' }" @click="approach = approach === 'before' ? 'after' : 'before'">
+                    <span class="toggle-label" style="margin-right: 1rem;" :style="{ color: approach === 'before' ? 'var(--danger)' : 'var(--text-muted)' }">Traditional AI</span>
+                    <div class="toggle-track" style="width: 60px;">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                    <span class="toggle-label" style="margin-left: 1rem;" :style="{ color: approach === 'after' ? 'var(--teal)' : 'var(--text-muted)' }">Continuous Claude</span>
+                </div>
+            </div>
+
+            <div class="tab-content reveal">
+                <div x-show="approach === 'before'" x-transition>
+                    <div class="highlight-box-danger" style="max-width: 800px; margin: 0 auto;">
+                        <h3 style="color: var(--danger); margin-bottom: 1rem;">Traditional AI Development</h3>
+                        <div class="card-grid card-grid-4" style="gap: 0.75rem;">
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128683;</div>
+                                <strong>Stateless</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">Re-explain everything</p>
+                            </div>
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129302;</div>
+                                <strong>Generalist</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">Same model for all</p>
+                            </div>
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128176;</div>
+                                <strong>Wasteful</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">Full files every time</p>
+                            </div>
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129310;</div>
+                                <strong>Hope-based</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">No verification</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="approach === 'after'" x-cloak x-transition>
+                    <div class="highlight-box" style="max-width: 800px; margin: 0 auto;">
+                        <h3 style="color: var(--teal); margin-bottom: 1rem;">Continuous Claude</h3>
+                        <div class="card-grid card-grid-4" style="gap: 0.75rem;">
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129504;</div>
+                                <strong>Persistent</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">Remembers everything</p>
+                            </div>
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#127891;</div>
+                                <strong>Specialized</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">Right agent per task</p>
+                            </div>
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#9889;</div>
+                                <strong>Efficient</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">95% token savings</p>
+                            </div>
+                            <div class="card" style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128737;</div>
+                                <strong>Verified</strong>
+                                <p style="font-size: 0.75rem; margin: 0.25rem 0 0 0;">78 quality gates</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 16: THE COMPOUND EFFECT
+         ========================================= -->
+    <section class="slide" data-slide="15">
+        <div class="glow-bg glow-amber" style="top: 20%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-amber reveal">Growth</p>
+            <h2 class="reveal">The Compound Effect</h2>
+            <p class="reveal">Every session makes the system smarter. Intelligence accumulates.</p>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div class="reveal">
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="compoundGrowthChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <div class="card reveal" style="margin-bottom: 1rem;">
+                        <h4 style="color: var(--teal);">Week 1: Foundation</h4>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Basic memory established. First patterns captured. System learning your codebase.</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 1rem;">
+                        <h4 style="color: var(--accent);">Month 1: Pattern Recognition</h4>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">50+ learnings accumulated. Common solutions recalled instantly. Failures avoided.</p>
+                    </div>
+                    <div class="card reveal">
+                        <h4 style="color: var(--purple);">Month 3: Expert System</h4>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">200+ learnings. Deep codebase knowledge. Architectural decisions informed by history.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 17: KEY BENEFITS
+         ========================================= -->
+    <section class="slide" data-slide="16">
+        <div class="glow-bg glow-teal" style="top: 20%; right: -15%;"></div>
+        <div class="glow-bg glow-purple" style="bottom: 10%; left: -10%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">Summary</p>
+            <h2 class="reveal">Key Benefits</h2>
+
+            <div class="card-grid card-grid-2 reveal" style="margin-top: 2rem;">
+                <div class="card card-accent">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div class="icon-box" style="flex-shrink: 0;">&#129504;</div>
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">Institutional Memory</h3>
+                            <p style="font-size: 0.95rem; margin: 0;">Zero knowledge loss between sessions. Solutions recalled instantly. Failures never repeated.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-accent">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div class="icon-box icon-box-success" style="flex-shrink: 0;">&#9889;</div>
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">95% Token Efficiency</h3>
+                            <p style="font-size: 0.95rem; margin: 0;">20x more code fits in context. Lower costs. Better understanding through structure.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-accent">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div class="icon-box icon-box-purple" style="flex-shrink: 0;">&#127891;</div>
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">18+ Specialists</h3>
+                            <p style="font-size: 0.95rem; margin: 0;">Right agent for each task. Opus for complex reasoning, Sonnet for fast execution.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-accent">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <div class="icon-box icon-box-amber" style="flex-shrink: 0;">&#9881;</div>
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">150+ Workflows</h3>
+                            <p style="font-size: 0.95rem; margin: 0;">Best practices built-in. Multi-agent pipelines orchestrated automatically.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box reveal" style="margin-top: 2rem; text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                    <div class="icon-box" style="width: 56px; height: 56px; font-size: 1.75rem;">&#128737;</div>
+                    <div style="text-align: left;">
+                        <h4 style="color: var(--teal);">78 Automatic Quality Gates</h4>
+                        <p style="margin: 0; color: var(--text-secondary);">Every action intercepted. Mistakes blocked before they happen. Quality enforced, not just monitored.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 18: FOR NON-TECHNICAL USERS
+         ========================================= -->
+    <section class="slide" data-slide="17">
+        <div class="glow-bg glow-purple" style="top: 10%; left: -15%;"></div>
+        <div class="slide-content">
+            <p class="label label-purple reveal">Accessibility</p>
+            <h2 class="reveal">Can You Build Software?</h2>
+            <p class="reveal">Yes - that's the whole point. You describe outcomes, agents execute.</p>
+
+            <div class="two-col" style="margin-top: 2rem;">
+                <div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-purple">&#128172;</div>
+                        <div>
+                            <h4>Describe What You Want</h4>
+                            <p>"I need a dashboard that shows sales by region with filters"</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-purple">&#127891;</div>
+                        <div>
+                            <h4>Agents Execute</h4>
+                            <p>Scout explores, Architect designs, Kraken implements, Arbiter tests</p>
+                        </div>
+                    </div>
+                    <div class="feature-item reveal">
+                        <div class="icon-box icon-box-purple">&#128065;</div>
+                        <div>
+                            <h4>Review Results</h4>
+                            <p>Approve plans before execution. See what changed. Request adjustments.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="highlight-box-purple">
+                        <h3 style="color: var(--purple);">Example Use Cases</h3>
+                        <ul style="margin: 0.75rem 0 0 0; font-size: 0.9rem;">
+                            <li><strong>Forms:</strong> "Create a contact form with email validation"</li>
+                            <li><strong>Dashboards:</strong> "Show monthly metrics with charts"</li>
+                            <li><strong>Automations:</strong> "Send Slack alerts when orders fail"</li>
+                            <li><strong>Reports:</strong> "Generate weekly sales summaries as PDF"</li>
+                        </ul>
+                        <p style="margin: 1rem 0 0 0; font-size: 0.9rem; color: var(--text-primary);">
+                            <strong>You're the director. Agents are your technical team.</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================
+         SLIDE 19: CALL TO ACTION
+         ========================================= -->
+    <section class="slide title-slide" data-slide="18" x-data="{ showResources: false }">
+        <div class="glow-bg glow-teal" style="top: 0%; left: 50%; transform: translateX(-50%);"></div>
+        <div class="glow-bg glow-purple" style="bottom: -20%; right: 20%;"></div>
+        <div class="slide-content">
+            <p class="label reveal">Get Started</p>
+            <h1 class="reveal" style="font-size: clamp(2rem, 4vw, 3.5rem);">AI That Remembers,<br>Learns, and Grows</h1>
+            <div class="accent-line reveal" style="margin: 2rem auto;"></div>
+
+            <div class="reveal" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+                <div class="highlight-box" style="padding: 1.25rem 2rem; text-align: center;">
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem;">Guided orchestration</p>
+                    <code style="font-size: 1.25rem; display: inline-block; margin-top: 0.5rem;">/maestro</code>
+                </div>
+                <div class="highlight-box-purple" style="padding: 1.25rem 2rem; text-align: center;">
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem;">Autonomous development</p>
+                    <code style="font-size: 1.25rem; display: inline-block; margin-top: 0.5rem; color: var(--purple);">/ralph</code>
+                </div>
+            </div>
+
+            <p class="reveal" style="margin: 2rem auto 0; max-width: 600px; text-align: center;">
+                Transform AI development from prompt-and-pray into systematic engineering.
+            </p>
+
+            <button class="tab-btn reveal" style="margin-top: 2rem;" @click="showResources = true">Resources & Documentation</button>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal-overlay" :class="{ open: showResources }" @click.self="showResources = false">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">Resources</h3>
+                    <button class="modal-close" @click="showResources = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h4 style="color: var(--teal); margin-bottom: 0.75rem;">Documentation</h4>
+                    <ul style="font-size: 0.9rem;">
+                        <li>Architecture: <code>docs/ARCHITECTURE.md</code></li>
+                        <li>Memory System: <code>docs/memory-architecture.md</code></li>
+                        <li>Hooks Reference: <code>docs/hooks/README.md</code></li>
+                        <li>Agent Guide: <code>docs/agents/README.md</code></li>
+                    </ul>
+                    <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">Quick Commands</h4>
+                    <ul style="font-size: 0.9rem;">
+                        <li><code>/help</code> - Interactive discovery</li>
+                        <li><code>/build</code> - Feature workflow</li>
+                        <li><code>/fix</code> - Bug fix workflow</li>
+                        <li><code>/explore</code> - Codebase research</li>
+                    </ul>
+                    <h4 style="color: var(--purple); margin: 1.5rem 0 0.75rem;">The 5 Pillars</h4>
+                    <ul style="font-size: 0.9rem;">
+                        <li><strong>Memory:</strong> PostgreSQL + pgvector semantic search</li>
+                        <li><strong>Hooks:</strong> 78 behavioral interceptors</li>
+                        <li><strong>Agents:</strong> 18+ specialized sub-assistants</li>
+                        <li><strong>Skills:</strong> 150+ pre-built workflows</li>
+                        <li><strong>Efficiency:</strong> TLDR AST-based analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">
+        Press <kbd>&#8592;</kbd> <kbd>&#8594;</kbd> or <kbd>Space</kbd> to navigate
+    </div>
+
+    <!-- ===========================================
+         PRESENTATION CONTROLLER
+         =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.progressBar = document.querySelector('.progress-bar');
+                this.navDots = document.querySelector('.nav-dots');
+                this.currentSlide = 0;
+                this.totalSlides = this.slides.length;
+                this.init();
+            }
+
+            init() {
+                this.createNavDots();
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupScrollListener();
+                this.updateProgress();
+            }
+
+            createNavDots() {
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot';
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    this.navDots.appendChild(dot);
+                });
+                this.updateNavDots();
+            }
+
+            updateNavDots() {
+                const dots = this.navDots.querySelectorAll('.nav-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            this.currentSlide = parseInt(entry.target.dataset.slide);
+                            this.updateNavDots();
+                            this.updateProgress();
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    }
+                });
+            }
+
+            setupScrollListener() {
+                window.addEventListener('scroll', () => this.updateProgress(), { passive: true });
+            }
+
+            updateProgress() {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                this.progressBar.style.width = `${progress}%`;
+            }
+
+            goToSlide(index) {
+                if (index >= 0 && index < this.totalSlides) {
+                    this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.goToSlide(this.currentSlide + 1);
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.goToSlide(this.currentSlide - 1);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+            initCharts();
+        });
+
+        // ===========================================
+        // CHARTS
+        // ===========================================
+        function initCharts() {
+            // Knowledge Growth Chart (Slide 4)
+            const knowledgeGrowthCtx = document.getElementById('knowledgeGrowthChart');
+            if (knowledgeGrowthCtx) {
+                new Chart(knowledgeGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                        datasets: [
+                            {
+                                label: 'Stored Learnings',
+                                data: [8, 22, 45, 72, 105, 142, 185, 230],
+                                borderColor: '#00B69F',
+                                backgroundColor: 'rgba(0, 182, 159, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#94a3b8',
+                                borderColor: 'rgba(148, 163, 184, 0.1)',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                                ticks: { color: '#64748b', font: { size: 10 } }
+                            },
+                            y: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                                ticks: { color: '#64748b' },
+                                title: {
+                                    display: true,
+                                    text: 'Learnings',
+                                    color: '#64748b',
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Token Comparison Chart (Slide 12)
+            const tokenComparisonCtx = document.getElementById('tokenComparisonChart');
+            if (tokenComparisonCtx) {
+                new Chart(tokenComparisonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Traditional', 'TLDR'],
+                        datasets: [{
+                            label: 'Tokens Used',
+                            data: [23000, 1200],
+                            backgroundColor: ['rgba(239, 68, 68, 0.7)', 'rgba(0, 182, 159, 0.7)'],
+                            borderColor: ['#ef4444', '#00B69F'],
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#94a3b8',
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.raw.toLocaleString() + ' tokens';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                                ticks: {
+                                    color: '#64748b',
+                                    callback: function(value) {
+                                        return (value / 1000) + 'K';
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { color: '#94a3b8', font: { size: 12, weight: 600 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Compound Growth Chart (Slide 16)
+            const compoundGrowthCtx = document.getElementById('compoundGrowthChart');
+            if (compoundGrowthCtx) {
+                new Chart(compoundGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+                        datasets: [
+                            {
+                                label: 'System Capability',
+                                data: [10, 18, 30, 48, 85, 140, 210, 295, 400],
+                                borderColor: '#00B69F',
+                                backgroundColor: 'rgba(0, 182, 159, 0.15)',
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 3
+                            },
+                            {
+                                label: 'Traditional (No Memory)',
+                                data: [10, 10, 10, 10, 10, 10, 10, 10, 10],
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                                fill: true,
+                                tension: 0,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#94a3b8',
+                                    font: { family: "'Source Sans 3', sans-serif", size: 11 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#94a3b8'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                                ticks: { color: '#64748b', font: { size: 10 } }
+                            },
+                            y: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                                ticks: { color: '#64748b' },
+                                title: {
+                                    display: true,
+                                    text: 'Effectiveness Index',
+                                    color: '#64748b',
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

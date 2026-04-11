@@ -91,6 +91,10 @@
       margin-top: 2rem;
     }
 
+    section.decks + section.decks {
+      margin-top: 3rem;
+    }
+
     .section-label {
       font-family: var(--font-display);
       font-size: 0.75rem;
@@ -231,18 +235,74 @@
     </header>
 
     <section class="decks">
-      <p class="section-label">Available decks</p>
-
+      <p class="section-label">Team &amp; Orientation</p>
       <div class="grid">
-        <!--
-          TEMPLATE — duplicate this <a class="card"> block for each new deck.
-          The href should match the subfolder name you create in this repo.
-        -->
-        <div class="empty">
-          <strong>No decks yet</strong>
-          Drop an <code>index.html</code> into a new subfolder, push, and add a card here.
-          See <a href="https://github.com/Rev4nchist/ai-enablement-decks#adding-a-new-deck" style="color: var(--teal);">README</a> for the exact flow.
-        </div>
+        <a class="card" href="./portfolio-orientation-april-2026/">
+          <span class="tag">Orientation</span>
+          <h3>Portfolio Orientation — April 2026</h3>
+          <p>AI Enablement Team portfolio walkthrough, priorities, and team structure for Q2.</p>
+          <div class="meta">
+            <span>April 2026</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+        <a class="card" href="./ebr-builder-onboarding/">
+          <span class="tag">Onboarding</span>
+          <h3>EBR Builder System — Team Onboarding</h3>
+          <p>How the Fourth Executive Business Review builder works and how the team uses it end-to-end.</p>
+          <div class="meta">
+            <span>Onboarding</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="decks">
+      <p class="section-label">Tooling &amp; Workflows</p>
+      <div class="grid">
+        <a class="card" href="./cowork-mastery-guide/">
+          <span class="tag">Mastery Guide</span>
+          <h3>Claude Cowork Mastery Guide</h3>
+          <p>2026 starter pack + 10 power prompts for getting the most out of Claude Cowork day-to-day.</p>
+          <div class="meta">
+            <span>2026 Starter Pack</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+        <a class="card" href="./continuous-claude/">
+          <span class="tag">Dev Environment</span>
+          <h3>Continuous Claude</h3>
+          <p>The AI development environment — hooks, memory, agents, and the full Claude Code operating model.</p>
+          <div class="meta">
+            <span>CCv3</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="decks">
+      <p class="section-label">MCP Capabilities</p>
+      <div class="grid">
+        <a class="card" href="./fastmcp-capabilities/">
+          <span class="tag">Capabilities</span>
+          <h3>FastMCP — What We Can Build</h3>
+          <p>The full capability surface of FastMCP v3 and the shape of projects we can stand up on it.</p>
+          <div class="meta">
+            <span>Capabilities Guide</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+        <a class="card" href="./salesforce-mcp-kickoff/">
+          <span class="tag">Kick-Off</span>
+          <h3>Fourth Salesforce MCP — Kick-Off</h3>
+          <p>Project kick-off for the Fourth Salesforce MCP server — scope, architecture, and milestones.</p>
+          <div class="meta">
+            <span>Kick-Off</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
       </div>
     </section>
 

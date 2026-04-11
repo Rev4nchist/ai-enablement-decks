@@ -1,0 +1,1048 @@
+<!-- Generated: 2026-03-31 | Topic: FastMCP Capabilities — Beyond Data Connectors -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FastMCP — What We Can Build</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #2d00f7;
+    --accent-light: #4cc9f0;
+    --accent-pink: #f72585;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #f0883e;
+    --purple: #bc8cff;
+    --tag-bg: #1a2332;
+    --code-bg: #13151a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ─── Header ─── */
+  .page-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 620px;
+  }
+  .meta {
+    margin-top: 12px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+  }
+  .badge-green { color: var(--green); border-color: #2d5a2d; background: #0d2a0d; }
+  .badge-blue { color: var(--accent-light); border-color: #1a3a5c; background: #0a1e35; }
+  .badge-pink { color: var(--accent-pink); border-color: #4a1530; background: #200010; }
+  .badge-purple { color: var(--purple); border-color: #3a2060; background: #180830; }
+  .badge-yellow { color: var(--yellow); border-color: #4a3500; background: #1a1200; }
+
+  /* ─── Nav pills ─── */
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 36px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .toc-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .toc a {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent-light);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #1a3a5c;
+    background: #0a1e35;
+    transition: all 0.15s;
+  }
+  .toc a:hover { background: #142840; }
+
+  /* ─── Section ─── */
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .icon-blue { background: #0a1e35; border: 1px solid #1a3a5c; }
+  .icon-green { background: #0d2a0d; border: 1px solid #2d5a2d; }
+  .icon-pink { background: #200010; border: 1px solid #4a1530; }
+  .icon-purple { background: #180830; border: 1px solid #3a2060; }
+  .icon-yellow { background: #1a1200; border: 1px solid #4a3500; }
+  .icon-orange { background: #1a1000; border: 1px solid #4a2800; }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    margin-top: 4px;
+  }
+  p {
+    color: var(--muted);
+    margin-bottom: 10px;
+    line-height: 1.65;
+  }
+  p strong { color: var(--text); }
+
+  /* ─── Cards ─── */
+  .card-grid {
+    display: grid;
+    gap: 12px;
+  }
+  .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .card-grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: #4c5769; }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green { background: var(--green); }
+  .dot-blue { background: var(--accent-light); }
+  .dot-pink { background: var(--accent-pink); }
+  .dot-purple { background: var(--purple); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-orange { background: var(--orange); }
+
+  .card-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .card-body strong { color: var(--text); }
+
+  /* ─── Feature rows ─── */
+  .feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .feature-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    align-items: start;
+  }
+  .feature-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    padding-top: 1px;
+  }
+  .feature-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .feature-desc strong { color: var(--text); }
+
+  /* ─── Code ─── */
+  code, pre {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace;
+    font-size: 12px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    color: #c9d1d9;
+    line-height: 1.6;
+    margin: 10px 0;
+  }
+  code { color: var(--accent-light); }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cm { color: #8b949e; font-style: italic; }
+  .dec { color: var(--accent-pink); }
+  .num { color: #f8c555; }
+
+  /* ─── Callout ─── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    border-left: 3px solid;
+    display: flex;
+    gap: 10px;
+  }
+  .callout-blue {
+    background: #0a1e35;
+    border-color: var(--accent-light);
+  }
+  .callout-green {
+    background: #0d2a0d;
+    border-color: var(--green);
+  }
+  .callout-yellow {
+    background: #1a1200;
+    border-color: var(--yellow);
+  }
+  .callout-pink {
+    background: #200010;
+    border-color: var(--accent-pink);
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout-content { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .callout-content strong { color: var(--text); }
+  .callout-content p { margin: 0; }
+
+  /* ─── Table ─── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  td strong { color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+
+  /* ─── Divider ─── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  /* ─── Stat row ─── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent-light);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  /* ─── Use case cards ─── */
+  .usecase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .usecase-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .usecase-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+  }
+  .tag-blue { background: #0a1e35; color: var(--accent-light); }
+  .tag-green { background: #0d2a0d; color: var(--green); }
+  .tag-pink { background: #200010; color: var(--accent-pink); }
+  .tag-purple { background: #180830; color: var(--purple); }
+  .tag-yellow { background: #1a1200; color: var(--yellow); }
+
+  /* ─── Footer ─── */
+  .page-footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+  }
+  .footer-text {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .footer-link {
+    color: var(--accent-light);
+    text-decoration: none;
+    font-size: 11px;
+  }
+
+  /* ─── Section anchors ─── */
+  .anchor { scroll-margin-top: 20px; }
+
+  /* ─── Print ─── */
+  @media print {
+    body { background: white; color: black; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════ -->
+<div class="page-header">
+  <div class="eyebrow">Technical Reference · FastMCP</div>
+  <h1>What We Can Build with FastMCP</h1>
+  <p class="subtitle">A capabilities guide for the call — covering advanced MCP patterns beyond simple data source connections.</p>
+  <div class="meta">
+    <span class="meta-item">📅 March 2026</span>
+    <span class="meta-item">·</span>
+    <span class="badge badge-blue">v3 (latest)</span>
+    <span class="badge badge-green">Python</span>
+    <span class="badge badge-pink">1M downloads/day</span>
+    <span class="badge badge-purple">70% of all MCP servers</span>
+  </div>
+</div>
+
+<!-- Quick nav -->
+<div class="toc">
+  <div class="toc-label">Jump to section</div>
+  <a href="#what-is">What Is FastMCP</a>
+  <a href="#three-pillars">Three Pillars</a>
+  <a href="#advanced-server">Advanced Server Features</a>
+  <a href="#apps">Interactive Apps (UI)</a>
+  <a href="#clients">Clients</a>
+  <a href="#use-cases">What We Could Build</a>
+  <a href="#vs-raw">FastMCP vs Raw MCP</a>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     WHAT IS FASTMCP
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="what-is">
+  <div class="section-header">
+    <div class="section-icon icon-blue">⚡</div>
+    <h2>What Is FastMCP</h2>
+  </div>
+
+  <p>FastMCP is <strong>the standard Python framework for building MCP servers, clients, and applications</strong>. FastMCP 1.0 was incorporated into the official MCP Python SDK in 2024. Today it powers ~70% of MCP servers across all languages and downloads 1M times per day.</p>
+
+  <p>The core promise: <strong>declare a Python function, and FastMCP handles everything else</strong> — schema generation, validation, protocol lifecycle, transport negotiation, auth. You write business logic; the MCP layer "just works."</p>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-number">1M</div>
+      <div class="stat-label">Downloads / Day</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">70%</div>
+      <div class="stat-label">MCP Servers (all languages)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">24k</div>
+      <div class="stat-label">GitHub Stars</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">v3</div>
+      <div class="stat-label">Current Version</div>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content"><strong>The big picture:</strong> FastMCP is not just a connector library. It's a full application platform — you can build long-running agents, interactive dashboards, authenticated APIs, and distributed task schedulers, all surfaced through the MCP protocol.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     THREE PILLARS
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="three-pillars">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🏛</div>
+    <h2>The Three Pillars</h2>
+  </div>
+
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span> Servers</div>
+      <div class="card-body">
+        Expose tools, resources, and prompts to LLMs. <strong>This is where you build</strong> — from simple wrappers to authenticated, middleware-equipped, background-task-capable services.
+        <br><br>
+        Core primitives: <code>@mcp.tool</code>, <code>@mcp.resource</code>, <code>@mcp.prompt</code>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-pink"></span> Apps <span class="badge badge-pink" style="font-size:10px">NEW v3</span></div>
+      <div class="card-body">
+        Give tools <strong>interactive UIs rendered directly in the conversation</strong>. Not just text — charts, tables, forms, dashboards, real-time data. Built in pure Python, no frontend skills required.
+        <br><br>
+        Return a <code>PrefabApp</code> and the host renders it.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-green"></span> Clients</div>
+      <div class="card-body">
+        Connect to <em>any</em> MCP server — local or remote, with full transport support (SSE, stdio, HTTP). Programmatic or CLI. Handles auth, protocol lifecycle, and callbacks automatically.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ADVANCED SERVER FEATURES
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="advanced-server">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">⚙️</div>
+    <h2>Advanced Server Features</h2>
+    <span class="badge badge-yellow">The stuff most MCPs don't do</span>
+  </div>
+
+  <p>Most MCP connectors are thin wrappers around an API. FastMCP goes far further — here are the features that turn a connector into a production service.</p>
+
+  <!-- Background Tasks -->
+  <h3 style="margin-top:20px; color: var(--accent-light);">🕐 Background Tasks <span class="badge badge-blue">NEW v2.14</span></h3>
+  <p>Long-running operations shouldn't block the conversation. FastMCP implements the <strong>MCP background task protocol (SEP-1686)</strong> — add <code>task=True</code> to any tool and it becomes async-capable.</p>
+
+  <div class="card-grid card-grid-2" style="margin-bottom:12px;">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span> How it works</div>
+      <div class="card-body">
+        Client starts an operation → gets a <strong>task ID immediately</strong> → polls for progress → retrieves result when ready. Powered by <strong>Docket</strong> (Prefect's distributed task scheduler, open-sourced).
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-green"></span> Production capabilities</div>
+      <div class="card-body">
+        <strong>Redis backend</strong> for persistence + horizontal scaling. Multiple workers pulling from the same queue. Task progress reporting to clients in real time. Handles millions of concurrent tasks.
+      </div>
+    </div>
+  </div>
+
+  <pre><span class="dec">@mcp.tool</span>(<span class="str">task=True</span>)
+<span class="kw">async def</span> <span class="fn">process_large_report</span>(files: list[str], progress: Progress = Progress()) -> str:
+    <span class="str">"""Generate report from 50+ files — runs in background."""</span>
+    <span class="kw">await</span> progress.set_total(len(files))
+    <span class="kw">for</span> file <span class="kw">in</span> files:
+        <span class="kw">await</span> progress.set_message(f<span class="str">"Processing {file}"</span>)
+        <span class="cm"># ... do work ...</span>
+        <span class="kw">await</span> progress.increment()
+    <span class="kw">return</span> <span class="str">"Done"</span>
+
+<span class="cm"># Scale horizontally with additional workers</span>
+<span class="cm"># fastmcp tasks worker server.py</span></pre>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Backend</th><th>Use For</th><th>Pickup Latency</th><th>Scaling</th></tr></thead>
+      <tbody>
+        <tr><td><strong>In-Memory</strong></td><td>Dev / single-process</td><td>~250ms</td><td>Single process only</td></tr>
+        <tr><td><strong>Redis</strong></td><td>Production</td><td>Single-digit ms</td><td>Horizontal — add workers</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- Middleware -->
+  <h3 style="color: var(--accent-light);">🔀 Middleware</h3>
+  <p>Intercept, modify, or block <strong>every request and response</strong> flowing through your server. Add rate limiting, custom logging, input sanitisation, or request transformation — all in one place.</p>
+  <pre><span class="dec">@mcp.middleware</span>
+<span class="kw">async def</span> <span class="fn">audit_logger</span>(request, call_next):
+    <span class="cm"># Log every tool call with metadata</span>
+    logger.info(f<span class="str">"Tool call: {request.tool} | User: {request.context.user_id}"</span>)
+    response = <span class="kw">await</span> call_next(request)
+    logger.info(f<span class="str">"Tool result: {response.status}"</span>)
+    <span class="kw">return</span> response</pre>
+
+  <hr>
+
+  <!-- Elicitation -->
+  <h3 style="color: var(--accent-light);">💬 Elicitation</h3>
+  <p>Your server can <strong>ask the user a question mid-execution</strong> — structured forms, confirmation dialogs, approvals. The conversation pauses, the user responds, your tool continues. Think "human in the loop" workflows.</p>
+
+  <pre><span class="dec">@mcp.tool</span>
+<span class="kw">async def</span> <span class="fn">delete_campaign</span>(campaign_id: str, ctx: Context):
+    <span class="str">"""Delete a campaign after confirmation."""</span>
+    result = <span class="kw">await</span> ctx.elicit(
+        message=f<span class="str">"Delete campaign {campaign_id}? This can't be undone."</span>,
+        response_type=ConfirmOrDeny,
+    )
+    <span class="kw">if</span> result.action == <span class="str">"confirm"</span>:
+        db.delete(campaign_id)
+        <span class="kw">return</span> <span class="str">"Deleted."</span></pre>
+
+  <hr>
+
+  <!-- Sampling -->
+  <h3 style="color: var(--accent-light);">🧠 Sampling (Server → LLM)</h3>
+  <p>A FastMCP server can <strong>make its own LLM calls back to the host model</strong>. This enables agentic tools that reason, classify, summarise, or chain LLM calls — entirely server-side, no separate API keys needed.</p>
+  <pre><span class="dec">@mcp.tool</span>
+<span class="kw">async def</span> <span class="fn">classify_ticket</span>(ticket_text: str, ctx: Context) -> str:
+    result = <span class="kw">await</span> ctx.sample(f<span class="str">"Classify this support ticket: {ticket_text}"</span>)
+    <span class="kw">return</span> result.text  <span class="cm"># LLM did the classification</span></pre>
+
+  <hr>
+
+  <!-- Auth -->
+  <h3 style="color: var(--accent-light);">🔐 Authentication</h3>
+  <p>Built-in auth for production deployments. Supports <strong>OAuth 2.0, Bearer tokens, API keys, and JWT</strong>. Integrates with Auth0, Clerk, Supabase, and custom providers.</p>
+  <div class="callout callout-yellow">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-content"><strong>Why this matters for us:</strong> Any connector we build that touches customer data (Notion, Slack, Asana) should have per-user auth scoping, not shared credentials. FastMCP makes this first-class.</div>
+  </div>
+
+  <hr>
+
+  <!-- Composition -->
+  <h3 style="color: var(--accent-light);">🧩 Server Composition</h3>
+  <p>Mount multiple FastMCP servers under namespaces to build <strong>federated tool registries</strong>. A master server can aggregate tools from five sub-servers, with automatic namespace collision handling.</p>
+  <pre>master = FastMCP(<span class="str">"Master"</span>)
+master.mount(<span class="str">"/crm"</span>, crm_server)   <span class="cm"># tools exposed as crm_get_contact, etc.</span>
+master.mount(<span class="str">"/hr"</span>, hr_server)
+master.mount(<span class="str">"/ops"</span>, ops_server)</pre>
+
+  <hr>
+
+  <!-- Transforms -->
+  <h3 style="color: var(--accent-light);">🔄 Transforms</h3>
+  <p>Programmatically <strong>modify tool schemas or filter results</strong> before they reach the LLM. Strip sensitive fields, rename parameters for better AI understanding, add descriptions dynamically.</p>
+
+  <hr>
+
+  <!-- Lifespan / Dependencies -->
+  <h3 style="color: var(--accent-light);">🔋 Lifespan + Dependency Injection</h3>
+  <p>Run code on startup/shutdown — initialise database connections, load ML models, warm caches. Inject shared resources into tools via a typed dependency system (similar to FastAPI's <code>Depends</code>).</p>
+  <pre><span class="dec">@asynccontextmanager</span>
+<span class="kw">async def</span> <span class="fn">lifespan</span>(server: FastMCP):
+    db = <span class="kw">await</span> connect_database()
+    <span class="kw">yield</span> {<span class="str">"db"</span>: db}     <span class="cm"># injected into all tools</span>
+    <span class="kw">await</span> db.close()
+
+mcp = FastMCP(<span class="str">"MyServer"</span>, lifespan=lifespan)</pre>
+
+  <!-- Quick feature summary -->
+  <div style="margin-top:20px;">
+    <h3 style="color: var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">Full Feature List (Server)</h3>
+    <div class="card-grid card-grid-4">
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-blue"></span>Background Tasks</div>
+        <div class="card-body" style="font-size:11px;">Async ops + progress</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-blue"></span>Middleware</div>
+        <div class="card-body" style="font-size:11px;">Intercept all calls</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-blue"></span>Elicitation</div>
+        <div class="card-body" style="font-size:11px;">Ask user mid-run</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-green"></span>Sampling</div>
+        <div class="card-body" style="font-size:11px;">Server makes LLM calls</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-green"></span>Auth</div>
+        <div class="card-body" style="font-size:11px;">OAuth, JWT, Bearer</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-green"></span>Composition</div>
+        <div class="card-body" style="font-size:11px;">Mount sub-servers</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-purple"></span>Transforms</div>
+        <div class="card-body" style="font-size:11px;">Modify schemas/results</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-purple"></span>Lifespan</div>
+        <div class="card-body" style="font-size:11px;">Startup/shutdown hooks</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-pink"></span>Dependencies</div>
+        <div class="card-body" style="font-size:11px;">Inject shared resources</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-pink"></span>Storage</div>
+        <div class="card-body" style="font-size:11px;">Persistent backends</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-yellow"></span>Telemetry</div>
+        <div class="card-body" style="font-size:11px;">OpenTelemetry built-in</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="card-title" style="font-size:12px;"><span class="dot dot-yellow"></span>Pagination</div>
+        <div class="card-body" style="font-size:11px;">Large result sets</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     APPS — INTERACTIVE UI
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="apps">
+  <div class="section-header">
+    <div class="section-icon icon-pink">🖥</div>
+    <h2>Apps — Interactive UIs in the Conversation</h2>
+    <span class="badge badge-pink">Biggest differentiator · v3</span>
+  </div>
+
+  <p>This is FastMCP's most distinctive capability. MCP tools normally return text. <strong>FastMCP Apps let tools return interactive UIs rendered directly inside the conversation window</strong> — charts the user can hover over, forms that submit data, sortable tables, dashboards with live state.</p>
+
+  <p>You write pure Python. The host renders the component library (Prefab UI). No frontend skills required.</p>
+
+  <div class="card-grid card-grid-2" style="margin-bottom:20px;">
+    <div class="usecase-card">
+      <div class="usecase-title">🧱 Prefab Apps <span class="badge badge-blue" style="font-size:10px">v3.1</span></div>
+      <div class="usecase-desc">Add <code>app=True</code> to any tool and return Prefab components — charts, tables, progress bars, metrics cards, forms, toggles. Python declarative syntax, interactive output. No JavaScript.</div>
+      <div class="tag-row">
+        <span class="tag tag-blue">Bar / Line / Pie Charts</span>
+        <span class="tag tag-blue">Data Tables</span>
+        <span class="tag tag-blue">Forms</span>
+        <span class="tag tag-blue">Metrics</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-title">🏗 FastMCPApp <span class="badge badge-pink" style="font-size:10px">v3.2</span></div>
+      <div class="usecase-desc">Multi-tool apps where the UI calls backend tools. <strong>Manages visibility</strong> (model sees entry points, UI sees backends). Stable identifiers that survive server composition. Think full CRUD apps in-conversation.</div>
+      <div class="tag-row">
+        <span class="tag tag-pink">Multi-step workflows</span>
+        <span class="tag tag-pink">Form → save → update</span>
+        <span class="tag tag-pink">Backend isolation</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-title">🤖 Generative UI <span class="badge badge-purple" style="font-size:10px">v3.2</span></div>
+      <div class="usecase-desc">The LLM writes the UI at runtime. Provider registers tools that let the model write Prefab Python, execute it in a sandbox, and stream the result — the user watches the dashboard build up live.</div>
+      <div class="tag-row">
+        <span class="tag tag-purple">LLM-designed layouts</span>
+        <span class="tag tag-purple">Streaming</span>
+        <span class="tag tag-purple">One-liner setup</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-title">📝 Custom HTML <span class="badge badge-yellow" style="font-size:10px">Low-level</span></div>
+      <div class="usecase-desc">Full control — your own HTML, CSS, JavaScript, any framework. Communicate with the host via the MCP Apps extension SDK. Use for maps, 3D visualisations, video, custom widgets.</div>
+      <div class="tag-row">
+        <span class="tag tag-yellow">Any JS framework</span>
+        <span class="tag tag-yellow">Maps / 3D</span>
+        <span class="tag tag-yellow">Custom interactions</span>
+      </div>
+    </div>
+  </div>
+
+  <pre><span class="cm"># Prefab App — Revenue chart in ~10 lines of Python</span>
+<span class="dec">@mcp.tool</span>(<span class="str">app=True</span>)
+<span class="kw">def</span> <span class="fn">revenue_dashboard</span>(year: int) -> PrefabApp:
+    <span class="str">"""Show annual revenue as an interactive bar chart."""</span>
+    data = db.get_revenue(year)
+    <span class="kw">with</span> Column(gap=<span class="num">4</span>, css_class=<span class="str">"p-6"</span>) <span class="kw">as</span> view:
+        Heading(f<span class="str">"{year} Revenue"</span>)
+        BarChart(data=data, series=[ChartSeries(data_key=<span class="str">"revenue"</span>)], x_axis=<span class="str">"quarter"</span>)
+        DataTable(data=data)
+    <span class="kw">return</span> PrefabApp(view=view)</pre>
+
+  <!-- Dev tooling -->
+  <div class="callout callout-green" style="margin-top:16px;">
+    <div class="callout-icon">🛠</div>
+    <div class="callout-content">
+      <strong>Local dev server:</strong> <code>fastmcp dev apps server.py</code> launches a browser preview at <code>localhost:8080</code> with <strong>auto-reload, MCP inspector, and live JSON-RPC traffic view</strong>. No host client needed. Build and test UIs before connecting to Claude.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     CLIENTS
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="clients">
+  <div class="section-header">
+    <div class="section-icon icon-green">🔌</div>
+    <h2>Clients — Connect to Any MCP Server</h2>
+  </div>
+
+  <p>FastMCP's client layer lets you <strong>call any MCP server programmatically</strong> — from scripts, workflows, or other agents. Handles transports, auth, and protocol lifecycle automatically.</p>
+
+  <div class="card-grid card-grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-green"></span> Transport support</div>
+      <div class="card-body">SSE (Server-Sent Events), stdio, HTTP Streamable. <strong>Just pass a URL</strong> — FastMCP negotiates the rest. Works with local processes and remote hosted servers equally.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span> Programmatic orchestration</div>
+      <div class="card-body">Call tools, read resources, and fetch prompts in Python code. Build <strong>multi-agent pipelines</strong> where one agent calls another via MCP — composable at the protocol level.</div>
+    </div>
+  </div>
+
+  <pre><span class="kw">async with</span> Client(<span class="str">"https://gofastmcp.com/mcp"</span>) <span class="kw">as</span> client:
+    result = <span class="kw">await</span> client.call_tool(<span class="str">"search"</span>, {<span class="str">"query"</span>: <span class="str">"FastMCP deployment"</span>})
+    resources = <span class="kw">await</span> client.list_resources()
+    <span class="cm"># Full protocol access — tools, resources, prompts</span></pre>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     WHAT WE COULD BUILD
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="use-cases">
+  <div class="section-header">
+    <div class="section-icon icon-orange">🚀</div>
+    <h2>What We Could Build — Fourth Use Cases</h2>
+    <span class="badge badge-yellow">Applied to our context</span>
+  </div>
+
+  <div class="card-grid card-grid-2">
+
+    <div class="usecase-card">
+      <div class="usecase-title">📊 Live Report Dashboard in Chat</div>
+      <div class="usecase-desc">
+        Weekly AI report as an <strong>interactive Prefab app</strong> rather than a static HTML file. Bar charts hover-enabled, tables sortable, metrics with RAG indicators — all rendered in the conversation. Carly opens it without leaving Claude.
+      </div>
+      <div class="tag-row">
+        <span class="tag tag-pink">Apps</span>
+        <span class="tag tag-blue">Prefab UI</span>
+        <span class="tag tag-green">Report pipeline</span>
+      </div>
+    </div>
+
+    <div class="usecase-card">
+      <div class="usecase-title">📋 RFP Builder with Background Processing</div>
+      <div class="usecase-desc">
+        Submit an RFP for processing, get a task ID, and receive progress updates as it runs — no timeout, no blocking. Large RFPs (100+ questions) handled asynchronously with per-question confidence scoring streamed back.
+      </div>
+      <div class="tag-row">
+        <span class="tag tag-purple">Background Tasks</span>
+        <span class="tag tag-blue">Progress tracking</span>
+        <span class="tag tag-yellow">Redis backend</span>
+      </div>
+    </div>
+
+    <div class="usecase-card">
+      <div class="usecase-title">🔐 Authenticated Multi-Tenant MCP</div>
+      <div class="usecase-desc">
+        A single Fourth iQ MCP server that scopes <strong>per CSM's data</strong> — customer A's CSM sees only their accounts, using OAuth. Middleware enforces tenancy. One server, many users, correct data isolation.
+      </div>
+      <div class="tag-row">
+        <span class="tag tag-green">Auth</span>
+        <span class="tag tag-blue">Middleware</span>
+        <span class="tag tag-pink">Multi-tenant</span>
+      </div>
+    </div>
+
+    <div class="usecase-card">
+      <div class="usecase-title">✅ Approval Workflow Tool</div>
+      <div class="usecase-desc">
+        Use Elicitation to build tools that <strong>pause and ask for human approval</strong> mid-run — "Delete this Asana task?" with a confirmation form. Structured confirmation dialogs before irreversible actions.
+      </div>
+      <div class="tag-row">
+        <span class="tag tag-blue">Elicitation</span>
+        <span class="tag tag-purple">Human-in-loop</span>
+        <span class="tag tag-green">Safety gates</span>
+      </div>
+    </div>
+
+    <div class="usecase-card">
+      <div class="usecase-title">🧩 Federated Tool Registry</div>
+      <div class="usecase-desc">
+        Mount the Notion connector, Slack connector, Asana connector, and M365 connector into <strong>one master server</strong> using Composition. One connection point for Claude, all tools namespaced cleanly. Simplifies MCP config management.
+      </div>
+      <div class="tag-row">
+        <span class="tag tag-yellow">Composition</span>
+        <span class="tag tag-blue">Namespacing</span>
+        <span class="tag tag-green">Single endpoint</span>
+      </div>
+    </div>
+
+    <div class="usecase-card">
+      <div class="usecase-title">🤖 Generative EBR Builder</div>
+      <div class="usecase-desc">
+        Feed customer data to GenerativeUI — the LLM designs the EBR dashboard at runtime based on the account's specific metrics. No fixed template. Streams the UI build as the LLM writes it. Different layout per account.
+      </div>
+      <div class="tag-row">
+        <span class="tag tag-purple">Generative UI</span>
+        <span class="tag tag-pink">Streaming</span>
+        <span class="tag tag-blue">EBR Builder</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     FASTMCP vs RAW MCP
+═══════════════════════════════════════════════════════ -->
+<div class="section anchor" id="vs-raw">
+  <div class="section-header">
+    <div class="section-icon icon-blue">⚖️</div>
+    <h2>FastMCP vs Raw MCP</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Raw MCP</th>
+          <th>FastMCP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Setup</strong></td>
+          <td>Manual schema, transport, lifecycle code</td>
+          <td>One decorator, done</td>
+        </tr>
+        <tr>
+          <td><strong>Interactive UI</strong></td>
+          <td>Not supported</td>
+          <td>✅ Prefab Apps, Generative UI, Custom HTML</td>
+        </tr>
+        <tr>
+          <td><strong>Long-running ops</strong></td>
+          <td>Blocks the client</td>
+          <td>✅ Background tasks with progress + Redis backend</td>
+        </tr>
+        <tr>
+          <td><strong>Auth</strong></td>
+          <td>Build from scratch</td>
+          <td>✅ OAuth / Bearer / JWT built-in, Auth0/Clerk integrations</td>
+        </tr>
+        <tr>
+          <td><strong>Middleware</strong></td>
+          <td>Manual wrapping</td>
+          <td>✅ Declarative intercept layer for all calls</td>
+        </tr>
+        <tr>
+          <td><strong>Asking the user</strong></td>
+          <td>Not supported</td>
+          <td>✅ Elicitation — pause mid-tool for structured user input</td>
+        </tr>
+        <tr>
+          <td><strong>LLM calls from server</strong></td>
+          <td>Separate API key / complexity</td>
+          <td>✅ Sampling — call the host LLM from within any tool</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-server</strong></td>
+          <td>Manual routing</td>
+          <td>✅ Composition — mount servers under namespaces</td>
+        </tr>
+        <tr>
+          <td><strong>Deployment</strong></td>
+          <td>DIY</td>
+          <td>✅ Prefect Horizon (free), Docker, any cloud</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>Complex mock setup</td>
+          <td>✅ Built-in testing utilities</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-pink" style="margin-top:16px;">
+    <div class="callout-icon">🎯</div>
+    <div class="callout-content">
+      <strong>Bottom line:</strong> FastMCP is not a wrapper around the MCP spec — it's a production application platform that happens to speak MCP. The connectors we build today can evolve into full apps with background processing, interactive UIs, and auth without changing frameworks.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     KEY LINKS
+═══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon icon-green">🔗</div>
+    <h2>Key Links</h2>
+  </div>
+  <div class="feature-list">
+    <div class="feature-row">
+      <div class="feature-name">Docs home</div>
+      <div class="feature-desc"><a href="https://gofastmcp.com" style="color:var(--accent-light);">gofastmcp.com</a> — includes MCP server for docs search</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-name">Background Tasks</div>
+      <div class="feature-desc"><a href="https://gofastmcp.com/servers/tasks" style="color:var(--accent-light);">gofastmcp.com/servers/tasks</a></div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-name">Apps Overview</div>
+      <div class="feature-desc"><a href="https://gofastmcp.com/apps/overview" style="color:var(--accent-light);">gofastmcp.com/apps/overview</a></div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-name">App Dev Server</div>
+      <div class="feature-desc"><a href="https://gofastmcp.com/apps/development" style="color:var(--accent-light);">gofastmcp.com/apps/development</a></div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-name">GitHub</div>
+      <div class="feature-desc"><a href="https://github.com/PrefectHQ/fastmcp" style="color:var(--accent-light);">github.com/PrefectHQ/fastmcp</a> — 24k stars</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-name">Deployment</div>
+      <div class="feature-desc"><a href="https://prefect.io/horizon" style="color:var(--accent-light);">prefect.io/horizon</a> — free hosting for FastMCP servers</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════ -->
+<div class="page-footer">
+  <span class="footer-text">Generated by Donna · 2026-03-31 · Research: gofastmcp.com</span>
+  <a href="https://gofastmcp.com" class="footer-link">gofastmcp.com →</a>
+</div>
+
+</body>
+</html>
