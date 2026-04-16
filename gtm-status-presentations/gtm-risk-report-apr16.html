@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTM Risk Intelligence Report — April 14–16, 2026</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --card-bg: #f8fafc;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --cns: #d97706;
+    --cns-bg: #fffbeb;
+    --cns-border: #fde68a;
+    --p2v: #dc2626;
+    --p2v-bg: #fef2f2;
+    --p2v-border: #fecaca;
+    --pgf: #7c3aed;
+    --pgf-bg: #f5f3ff;
+    --pgf-border: #ddd6fe;
+    --fourth-blue: #0066FF;
+    --risk-red: #dc2626;
+    --risk-amber: #d97706;
+    --risk-green: #16a34a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 32px;
+  }
+
+  /* Header */
+  .report-header {
+    border-bottom: 3px solid var(--fourth-blue);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+
+  .report-header .fourth-mark {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--fourth-blue);
+    margin-bottom: 8px;
+  }
+
+  .report-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .report-header .period {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Executive Summary */
+  .exec-summary {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+
+  .exec-summary h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .exec-summary p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .exec-summary p + p { margin-top: 10px; }
+
+  /* KPI Row */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .kpi {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+
+  .kpi-number {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .kpi.cns { background: var(--cns-bg); border-color: var(--cns-border); }
+  .kpi.cns .kpi-number { color: var(--cns); }
+  .kpi.p2v { background: var(--p2v-bg); border-color: var(--p2v-border); }
+  .kpi.p2v .kpi-number { color: var(--p2v); }
+  .kpi.pgf { background: var(--pgf-bg); border-color: var(--pgf-border); }
+  .kpi.pgf .kpi-number { color: var(--pgf); }
+
+  /* Bucket bars */
+  .bucket-bars {
+    margin-bottom: 28px;
+  }
+
+  .bucket-bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .bucket-bar-label {
+    width: 160px;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .bucket-bar-track {
+    flex: 1;
+    height: 28px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bucket-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    transition: width 0.6s ease;
+  }
+
+  .bucket-bar-fill.pgf { background: var(--pgf); width: 100%; }
+  .bucket-bar-fill.cns { background: var(--cns); width: 64%; }
+  .bucket-bar-fill.p2v { background: var(--p2v); width: 36%; }
+
+  .bucket-bar-count {
+    width: 40px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+
+  /* Section headers */
+  .section-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-header .badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--p2v);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* Red Zone Table */
+  .risk-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 28px;
+    font-size: 13px;
+  }
+
+  .risk-table th {
+    background: #f1f5f9;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .risk-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .risk-table tr:last-child td { border-bottom: none; }
+
+  .risk-table .account-name { font-weight: 600; }
+  .risk-table .rep-name { color: var(--text-muted); font-size: 12px; }
+
+  .bucket-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .bdot {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .bdot.cns { background: var(--cns-bg); color: var(--cns); border: 1px solid var(--cns-border); }
+  .bdot.p2v { background: var(--p2v-bg); color: var(--p2v); border: 1px solid var(--p2v-border); }
+  .bdot.pgf { background: var(--pgf-bg); color: var(--pgf); border: 1px solid var(--pgf-border); }
+  .bdot.off { background: #f8fafc; color: #cbd5e1; border: 1px solid #e2e8f0; }
+
+  .risk-score {
+    font-weight: 800;
+    font-size: 15px;
+  }
+
+  .risk-high { color: var(--risk-red); }
+  .risk-med { color: var(--risk-amber); }
+
+  /* Voice of Customer */
+  .voc-section { margin-bottom: 28px; }
+
+  .voc-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    border-left: 4px solid;
+  }
+
+  .voc-card.cns { border-left-color: var(--cns); background: var(--cns-bg); }
+  .voc-card.p2v { border-left-color: var(--p2v); background: var(--p2v-bg); }
+  .voc-card.pgf { border-left-color: var(--pgf); background: var(--pgf-bg); }
+
+  .voc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .voc-account {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .voc-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .voc-tag.cns { background: var(--cns); color: white; }
+  .voc-tag.p2v { background: var(--p2v); color: white; }
+  .voc-tag.pgf { background: var(--pgf); color: white; }
+
+  .voc-quote {
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .voc-attribution {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* Recommendations */
+  .rec-list { margin-bottom: 28px; }
+
+  .rec-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rec-item:last-child { border-bottom: none; }
+
+  .rec-number {
+    width: 28px;
+    height: 28px;
+    background: var(--fourth-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .rec-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .rec-text strong { font-weight: 700; }
+
+  /* Footer */
+  .report-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .report-footer .source { font-weight: 600; }
+
+  /* Legend inline */
+  .legend-inline {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .legend-inline span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .ldot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .ldot.cns { background: var(--cns); }
+  .ldot.p2v { background: var(--p2v); }
+  .ldot.pgf { background: var(--pgf); }
+
+  @media print {
+    body { padding: 20px; }
+    .voc-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <div class="fourth-mark">Fourth &middot; AI Enablement</div>
+  <h1>GTM Risk Intelligence Report</h1>
+  <div class="period">April 14–16, 2026 &middot; 3-day rolling window &middot; Source: #gong_gtm-test</div>
+</div>
+
+<div class="exec-summary">
+  <h2>Executive Summary</h2>
+  <p>Over the past three days, Gong captured <strong>50 risk signals</strong> across <strong>23 accounts</strong>, automatically classified into three retention risk categories. Product Gaps (PGF) is the dominant signal at 50% of all flags, followed by Customer Not Supported (CNS) at 32% and Price-to-Value (P2V) at 18%.</p>
+  <p>The most concerning finding: <strong>8 accounts are triggering all three risk buckets simultaneously</strong>, indicating compounding dissatisfaction across support, value perception, and product capability. These accounts require immediate, coordinated intervention from CS, Product, and commercial teams.</p>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-row">
+  <div class="kpi cns">
+    <div class="kpi-number">16</div>
+    <div class="kpi-label">Not Supported (CNS)</div>
+  </div>
+  <div class="kpi p2v">
+    <div class="kpi-number">9</div>
+    <div class="kpi-label">Price-to-Value (P2V)</div>
+  </div>
+  <div class="kpi pgf">
+    <div class="kpi-number">25</div>
+    <div class="kpi-label">Product Gaps (PGF)</div>
+  </div>
+</div>
+
+<!-- Distribution -->
+<div class="bucket-bars">
+  <div class="bucket-bar-row">
+    <div class="bucket-bar-label" style="color:var(--pgf)">Product Gaps</div>
+    <div class="bucket-bar-track"><div class="bucket-bar-fill pgf">25 signals &middot; 50%</div></div>
+    <div class="bucket-bar-count" style="color:var(--pgf)">25</div>
+  </div>
+  <div class="bucket-bar-row">
+    <div class="bucket-bar-label" style="color:var(--cns)">Not Supported</div>
+    <div class="bucket-bar-track"><div class="bucket-bar-fill cns">16 signals &middot; 32%</div></div>
+    <div class="bucket-bar-count" style="color:var(--cns)">16</div>
+  </div>
+  <div class="bucket-bar-row">
+    <div class="bucket-bar-label" style="color:var(--p2v)">Price-to-Value</div>
+    <div class="bucket-bar-track"><div class="bucket-bar-fill p2v">9 &middot; 18%</div></div>
+    <div class="bucket-bar-count" style="color:var(--p2v)">9</div>
+  </div>
+</div>
+
+<!-- Red Zone -->
+<div class="section-header">Red Zone: All Three Buckets Active <span class="badge">8 ACCOUNTS</span></div>
+
+<div class="legend-inline">
+  <span><i class="ldot cns"></i> CNS = Not Supported</span>
+  <span><i class="ldot p2v"></i> P2V = Price-to-Value</span>
+  <span><i class="ldot pgf"></i> PGF = Product Gaps</span>
+</div>
+
+<table class="risk-table">
+  <thead>
+    <tr>
+      <th>Account</th>
+      <th>Fourth Rep</th>
+      <th style="text-align:center">CNS</th>
+      <th style="text-align:center">P2V</th>
+      <th style="text-align:center">PGF</th>
+      <th style="text-align:right">Risk</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="account-name">D&amp;D London (Evolv)</td>
+      <td class="rep-name">Johanna Murphy</td>
+      <td style="text-align:center"><span class="bdot cns">5</span></td>
+      <td style="text-align:center"><span class="bdot p2v">3</span></td>
+      <td style="text-align:center"><span class="bdot pgf">17</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">55</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">Flynn Restaurant Group</td>
+      <td class="rep-name">Jennifer Jones</td>
+      <td style="text-align:center"><span class="bdot cns">3</span></td>
+      <td style="text-align:center"><span class="bdot p2v">2</span></td>
+      <td style="text-align:center"><span class="bdot pgf">8</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">43</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">Corinthia Hotel</td>
+      <td class="rep-name">Alexandra Stevens</td>
+      <td style="text-align:center"><span class="bdot cns">5</span></td>
+      <td style="text-align:center"><span class="bdot p2v">5</span></td>
+      <td style="text-align:center"><span class="bdot pgf">10</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">50</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">Cubitt House</td>
+      <td class="rep-name">Sarah Bwalya</td>
+      <td style="text-align:center"><span class="bdot cns">4</span></td>
+      <td style="text-align:center"><span class="bdot p2v">3</span></td>
+      <td style="text-align:center"><span class="bdot pgf">9</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">46</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">Wolseley Hospitality</td>
+      <td class="rep-name">Alexandra Stevens</td>
+      <td style="text-align:center"><span class="bdot cns">4</span></td>
+      <td style="text-align:center"><span class="bdot p2v">3</span></td>
+      <td style="text-align:center"><span class="bdot pgf">5</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">42</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">Applebee's (Apple Texas)</td>
+      <td class="rep-name">Annie Smith</td>
+      <td style="text-align:center"><span class="bdot cns">4</span></td>
+      <td style="text-align:center"><span class="bdot p2v">6</span></td>
+      <td style="text-align:center"><span class="bdot pgf">7</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">47</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">CAVE HOTELS UK</td>
+      <td class="rep-name">Abegail Del Villar</td>
+      <td style="text-align:center"><span class="bdot cns">3</span></td>
+      <td style="text-align:center"><span class="bdot p2v">8</span></td>
+      <td style="text-align:center"><span class="bdot pgf">2</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">43</span></td>
+    </tr>
+    <tr>
+      <td class="account-name">Swensons Drive-In</td>
+      <td class="rep-name">Aaron Johnson</td>
+      <td style="text-align:center"><span class="bdot cns">3</span></td>
+      <td style="text-align:center"><span class="bdot p2v">2</span></td>
+      <td style="text-align:center"><span class="bdot pgf">5</span></td>
+      <td style="text-align:right"><span class="risk-score risk-high">40</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Voice of Customer -->
+<div class="section-header">Voice of Customer: Loudest Signals</div>
+
+<div class="voc-section">
+  <div class="voc-card pgf">
+    <div class="voc-meta">
+      <span class="voc-account">Big Table Group</span>
+      <span class="voc-tag pgf">PGF &middot; 20 mentions</span>
+    </div>
+    <div class="voc-quote">"The system is not calculating the eight-week, 80% average salary correctly for statutory sick pay, leading to unfair payments and non-compliance with legislation."</div>
+    <div class="voc-attribution">Melissa Davis, Head of People Operations &middot; Apr 16 &middot; Rep: Lindsey Braniff</div>
+  </div>
+
+  <div class="voc-card pgf">
+    <div class="voc-meta">
+      <span class="voc-account">D&amp;D London (Evolv)</span>
+      <span class="voc-tag pgf">PGF &middot; 17 mentions</span>
+    </div>
+    <div class="voc-quote">"Extensive product gaps across HR, payroll, and scheduling features — multiple manual workarounds required for basic operations."</div>
+    <div class="voc-attribution">Apr 15 &middot; Rep: Johanna Murphy</div>
+  </div>
+
+  <div class="voc-card cns">
+    <div class="voc-meta">
+      <span class="voc-account">Fuller Smith &amp; Turner</span>
+      <span class="voc-tag cns">CNS &middot; 13 mentions</span>
+    </div>
+    <div class="voc-quote">"Extensive frustration with support quality and resolution timelines — feeling left without adequate follow-through."</div>
+    <div class="voc-attribution">Apr 15 &middot; Rep: Lindsey Braniff</div>
+  </div>
+
+  <div class="voc-card cns">
+    <div class="voc-meta">
+      <span class="voc-account">Big Table Group</span>
+      <span class="voc-tag cns">CNS &middot; 5 mentions</span>
+    </div>
+    <div class="voc-quote">"I don't feel 100 percent confident that we have the answers if we were to be audited right now."</div>
+    <div class="voc-attribution">Melissa Davis, Head of People Operations &middot; Apr 16 &middot; Rep: Lindsey Braniff</div>
+  </div>
+
+  <div class="voc-card p2v">
+    <div class="voc-meta">
+      <span class="voc-account">CAVE HOTELS UK</span>
+      <span class="voc-tag p2v">P2V &middot; 8 mentions</span>
+    </div>
+    <div class="voc-quote">"PTP price went up by 31 percent — not using it to full potential, could get similar services elsewhere for much less."</div>
+    <div class="voc-attribution">Sibhat Kesete, Finance Manager &middot; Apr 16 &middot; Rep: Abegail Del Villar</div>
+  </div>
+
+  <div class="voc-card cns">
+    <div class="voc-meta">
+      <span class="voc-account">Dorchester Collection</span>
+      <span class="voc-tag cns">CNS &middot; 4 mentions</span>
+    </div>
+    <div class="voc-quote">"The girls feel disheartened because they believe no one is listening to them. I don't want to feel like a ping pong going around between different support channels."</div>
+    <div class="voc-attribution">Custódio Barreiros, Consultant &middot; Apr 16 &middot; Rep: Jake Alfeche</div>
+  </div>
+
+  <div class="voc-card p2v">
+    <div class="voc-meta">
+      <span class="voc-account">Swensons Drive-In</span>
+      <span class="voc-tag p2v">P2V &middot; 2 mentions</span>
+    </div>
+    <div class="voc-quote">"HotSchedules was a leader 10 or 15 years ago, but now it's kind of table stakes. Everybody's got a solution now."</div>
+    <div class="voc-attribution">Ron Dinella, CFO &middot; Apr 16 &middot; Rep: Aaron Johnson</div>
+  </div>
+
+  <div class="voc-card p2v">
+    <div class="voc-meta">
+      <span class="voc-account">Applebee's (Apple Texas)</span>
+      <span class="voc-tag p2v">P2V &middot; 6 mentions</span>
+    </div>
+    <div class="voc-quote">"Why is there such a huge difference in price, from $16 to $70, for the exact same resources? That's kind of crazy."</div>
+    <div class="voc-attribution">Krista Melton, Apple Houston &middot; Apr 16 &middot; Rep: Annie Smith</div>
+  </div>
+</div>
+
+<!-- Recommended Actions -->
+<div class="section-header">Recommended Actions</div>
+
+<div class="rec-list">
+  <div class="rec-item">
+    <div class="rec-number">1</div>
+    <div class="rec-text"><strong>Triage the 8 red-zone accounts immediately.</strong> These accounts are signaling across all three risk vectors. Assign a cross-functional owner (CS + Product + Commercial) for each. Big Table Group and D&amp;D London are the highest intensity — schedule intervention calls this week.</div>
+  </div>
+  <div class="rec-item">
+    <div class="rec-number">2</div>
+    <div class="rec-text"><strong>Escalate Big Table Group's compliance gap to Product.</strong> SSP miscalculation is a legal exposure, not just a product gap. This needs a hotfix, not a roadmap item. Melissa Davis explicitly stated she can't pass an audit.</div>
+  </div>
+  <div class="rec-item">
+    <div class="rec-number">3</div>
+    <div class="rec-text"><strong>Address the UK support communication pattern.</strong> Dorchester, Fuller Smith &amp; Turner, Holland &amp; Barrett, and JKS are all flagging the same CNS theme: tickets going silent, internal updates not visible to customers, "radio silence." This is systemic, not account-specific.</div>
+  </div>
+  <div class="rec-item">
+    <div class="rec-number">4</div>
+    <div class="rec-text"><strong>Review CAVE HOTELS pricing before they churn.</strong> A 31% PTP increase on an account that self-reports underutilization is a cancellation waiting to happen. Commercial team should have a value realization conversation, not a price negotiation.</div>
+  </div>
+  <div class="rec-item">
+    <div class="rec-number">5</div>
+    <div class="rec-text"><strong>Feed PGF data to Product leadership weekly.</strong> 50% of all signals are product gaps. The top themes: SSP/payroll calculation accuracy, API field availability, reporting flexibility, and integration reliability. This is a product investment signal, not just CS feedback.</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="report-footer">
+  <div>
+    <span class="source">Source:</span> #gong_gtm-test Slack channel &middot; 50 signals from 23 accounts &middot; Apr 14–16, 2026
+  </div>
+  <div>
+    Powered by iQ &middot; AI Enablement Team &middot; POC v0.1
+  </div>
+</div>
+
+</body>
+</html>
