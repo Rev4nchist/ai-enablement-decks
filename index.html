@@ -130,6 +130,11 @@
       background: var(--bg-surface);
     }
 
+    .card.featured {
+      background: linear-gradient(135deg, rgba(0,212,200,0.08) 0%, var(--bg-card) 55%);
+      border-color: rgba(0,212,200,0.25);
+    }
+
     .card .tag {
       display: inline-block;
       font-family: var(--font-display);
@@ -233,6 +238,30 @@
       <h1>Decks &amp; Briefings</h1>
       <p class="sub">A shared home for AI Enablement presentations, orientations, and capability briefings. Each card links to a standalone deck.</p>
     </header>
+
+    <section class="decks">
+      <p class="section-label">VP Briefing · April 2026</p>
+      <div class="grid">
+        <a class="card featured" href="./vp-briefing-april-2026/">
+          <span class="tag">VP Briefing</span>
+          <h3>AI Enablement · VP Portfolio Review</h3>
+          <p>Twenty-slide story deck for VP+ leadership — what we shipped, what's in build, and how the projects add up to Fourth's intelligence platform.</p>
+          <div class="meta">
+            <span>April 2026</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+        <a class="card featured" href="./portfolio-april-2026/">
+          <span class="tag">Leave-behind</span>
+          <h3>AI Enablement · Portfolio Landing</h3>
+          <p>Long-scroll leave-behind covering all 14 projects across Customer Success, Marketing, Sales, Support, and Platform.</p>
+          <div class="meta">
+            <span>April 2026</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
 
     <section class="decks">
       <p class="section-label">Team &amp; Orientation</p>

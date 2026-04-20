@@ -1,0 +1,345 @@
+/**
+ * Fourth Design System — Colors & Type
+ * Consolidated base styles: color + typography CSS variables for all 4 themes,
+ * plus semantic element defaults (h1/h2/p/code/etc) and a typographic utility scale.
+ *
+ * Load order in pages:
+ *   1. themes/fourth-v2.css    (or graphite.css / obsidian.css / fourth-classic.css)
+ *   2. tokens/base.css          (spacing, radii, motion, shadows, blur)
+ *   3. tokens/animations.css
+ *   4. tokens/gradients.css
+ *   5. colors_and_type.css      (this file — semantic type + color classes)
+ *
+ * The theme file owns the color & font-family tokens. This file defines the
+ * semantic HTML-level defaults and the explicit type scale (.t-display-xl
+ * through .t-caption) with the negative-tracking values Fourth requires at
+ * every size.
+ */
+
+/* -------------------------------------------------------------- */
+/* @FONT-FACE — self-hosted brand fonts                           */
+/* Paths are relative to this file (repo root). Override for      */
+/* subdirectory use by copying the fonts/ folder.                 */
+/* -------------------------------------------------------------- */
+
+/* Satoshi — variable file covers weights 300–900 + italic */
+@font-face {
+  font-family: "Satoshi";
+  src: url("fonts/Satoshi-Variable.woff2") format("woff2-variations"),
+       url("fonts/Satoshi-Variable.woff2") format("woff2"),
+       url("fonts/Satoshi-Variable.woff")  format("woff");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("fonts/Satoshi-VariableItalic.woff2") format("woff2-variations"),
+       url("fonts/Satoshi-VariableItalic.woff2") format("woff2"),
+       url("fonts/Satoshi-VariableItalic.woff")  format("woff");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Geist Mono — NOT YET BUNDLED.
+   Mono specimens fall back to `ui-monospace, Cascadia Code, Menlo`.
+   Drop GeistMono-VariableFont_wght.ttf (or .woff2) into fonts/ and
+   uncomment to self-host. */
+/*
+@font-face {
+  font-family: "Geist Mono";
+  src: url("fonts/GeistMono-VariableFont_wght.woff2") format("woff2-variations"),
+       url("fonts/GeistMono-VariableFont_wght.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* Inter Variable — NOT YET BUNDLED.
+   The graphite theme falls back to system-ui until the file is
+   added. Drop InterVariable.woff2 into fonts/ and uncomment. */
+/*
+@font-face {
+  font-family: "Inter Variable";
+  src: url("fonts/InterVariable.woff2") format("woff2-variations"),
+       url("fonts/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* Cabinet Grotesk — static OTFs covering the full weight axis.
+   Fourth uses 700 on all display/headlines; other weights load on demand. */
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Extrabold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Extralight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("fonts/CabinetGrotesk-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* -------------------------------------------------------------- */
+/* SEMANTIC FOREGROUND / BACKGROUND ALIASES                       */
+/* Use these across all themes — they resolve from the active     */
+/* theme tokens.                                                  */
+/* -------------------------------------------------------------- */
+:root {
+  /* Foreground aliases */
+  --fg-1: var(--text-primary);
+  --fg-2: var(--text-secondary);
+  --fg-3: var(--text-muted);
+  --fg-inverse: var(--text-inverse);
+  --fg-accent: var(--accent);
+
+  /* Background aliases */
+  --surface-0: var(--bg-primary);
+  --surface-1: var(--bg-secondary);
+  --surface-2: var(--bg-card);
+  --surface-3: var(--bg-elevated);
+  --surface-overlay: var(--bg-overlay);
+
+  /* Border aliases */
+  --line-1: var(--border-subtle);
+  --line-2: var(--border-standard);
+  --line-3: var(--border-strong);
+
+  /* Font-family aliases */
+  --font-serif-display: var(--font-display);
+  --font-sans-body:     var(--font-body);
+  --font-code:          var(--font-mono);
+}
+
+/* -------------------------------------------------------------- */
+/* SEMANTIC HTML TYPE DEFAULTS                                    */
+/* Apply when data-theme is set on <html>. These mirror the       */
+/* hierarchy table in DESIGN.md §3. Negative tracking at every    */
+/* size is non-negotiable.                                        */
+/* -------------------------------------------------------------- */
+html[data-theme] body,
+[data-theme] body {
+  background: var(--surface-0);
+  color: var(--fg-1);
+  font-family: var(--font-sans-body);
+  font-weight: 400;
+  font-size: 0.9375rem;    /* 15px body */
+  line-height: 1.65;
+  letter-spacing: -0.165px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern", "liga", "calt";
+}
+
+/* Graphite theme requires Inter's engineered alternates */
+[data-theme="graphite"] body {
+  font-feature-settings: "kern", "liga", "calt", "cv01", "ss03";
+  font-weight: 510;
+}
+
+/* Display / heading defaults */
+[data-theme] h1,
+[data-theme] .t-display-l {
+  font-family: var(--font-serif-display);
+  font-weight: 700;
+  font-size: 4rem;         /* 64px */
+  line-height: 1.07;
+  letter-spacing: -1.5px;
+  color: var(--fg-1);
+}
+
+[data-theme] .t-display-xl {
+  font-family: var(--font-serif-display);
+  font-weight: 700;
+  font-size: 5rem;         /* 80px */
+  line-height: 1.05;
+  letter-spacing: -2.0px;
+  color: var(--fg-1);
+}
+
+[data-theme] h2,
+[data-theme] .t-display-m {
+  font-family: var(--font-serif-display);
+  font-weight: 700;
+  font-size: 3rem;         /* 48px */
+  line-height: 1.10;
+  letter-spacing: -1.0px;
+  color: var(--fg-1);
+}
+
+[data-theme] h3,
+[data-theme] .t-heading-l {
+  font-family: var(--font-serif-display);
+  font-weight: 700;
+  font-size: 2.25rem;      /* 36px */
+  line-height: 1.15;
+  letter-spacing: -0.72px;
+  color: var(--fg-1);
+}
+
+[data-theme] h4,
+[data-theme] .t-heading-m {
+  font-family: var(--font-sans-body);
+  font-weight: 600;
+  font-size: 1.75rem;      /* 28px */
+  line-height: 1.18;
+  letter-spacing: -0.42px;
+  color: var(--fg-1);
+}
+
+[data-theme] h5,
+[data-theme] .t-heading-s {
+  font-family: var(--font-sans-body);
+  font-weight: 600;
+  font-size: 1.375rem;     /* 22px */
+  line-height: 1.22;
+  letter-spacing: -0.22px;
+  color: var(--fg-1);
+}
+
+[data-theme] .t-body-l {
+  font-family: var(--font-sans-body);
+  font-weight: 400;
+  font-size: 1.125rem;     /* 18px */
+  line-height: 1.60;
+  letter-spacing: -0.18px;
+  color: var(--fg-2);
+}
+
+[data-theme] p,
+[data-theme] .t-body {
+  font-family: var(--font-sans-body);
+  font-weight: 400;
+  font-size: 0.9375rem;    /* 15px */
+  line-height: 1.65;
+  letter-spacing: -0.165px;
+  color: var(--fg-2);
+}
+
+[data-theme] small,
+[data-theme] .t-body-s {
+  font-family: var(--font-sans-body);
+  font-weight: 400;
+  font-size: 0.8125rem;    /* 13px */
+  line-height: 1.55;
+  letter-spacing: -0.13px;
+  color: var(--fg-2);
+}
+
+[data-theme] .t-label {
+  font-family: var(--font-sans-body);
+  font-weight: 500;
+  font-size: 0.75rem;      /* 12px */
+  line-height: 1.40;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+[data-theme] .t-caption {
+  font-family: var(--font-sans-body);
+  font-weight: 400;
+  font-size: 0.6875rem;    /* 11px */
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: var(--fg-3);
+}
+
+/* Code defaults */
+[data-theme] code,
+[data-theme] .t-mono-s {
+  font-family: var(--font-code);
+  font-weight: 400;
+  font-size: 0.75rem;      /* 12px */
+  line-height: 1.55;
+  letter-spacing: 0;
+  color: var(--fg-1);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+}
+
+[data-theme] pre,
+[data-theme] .t-mono {
+  font-family: var(--font-code);
+  font-weight: 400;
+  font-size: 0.875rem;     /* 14px */
+  line-height: 1.60;
+  letter-spacing: 0;
+  color: var(--fg-1);
+}
+
+[data-theme] pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Link defaults */
+[data-theme] a {
+  color: var(--accent);
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme] a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* Selection */
+[data-theme] ::selection {
+  background: var(--selection);
+  color: var(--fg-1);
+}

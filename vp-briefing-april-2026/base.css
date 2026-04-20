@@ -1,0 +1,243 @@
+/**
+ * Fourth Design System — Shared Token Base
+ * These tokens are theme-agnostic. Import this file in every page alongside
+ * the active theme file. Themes override the color/typography tokens;
+ * this file owns spacing, radii, motion, shadows, blur levels, and breakpoints.
+ *
+ * Import order:
+ *   1. themes/fourth-v2.css  (or graphite.css / obsidian.css / fourth-classic.css)
+ *   2. tokens/base.css          (this file)
+ *   3. tokens/animations.css
+ *   4. tokens/gradients.css
+ */
+
+:root {
+
+  /* -------------------------------------------------- */
+  /* SPACING                                            */
+  /* 8px base unit. All spacing derives from this.     */
+  /* -------------------------------------------------- */
+  --space-1:   2px;    /* Micro */
+  --space-2:   4px;    /* XS */
+  --space-3:   8px;    /* S — base unit */
+  --space-4:   12px;   /* SM */
+  --space-5:   16px;   /* M */
+  --space-6:   20px;   /* ML */
+  --space-7:   24px;   /* L */
+  --space-8:   32px;   /* XL */
+  --space-9:   40px;   /* 2XL */
+  --space-10:  48px;   /* 3XL */
+  --space-11:  64px;   /* 4XL */
+  --space-12:  80px;   /* 5XL */
+  --space-13:  96px;   /* 6XL */
+
+  /* Content widths */
+  --width-narrow:  720px;
+  --width-content: 1200px;
+  --width-wide:    1440px;
+
+  /* -------------------------------------------------- */
+  /* BORDER RADIUS                                      */
+  /* -------------------------------------------------- */
+  --radius-sm:   6px;
+  --radius:      10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-pill: 980px;
+  --radius-full: 9999px;
+
+  /* -------------------------------------------------- */
+  /* MOTION                                             */
+  /* One house ease for entrances, one for interactions */
+  /* -------------------------------------------------- */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);   /* Entrances, reveals */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);  /* Hover, active, focus */
+  --ease-in-expo:   cubic-bezier(0.7, 0, 0.84, 0);   /* Exits (use sparingly) */
+  --ease-linear:    linear;
+
+  --duration-fast:   200ms;
+  --duration-normal: 400ms;
+  --duration-slow:   700ms;
+  --duration-xslow:  1000ms;
+
+  /* Stagger increment for animation groups */
+  --stagger-step: 80ms;
+
+  /* -------------------------------------------------- */
+  /* SHADOWS                                            */
+  /* One shadow philosophy: soft, wide, not stacked    */
+  /* -------------------------------------------------- */
+  --shadow-sm:    0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow:       0 10px 40px rgba(0, 0, 0, 0.4);
+  --shadow-lg:    0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-xl:    0 32px 80px rgba(0, 0, 0, 0.6);
+
+  /* Glass specular (inset top-edge highlight) */
+  --shadow-specular: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --shadow-specular-warm: inset 0 1px 0 rgba(255, 240, 220, 0.10);
+
+  /* Focus ring — set by active theme, default below */
+  --shadow-focus: 0 0 0 3px rgba(111, 180, 227, 0.4);
+
+  /* -------------------------------------------------- */
+  /* BLUR LEVELS                                        */
+  /* Progressive blur from sm (HUD text) to xl (modal) */
+  /* -------------------------------------------------- */
+  --blur-sm:   8px;
+  --blur-md:   14px;
+  --blur-lg:   24px;
+  --blur-xl:   48px;
+
+  /* -------------------------------------------------- */
+  /* Z-INDEX SCALE                                      */
+  /* -------------------------------------------------- */
+  --z-below:     -1;
+  --z-base:       0;
+  --z-raised:    10;
+  --z-dropdown:  20;
+  --z-sticky:    30;
+  --z-overlay:   40;
+  --z-nav:       50;
+  --z-modal:     60;
+  --z-toast:     70;
+  --z-tooltip:   80;
+
+  /* -------------------------------------------------- */
+  /* BREAKPOINTS                                        */
+  /* Use in @media (min-width: var(...)) — but note     */
+  /* CSS custom properties cannot be used in @media     */
+  /* directly. These serve as documentation references. */
+  /* -------------------------------------------------- */
+  /* --bp-mobile-s: 375px                              */
+  /* --bp-mobile-l: 480px                              */
+  /* --bp-tablet-s: 640px                              */
+  /* --bp-tablet:   768px                              */
+  /* --bp-desktop-s: 1024px                            */
+  /* --bp-desktop:  1280px                             */
+  /* --bp-large:    1440px                             */
+  /* --bp-xl:       1920px                             */
+
+  /* -------------------------------------------------- */
+  /* GLASS RECIPE (shared across all themes)           */
+  /* These complement the theme-specific glass tokens. */
+  /* -------------------------------------------------- */
+  --glass-noise-opacity: 0.03;  /* SVG noise texture opacity */
+
+}
+
+/* -------------------------------------------------- */
+/* BOX SIZING RESET                                   */
+/* -------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* -------------------------------------------------- */
+/* SCROLL BEHAVIOR                                    */
+/* -------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* -------------------------------------------------- */
+/* FOCUS VISIBLE (accessible, not intrusive)         */
+/* -------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid oklch(0.79 0.09 236);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* -------------------------------------------------- */
+/* GLASS UTILITY CLASSES                              */
+/* Extend via theme-specific .glass overrides         */
+/* -------------------------------------------------- */
+.glass-subtle {
+  background: var(--glass-bg-subtle, rgba(255,255,255,0.03));
+  backdrop-filter: var(--glass-blur-subtle, blur(8px) saturate(140%));
+  -webkit-backdrop-filter: var(--glass-blur-subtle, blur(8px) saturate(140%));
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--glass-specular), var(--shadow-sm);
+  border-radius: var(--radius-lg);
+}
+
+.glass-standard {
+  background: var(--glass-bg-standard, rgba(255,255,255,0.05));
+  backdrop-filter: var(--glass-blur-standard, blur(14px) saturate(180%));
+  -webkit-backdrop-filter: var(--glass-blur-standard, blur(14px) saturate(180%));
+  border: 1px solid var(--border-standard);
+  box-shadow: var(--glass-specular), var(--shadow);
+  border-radius: var(--radius-lg);
+}
+
+.glass-elevated {
+  background: var(--glass-bg-elevated, rgba(255,255,255,0.07));
+  backdrop-filter: var(--glass-blur-elevated, blur(24px) saturate(200%));
+  -webkit-backdrop-filter: var(--glass-blur-elevated, blur(24px) saturate(200%));
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--glass-specular), var(--shadow-lg);
+  border-radius: var(--radius-xl);
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-subtle,
+  .glass-standard,
+  .glass-elevated {
+    background: var(--bg-elevated, oklch(0.24 0.028 234));
+  }
+}
+
+/* -------------------------------------------------- */
+/* BUTTON PILL VARIANT                                */
+/* Add .pill to any .btn-accent or .btn-ghost         */
+/* -------------------------------------------------- */
+.btn-accent.pill,
+.btn-ghost.pill {
+  border-radius: var(--radius-pill);
+  padding: 10px 28px;
+}
+
+/* -------------------------------------------------- */
+/* TYPOGRAPHY UTILITIES                               */
+/* -------------------------------------------------- */
+.text-muted    { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent   { color: var(--accent); }
+
+.font-display  { font-family: var(--font-display); font-weight: var(--font-weight-display); }
+.font-body     { font-family: var(--font-body); font-weight: var(--font-weight-body); }
+.font-mono     { font-family: var(--font-mono); }
+
+/* -------------------------------------------------- */
+/* LAYOUT UTILITIES                                   */
+/* -------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--width-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-7);
+  padding-right: var(--space-7);
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: var(--width-narrow);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-7);
+  padding-right: var(--space-7);
+}
+
+@media (max-width: 640px) {
+  .container,
+  .container-narrow {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+}

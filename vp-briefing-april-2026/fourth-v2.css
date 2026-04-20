@@ -1,0 +1,200 @@
+/**
+ * Fourth Design System — Theme: fourth-v2
+ * The evolved Fourth aesthetic. Fourth Midnight base, Sky Blue + Teal accents.
+ * Display: Cabinet Grotesk 700 (Fontshare). Body: Satoshi 400/500 (Fontshare).
+ * Mono: Geist Mono (Vercel).
+ *
+ * Font loading: see assets/fonts/README.md for <link> tags.
+ * Activation: add data-theme="fourth-v2" to the <html> element.
+ */
+
+/* ---- Font imports ---- */
+@import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&f[]=satoshi@400,500,700&display=swap");
+@import url("https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-mono/style.css");
+
+/* ---- Base activation ---- */
+[data-theme="fourth-v2"] {
+
+  /* --- Background --- */
+  --bg-primary:      oklch(0.18 0.02 241);   /* #0A1929 — Fourth Midnight */
+  --bg-secondary:    oklch(0.22 0.025 236);  /* #0F2A3F */
+  --bg-card:         oklch(0.20 0.022 238);  /* #0D2035 */
+  --bg-elevated:     oklch(0.24 0.028 234);  /* #132D45 */
+  --bg-overlay:      oklch(0.18 0.02 241 / 0.85);
+
+  /* --- Text --- */
+  --text-primary:    oklch(0.98 0 0);                /* White */
+  --text-secondary:  oklch(0.83 0.005 0);            /* Cool Grey #CFD1D1 */
+  --text-muted:      oklch(0.65 0.005 240);          /* Slate #8FA4B2 */
+  --text-inverse:    oklch(0.14 0.005 240);          /* Near-black for text on accent */
+
+  /* --- Accent --- */
+  --accent:          oklch(0.79 0.09 236);   /* Sky Blue #6FB4E3 */
+  --accent-hover:    oklch(0.85 0.07 236);   /* Lighter Sky Blue */
+  --accent-active:   oklch(0.74 0.10 236);   /* Pressed Sky Blue */
+  --accent-secondary: oklch(0.68 0.14 171);  /* Teal #00B69F */
+  --accent-secondary-hover: oklch(0.74 0.12 171);
+
+  /* --- Borders --- */
+  --border-subtle:   rgba(255, 255, 255, 0.05);
+  --border-standard: rgba(255, 255, 255, 0.08);
+  --border-strong:   rgba(255, 255, 255, 0.14);
+
+  /* --- Focus & Selection --- */
+  --ring:            oklch(0.79 0.09 236 / 0.4);
+  --selection:       oklch(0.79 0.09 236 / 0.2);
+
+  /* --- Glass surfaces --- */
+  --glass-bg-subtle:    rgba(255, 255, 255, 0.03);
+  --glass-bg-standard:  rgba(255, 255, 255, 0.05);
+  --glass-bg-elevated:  rgba(255, 255, 255, 0.07);
+  --glass-blur-subtle:  blur(8px) saturate(140%);
+  --glass-blur-standard: blur(14px) saturate(180%);
+  --glass-blur-elevated: blur(24px) saturate(200%);
+  --glass-specular:     inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --glass-shadow:       0 10px 40px rgba(0, 0, 0, 0.4);
+
+  /* --- Status --- */
+  --status-success:  oklch(0.72 0.18 155);
+  --status-warning:  oklch(0.80 0.16 75);
+  --status-error:    oklch(0.65 0.22 25);
+  --status-info:     oklch(0.79 0.09 236);
+
+  /* --- Typography --- */
+  --font-display:    "Cabinet Grotesk", system-ui, sans-serif;
+  --font-body:       "Satoshi", system-ui, sans-serif;
+  --font-mono:       "Geist Mono", ui-monospace, "Cascadia Code", monospace;
+
+  --font-weight-display: 700;
+  --font-weight-heading: 600;
+  --font-weight-body:    400;
+  --font-weight-body-medium: 500;
+
+  /* Type scale — sizes */
+  --text-xs:   0.6875rem;  /* 11px */
+  --text-sm:   0.75rem;    /* 12px */
+  --text-base: 0.8125rem;  /* 13px */
+  --text-md:   0.9375rem;  /* 15px — body default */
+  --text-lg:   1.125rem;   /* 18px — body large */
+  --text-xl:   1.375rem;   /* 22px — heading S */
+  --text-2xl:  1.75rem;    /* 28px — heading M */
+  --text-3xl:  2.25rem;    /* 36px — heading L */
+  --text-4xl:  3rem;       /* 48px — display M */
+  --text-5xl:  4rem;       /* 64px — display L */
+  --text-6xl:  5rem;       /* 80px — display XL */
+}
+
+/* ---- Global base styles ---- */
+[data-theme="fourth-v2"] {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-body);
+  font-size: var(--text-md);
+  line-height: 1.65;
+  letter-spacing: -0.165px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="fourth-v2"] ::selection {
+  background: var(--selection);
+}
+
+/* ---- Heading helpers ---- */
+[data-theme="fourth-v2"] h1,
+[data-theme="fourth-v2"] h2,
+[data-theme="fourth-v2"] h3,
+[data-theme="fourth-v2"] h4 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  line-height: 1.10;
+  color: var(--text-primary);
+}
+
+[data-theme="fourth-v2"] h1 { font-size: var(--text-5xl); letter-spacing: -1.5px; line-height: 1.07; }
+[data-theme="fourth-v2"] h2 { font-size: var(--text-4xl); letter-spacing: -1.0px; line-height: 1.10; }
+[data-theme="fourth-v2"] h3 { font-size: var(--text-3xl); letter-spacing: -0.72px; line-height: 1.15; }
+[data-theme="fourth-v2"] h4 { font-size: var(--text-2xl); letter-spacing: -0.42px; line-height: 1.18; font-weight: var(--font-weight-heading); }
+
+[data-theme="fourth-v2"] p {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  letter-spacing: -0.165px;
+}
+
+[data-theme="fourth-v2"] a:not([class]) {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="fourth-v2"] a:hover {
+  color: var(--accent-hover);
+}
+
+[data-theme="fourth-v2"] code,
+[data-theme="fourth-v2"] pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0;
+}
+
+/* ---- Glass card utility ---- */
+[data-theme="fourth-v2"] .glass {
+  background: var(--glass-bg-standard);
+  backdrop-filter: var(--glass-blur-standard);
+  -webkit-backdrop-filter: var(--glass-blur-standard);
+  border: 1px solid var(--border-standard);
+  box-shadow: var(--glass-specular), var(--glass-shadow);
+  border-radius: var(--radius-lg);
+}
+
+/* ---- Accent button utility ---- */
+[data-theme="fourth-v2"] .btn-accent {
+  background: var(--accent);
+  color: var(--text-inverse);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-body-medium);
+  letter-spacing: -0.165px;
+  cursor: pointer;
+  transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="fourth-v2"] .btn-accent:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+[data-theme="fourth-v2"] .btn-accent:active {
+  background: var(--accent-active);
+  transform: translateY(0);
+}
+
+/* ---- Ghost button utility ---- */
+[data-theme="fourth-v2"] .btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-standard);
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-body-medium);
+  letter-spacing: -0.165px;
+  cursor: pointer;
+  transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="fourth-v2"] .btn-ghost:hover {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
+}

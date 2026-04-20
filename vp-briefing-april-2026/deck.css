@@ -1,0 +1,305 @@
+/* ──────────────────────────────────────────────────────────
+   AI Enablement Review · deck styles
+   Applies only inside this deck. Leans on Fourth tokens.
+   ────────────────────────────────────────────────────────── */
+
+/* Make every slide fill the 1920×1080 canvas, no scrollbars,
+   and set a consistent deep-space base. */
+deck-stage section {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  letter-spacing: -0.165px;
+  overflow: hidden;
+}
+
+/* Common utility: a slide's outer padding rail */
+.slide-rail { padding: 80px 96px; box-sizing: border-box; width: 100%; height: 100%; display: flex; flex-direction: column; }
+
+/* The ever-present slide header (eyebrow + label) */
+.slide-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.chapter-tag {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.foot {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.foot .brand { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--text-secondary); letter-spacing: -0.2px; }
+.foot .brand em { font-style: normal; color: var(--accent); }
+
+/* Kill-grid: decorative gridlines behind content */
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Kinetic entrance — use a simple transition toggled by .play class.
+   Initial state: opacity 0 + translateY. On .play: opacity 1 + no translate. */
+.kin {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 720ms cubic-bezier(0.16, 1, 0.3, 1), transform 720ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+deck-stage section.play .kin {
+  opacity: 1;
+  transform: translateY(0);
+}
+.kin-delay-1 { transition-delay: 80ms; }
+.kin-delay-2 { transition-delay: 160ms; }
+.kin-delay-3 { transition-delay: 240ms; }
+.kin-delay-4 { transition-delay: 320ms; }
+.kin-delay-5 { transition-delay: 400ms; }
+.kin-delay-6 { transition-delay: 480ms; }
+.kin-delay-7 { transition-delay: 560ms; }
+.kin-delay-8 { transition-delay: 640ms; }
+
+/* Status pulse dot — appears on "live" / "in build" badges */
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 9999px;
+  position: relative;
+}
+.status-dot::after {
+  content: ''; position: absolute; inset: -4px;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  opacity: 0.4;
+  animation: dot-pulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes dot-pulse {
+  0%   { transform: scale(0.6); opacity: 0.6; }
+  70%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.s-live { color: oklch(0.72 0.18 155); }
+.s-build { color: oklch(0.80 0.16 75); }
+.s-form { color: oklch(0.70 0.18 260); }
+.s-new { color: var(--accent); }
+
+/* Status chip */
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: color-mix(in oklch, currentColor 12%, transparent);
+  border: 1px solid color-mix(in oklch, currentColor 30%, transparent);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.chip-live  { color: oklch(0.72 0.18 155); }
+.chip-build { color: oklch(0.80 0.16 75); }
+.chip-form  { color: oklch(0.70 0.18 260); }
+.chip-new   { color: var(--accent); }
+
+/* Project card in grids (used on portfolio-at-a-glance + section intros) */
+.pcard {
+  position: relative;
+  padding: 22px 24px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.pcard .num {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+.pcard .t {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text-primary);
+  line-height: 1.18;
+  margin-top: 6px;
+}
+.pcard .st {
+  margin-top: 12px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Massive display number — for the EBR hero counter */
+.megacount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -5px;
+  font-size: 280px;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fff 0%, oklch(0.79 0.09 236) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Glass surface — full Liquid Glass recipe, used for detail cards */
+.glass {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 40px rgba(0,0,0,0.4);
+  border-radius: 16px;
+}
+
+/* KPI pill used on project detail slides */
+.kpi-pill {
+  display: inline-flex; align-items: baseline; gap: 10px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  background: rgba(111,180,227,0.08);
+  border: 1px solid rgba(111,180,227,0.25);
+}
+.kpi-pill .val { font-family: var(--font-display); font-weight: 700; font-size: 28px; letter-spacing: -0.6px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.kpi-pill .lab { font-family: var(--font-body); font-size: 13px; color: var(--text-secondary); letter-spacing: -0.13px; }
+.kpi-pill.muted { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
+.kpi-pill.muted .val { color: var(--text-muted); font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono); font-weight: 500; }
+
+/* Aurora hero backdrop — used on hero slides */
+.aurora-bg {
+  position: absolute; inset: 0; overflow: hidden;
+  background: var(--bg-primary);
+}
+.aurora-bg::before {
+  content: ''; position: absolute;
+  width: 150%; height: 150%;
+  top: -25%; left: -25%;
+  background: var(--gradient-aurora);
+  background-size: 300% 300%;
+  animation: aurora 14s ease-in-out infinite alternate;
+  opacity: 0.5;
+  filter: blur(40px);
+}
+.aurora-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 100%, var(--bg-primary) 0%, transparent 60%);
+}
+@keyframes aurora {
+  0%   { background-position: 0% 50%;   transform: rotate(-4deg) scale(0.95); }
+  100% { background-position: 100% 50%; transform: rotate(4deg) scale(1.05); }
+}
+
+/* Chapter dividers — massive number + function name */
+.chapter-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 340px;
+  line-height: 0.85;
+  letter-spacing: -10px;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.12);
+}
+.chapter-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 120px;
+  line-height: 1;
+  letter-spacing: -3px;
+  color: var(--text-primary);
+}
+
+/* Slide body text */
+.slide-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 1.05;
+  letter-spacing: -1.8px;
+  color: var(--text-primary);
+}
+.slide-title em { font-style: normal; color: var(--accent); }
+
+.slide-kicker {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.45;
+  letter-spacing: -0.22px;
+  color: var(--text-secondary);
+  max-width: 900px;
+}
+
+/* Bullet list with clean hairline divider */
+.bullets { list-style: none; padding: 0; margin: 0; }
+.bullets li {
+  padding: 18px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-family: var(--font-body);
+  font-size: 20px;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 16px;
+}
+.bullets li:last-child { border-bottom: 1px solid rgba(255,255,255,0.08); }
+.bullets li .bnum {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0;
+  min-width: 28px;
+  padding-top: 4px;
+}
+.bullets li b { color: var(--text-primary); font-weight: 500; }
+
+/* Timeline bar — used on the roadmap bits */
+.stream {
+  display: grid; grid-template-columns: 180px 1fr; align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.stream:last-child { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.stream .lab { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+
+.accent-line { height: 2px; background: var(--accent); border-radius: 2px; }
+.mono-line { height: 2px; background: rgba(255,255,255,0.14); border-radius: 2px; }
+
+/* Animated count-up: runs once the parent slide becomes active */
+.count-up { font-variant-numeric: tabular-nums; display: inline-block; }
+
+/* Icon chips (used to show data source streams etc.) */
+.src-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  letter-spacing: -0.14px;
+}
+.src-chip b { color: var(--text-primary); font-weight: 500; }

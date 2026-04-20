@@ -1,0 +1,167 @@
+/**
+ * Fourth Design System — OKLCH Gradient Tokens
+ * Lifted from cult-ui + Fourth originals. All OKLCH-based.
+ * Hex fallbacks are not included — these gradients are defined in OKLCH
+ * and degrade gracefully in browsers that don't support oklch()
+ * (which at 2026 is effectively none among target browsers).
+ *
+ * Import alongside theme CSS, base.css, and animations.css.
+ */
+
+:root {
+
+  /* -------------------------------------------------- */
+  /* ATMOSPHERIC GRADIENTS                              */
+  /* For aurora backgrounds, hero sections, pitch decks */
+  /* -------------------------------------------------- */
+
+  /* Aurora — multi-hue sweep through the OKLCH gamut */
+  --gradient-aurora: linear-gradient(
+    229.7deg,
+    oklch(0.85 0.12 45)  10.61%,
+    oklch(0.75 0.18 340) 26.17%,
+    oklch(0.65 0.15 264) 31.93%,
+    oklch(0.70 0.15 200) 46.54%,
+    oklch(0.12 0.002 220) 54.36%
+  );
+
+  /* Midnight Mesh — deep navy gradient for cards and overlays */
+  --gradient-midnight-mesh: linear-gradient(
+    90.7deg,
+    oklch(0.15 0.05 264) 0.61%,
+    oklch(0.18 0.05 220) 9.93%,
+    oklch(0.16 0.05 220) 13.93%,
+    oklch(0.12 0.05 220) 24%,
+    oklch(0 0 0)         66.36%
+  );
+
+  /* Cinematic — wide-gamut sweep for hero overlays */
+  --gradient-cinematic: linear-gradient(
+    135deg,
+    oklch(0.6 0.2 250 / 0.7)  20%,
+    oklch(0.7 0.15 300 / 0.7) 33%,
+    oklch(0.75 0.1 220 / 0.7) 46%,
+    oklch(0.8 0.1 180 / 0.7)  66%
+  );
+
+  /* Sunrise — violet-to-purple pitch deck accent */
+  --gradient-sunrise: linear-gradient(
+    135deg,
+    oklch(0.5 0.2 300) 10%,
+    oklch(0.7 0.15 300) 24%,
+    oklch(0.8 0.1 300)  31%,
+    oklch(0.85 0.08 300) 50%
+  );
+
+  /* -------------------------------------------------- */
+  /* BRAND GRADIENTS                                    */
+  /* Fourth-specific, tied to the brand accent palette */
+  /* -------------------------------------------------- */
+
+  /* Fourth Dimension — Sky Blue to Teal, the signature gradient */
+  --gradient-fourth-dimension: linear-gradient(
+    25deg,
+    oklch(0.68 0.14 171) 0%,    /* Teal */
+    oklch(0.79 0.09 236) 40%,   /* Sky Blue */
+    oklch(0.38 0.09 241) 100%   /* Deep Fourth Midnight blue */
+  );
+
+  /* Fourth Accent Sweep — simpler Sky Blue diagonal for CTA backgrounds */
+  --gradient-fourth-accent: linear-gradient(
+    135deg,
+    oklch(0.79 0.09 236) 0%,
+    oklch(0.68 0.14 171) 100%
+  );
+
+  /* Graphite Accent — Indigo glow for the graphite theme */
+  --gradient-graphite-accent: linear-gradient(
+    135deg,
+    oklch(0.62 0.2 275) 0%,
+    oklch(0.55 0.18 285) 100%
+  );
+
+  /* Obsidian Accent — Amber warmth for the obsidian theme */
+  --gradient-obsidian-accent: linear-gradient(
+    135deg,
+    oklch(0.75 0.13 65) 0%,
+    oklch(0.68 0.12 55) 100%
+  );
+
+  /* -------------------------------------------------- */
+  /* GLASS AND SURFACE GRADIENTS                        */
+  /* For specular highlights and glass overlays         */
+  /* -------------------------------------------------- */
+
+  /* Glass specular — top-to-transparent, for inset highlight on glass surfaces */
+  --gradient-glass-specular: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0)    100%
+  );
+
+  /* Glass tint — apply over a glass card with accent color at low opacity */
+  --gradient-glass-tint: linear-gradient(
+    135deg,
+    oklch(from var(--accent, oklch(0.79 0.09 236)) l c h / 0.12) 0%,
+    oklch(from var(--accent, oklch(0.79 0.09 236)) l c h / 0.04) 100%
+  );
+
+  /* Fallback for browsers without relative color syntax */
+  @supports not (color: oklch(from red l c h)) {
+    :root { --gradient-glass-tint: linear-gradient(135deg, rgba(111,180,227,0.12), rgba(111,180,227,0.04)); }
+  }
+
+  /* -------------------------------------------------- */
+  /* NOISE OVERLAY                                      */
+  /* Add film grain to hero sections and glass cards    */
+  /* Usage: background-image: var(--gradient-noise-overlay); */
+  /*        opacity: 0.03; mix-blend-mode: overlay;         */
+  /* -------------------------------------------------- */
+  --gradient-noise-overlay: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+
+  /* -------------------------------------------------- */
+  /* TEXT SHIMMER GRADIENT                              */
+  /* For shiny-text animation on hero headlines         */
+  /* -------------------------------------------------- */
+  --gradient-text-shimmer: linear-gradient(
+    90deg,
+    oklch(0.98 0 0 / 0.5)  0%,
+    oklch(0.98 0 0)         30%,
+    oklch(0.98 0 0 / 0.5)  60%,
+    oklch(0.98 0 0)         90%
+  );
+
+  /* -------------------------------------------------- */
+  /* MESH AURORA                                        */
+  /* Radial mesh for abstract section backgrounds      */
+  /* -------------------------------------------------- */
+  --gradient-mesh-aurora: radial-gradient(
+    ellipse 80% 80% at 20% 30%,
+    oklch(0.68 0.14 171 / 0.15) 0%,
+    transparent 60%
+  ),
+  radial-gradient(
+    ellipse 60% 60% at 80% 70%,
+    oklch(0.79 0.09 236 / 0.12) 0%,
+    transparent 60%
+  ),
+  radial-gradient(
+    ellipse 70% 70% at 50% 90%,
+    oklch(0.62 0.2 275 / 0.08) 0%,
+    transparent 60%
+  );
+
+  /* -------------------------------------------------- */
+  /* BORDER BEAM GRADIENT                               */
+  /* The traveling-light border effect                 */
+  /* Use with conic-gradient and CSS animation         */
+  /* -------------------------------------------------- */
+  --gradient-border-beam: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    var(--accent, oklch(0.79 0.09 236)) 25%,
+    transparent 50%
+  );
+
+}
