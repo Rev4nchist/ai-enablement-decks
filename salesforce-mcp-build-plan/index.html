@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>fourth-salesforce-mcp — Build & Deployment Plan</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-elev: #131829;
+    --bg-elev-2: #1a2138;
+    --border: #232b47;
+    --border-soft: #1d2540;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-faint: #64748b;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --accent-3: #06b6d4;
+    --success: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --gold: #eab308;
+    --pink: #ec4899;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+  /* Sidebar */
+  aside {
+    background: linear-gradient(180deg, #0a0e1a 0%, #0d1325 100%);
+    border-right: 1px solid var(--border);
+    padding: 28px 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  aside .brand {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  aside h1 {
+    font-size: 18px;
+    margin: 0 0 6px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  aside .meta {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  aside nav ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: nav-counter;
+  }
+  aside nav li {
+    counter-increment: nav-counter;
+    margin: 2px 0;
+  }
+  aside nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    display: block;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  aside nav a:hover { color: var(--text); background: var(--bg-elev); }
+  aside nav a.section-header {
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent-2);
+  }
+  aside nav a.section-header:hover { background: transparent; cursor: default; }
+  aside nav a .num {
+    color: var(--text-faint);
+    margin-right: 8px;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+  }
+  /* Main content */
+  main { padding: 40px 56px 80px; max-width: 1100px; }
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; }
+    main { padding: 24px; }
+  }
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+  .hero h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  .hero .subtitle { color: var(--text-dim); font-size: 16px; margin-bottom: 18px; }
+  .hero .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .pill.success { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.35); color: var(--success); }
+  .pill.amber { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.35); color: var(--amber); }
+  .pill.red { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); color: var(--red); }
+  .pill.accent { background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.35); color: #a5b4fc; }
+  /* Sections */
+  section { margin-bottom: 48px; scroll-margin-top: 24px; }
+  section h2 {
+    font-size: 22px;
+    margin: 0 0 8px;
+    color: var(--text);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  section h2 .sec-num {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  section h3 {
+    font-size: 17px;
+    margin: 28px 0 10px;
+    color: var(--text);
+  }
+  section h4 {
+    font-size: 14px;
+    margin: 20px 0 8px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  section p { color: var(--text); margin: 10px 0; }
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  th {
+    background: var(--bg-elev-2);
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  td:first-child { color: var(--text); }
+  td strong { color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  /* Code */
+  pre {
+    background: #0d1226;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
+    font-size: 12.5px;
+    color: #c5cae9;
+    line-height: 1.55;
+  }
+  code:not(pre code) {
+    background: var(--bg-elev-2);
+    color: #a5b4fc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--border-soft);
+  }
+  /* Lists */
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; color: var(--text); }
+  li::marker { color: var(--accent); }
+  /* Callout */
+  .callout {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.06) 100%);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    color: var(--text);
+  }
+  .callout strong { color: #a5b4fc; }
+  .callout.warn { background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(239, 68, 68, 0.05) 100%); border-left-color: var(--amber); }
+  .callout.warn strong { color: var(--amber); }
+  .callout.success { background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%); border-left-color: var(--success); }
+  .callout.success strong { color: var(--success); }
+  .callout.red { background: rgba(239, 68, 68, 0.06); border-left-color: var(--red); }
+  /* Status badges */
+  .status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status.done { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+  .status.pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+  .status.open { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
+  .status.closed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+  .status.blocked { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  /* Severity */
+  .sev { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .sev.high { background: rgba(239, 68, 68, 0.18); color: var(--red); }
+  .sev.medium { background: rgba(245, 158, 11, 0.18); color: var(--amber); }
+  .sev.low { background: rgba(16, 185, 129, 0.18); color: var(--success); }
+  /* Decision card grid */
+  .decision-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 16px 0; }
+  .decision {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    border-left: 3px solid var(--accent);
+  }
+  .decision .d-num {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  .decision .d-title { font-weight: 600; color: var(--text); display: inline; }
+  .decision .d-rationale { color: var(--text-dim); margin-top: 8px; font-size: 14px; }
+  .decision .d-source { color: var(--text-faint); font-size: 12px; margin-top: 8px; font-style: italic; }
+  /* Phase cards */
+  .phase {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    position: relative;
+  }
+  .phase .phase-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .phase h3 { margin: 0 0 8px; font-size: 16px; }
+  .phase.done { border-left: 3px solid var(--success); }
+  .phase.pending { border-left: 3px solid var(--amber); }
+  .phase.locked { border-left: 3px solid var(--border); opacity: 0.85; }
+  /* Track cards */
+  .tracks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .track-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    border-top: 3px solid var(--accent-2);
+  }
+  .track-card.b { border-top-color: var(--accent-3); }
+  .track-card.c { border-top-color: var(--gold); }
+  .track-card.d { border-top-color: var(--pink); }
+  .track-card h4 { margin: 0 0 8px; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--text); }
+  .track-card .tag { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; }
+  .track-card p { font-size: 13px; margin: 6px 0; color: var(--text-dim); }
+  /* Anchors */
+  a.anchor { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--border); }
+  a.anchor:hover { color: #a5b4fc; }
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 16px 0;
+    padding: 8px 18px;
+    background: var(--bg-elev);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  /* Addendum banner */
+  .addendum-banner {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 40px 0 32px;
+    text-align: center;
+  }
+  .addendum-banner .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-2);
+    font-weight: 700;
+  }
+  .addendum-banner h2 {
+    border: none;
+    margin: 8px 0;
+    font-size: 26px;
+    color: var(--text);
+    padding: 0;
+  }
+  .addendum-banner p { color: var(--text-dim); margin: 4px 0; }
+  /* Architecture flow */
+  .arch-flow { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  /* TOC scroll indicator (none) */
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <div class="brand">Fourth · Agent-Arch</div>
+  <h1>fourth-salesforce-mcp</h1>
+  <div class="meta">Build & Deployment Plan · Draft for Dave's review</div>
+  <nav>
+    <ol>
+      <li><a class="section-header">Original Proposal</a></li>
+      <li><a href="#s1"><span class="num">1</span>Context</a></li>
+      <li><a href="#s2"><span class="num">2</span>Recommendation</a></li>
+      <li><a href="#s3"><span class="num">3</span>Strategic Decisions</a></li>
+      <li><a href="#s4"><span class="num">4</span>Discrepancies</a></li>
+      <li><a href="#s5"><span class="num">5</span>Architecture</a></li>
+      <li><a href="#s6"><span class="num">6</span>Phase Plan</a></li>
+      <li><a href="#s7"><span class="num">7</span>Files & References</a></li>
+      <li><a href="#s8"><span class="num">8</span>Verification</a></li>
+      <li><a href="#s9"><span class="num">9</span>Open Questions</a></li>
+      <li><a href="#s10"><span class="num">10</span>Top Risks</a></li>
+      <li><a href="#s11"><span class="num">11</span>Out of Scope</a></li>
+      <li><a href="#s12"><span class="num">12</span>Stakeholder Summary</a></li>
+      <li><a class="section-header">Addendum · v1 / v2</a></li>
+      <li><a href="#s13"><span class="num">13</span>Status Snapshot</a></li>
+      <li><a href="#s14"><span class="num">14</span>v1 / v2 Plan</a></li>
+      <li><a href="#s15"><span class="num">15</span>Parallel Tracks</a></li>
+      <li><a href="#s16"><span class="num">16</span>Schema Discovery</a></li>
+      <li><a href="#s17"><span class="num">17</span>Updated Q&A</a></li>
+    </ol>
+  </nav>
+</aside>
+
+<main>
+
+<div class="hero">
+  <h1>fourth-salesforce-mcp — Build & Deployment Plan</h1>
+  <div class="subtitle">FastMCP v3 governance proxy on Azure Container Apps, wrapping Salesforce's Hosted MCP. Entra-rooted identity · audit · rate limit · tool curation · custom-object schema awareness.</div>
+  <div class="pills">
+    <span class="pill accent">Draft for Dave's review</span>
+    <span class="pill success">Scaffold ✅ done (commit fefb034)</span>
+    <span class="pill amber">⏳ Awaiting Entra v2 issuer flip</span>
+    <span class="pill">v1 → v2 framing · 2026-05-07</span>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>One-line summary:</strong> Salesforce now ships official Hosted MCP servers (TDX 2026). Our job is no longer building a Salesforce wrapper — it's building the governance proxy that sits in front of theirs. Entra-aligned auth, audit, rate limit, dept routing, custom-object schema. Phase 1 ships a Marketing read-only pilot.
+</div>
+
+<!-- 1 Context -->
+<section id="s1">
+  <h2><span class="sec-num">§1</span> Context — why this is being built</h2>
+  <p>Fourth needs a per-user Salesforce surface for Claude/MCP clients with Entra-rooted identity, audit trail, rate limiting, department-specific tool curation, and custom-object awareness. The original plan (March 2026) was to hand-roll a Salesforce REST/SOQL wrapper.</p>
+  <div class="callout warn">
+    <strong>Reframed 2026-04-17.</strong> Salesforce announced <strong>Headless 360 / Hosted MCP Servers at TDX 2026 (Apr 15)</strong> — first-party MCP endpoints covering our entire Phase 1 scope (sObject CRUD, SOQL/SOSL, Apex Invocable, Flows, Named Queries, Data 360, Tableau Next, Prompt Builder, DevOps Center).
+  </div>
+  <p>The build is now a <strong>governance proxy</strong> in front of Salesforce's Hosted MCP. Salesforce owns tool plumbing; <strong>Fourth owns identity brokering, audit, rate limiting, tool curation, schema intelligence, and protocol insulation</strong>.</p>
+  <h4>Phase 1 Definition of Done</h4>
+  <p>A Marketing user asks Claude a Salesforce question → Claude routes through <code>salesforce-mcp</code> → the proxy authenticates that user via Entra → the proxy proxies to Salesforce Hosted MCP under that user's permissions → the answer respects field-level security and sharing rules → the audit log proves what happened.</p>
+</section>
+
+<!-- 2 Recommendation -->
+<section id="s2">
+  <h2><span class="sec-num">§2</span> Recommendation summary</h2>
+  <p>Build <code>fourth-salesforce-mcp</code> as a <strong>FastMCP v3 governance proxy on Azure Container Apps</strong>, wrapping Salesforce's Hosted MCP servers.</p>
+  <ul>
+    <li><strong>Transport:</strong> Streamable HTTP with <code>stateless_http=True</code></li>
+    <li><strong>Edge auth:</strong> Easy Auth + <code>Return401</code> + <code>EasyAuthGate</code> middleware (Entra)</li>
+    <li><strong>Downstream auth:</strong> OAuth 2.0 + PKCE with a Salesforce External Client App; OBO / token exchange bridges Entra → Salesforce</li>
+    <li><strong>First persona:</strong> Marketing read-only bundle (~10 curated tools)</li>
+    <li><strong>Inheritance:</strong> Project shape from <code>gong-mcp</code>, Azure deploy from the playbook verbatim</li>
+  </ul>
+</section>
+
+<!-- 3 Strategic Decisions -->
+<section id="s3">
+  <h2><span class="sec-num">§3</span> Strategic decisions</h2>
+  <p style="color: var(--text-dim);">With rationale and sources. Reject any of these in code review and you've reopened the architecture debate.</p>
+
+  <div class="decision-grid">
+    <div class="decision">
+      <span class="d-num">D1</span><span class="d-title">Governance proxy, not REST wrapper</span>
+      <div class="d-rationale">Salesforce now owns tool plumbing — duplicating it surrenders speed without buying control. Proxy preserves Fourth's value (Entra, audit, dept routing, tool curation).</div>
+      <div class="d-source">Source: Parent project Notion doc, 2026-04-17 architecture reframe</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D2</span><span class="d-title">FastMCP v3 with <code>[apps]</code> extra</span>
+      <div class="d-rationale">70%+ of MCP servers; middleware lifecycle covers our governance needs; v3 ships native <code>FastMCP.as_proxy()</code> for upstream MCP wrapping.</div>
+      <div class="d-source">Source: playbook §Stack; gofastmcp.com/servers/proxy</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D3</span><span class="d-title">Streamable HTTP + <code>stateless_http=True</code> (no sticky sessions)</span>
+      <div class="d-rationale">Microsoft + FastMCP 2026 guidance: stateless is preferred for Streamable HTTP. Sticky sessions force Single-revision mode and block blue-green.</div>
+      <div class="d-source">Source: playbook anti-patterns; gofastmcp.com/deployment/asgi; learn.microsoft.com/azure/container-apps/mcp-overview</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D4</span><span class="d-title">Edge auth: Easy Auth + <code>Return401</code> + <code>EasyAuthGate</code></span>
+      <div class="d-rationale">Microsoft's documented pattern for MCP-on-ACA. <code>RedirectToLoginPage</code> breaks MCP clients (no HTML redirect). <code>AllowAnonymous</code> lets unauthenticated traffic through. <code>EasyAuthGate</code> enforces App Role as defense-in-depth.</div>
+      <div class="d-source">Source: playbook Phase 6+8; learn.microsoft.com/azure/container-apps/mcp-authentication</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D5</span><span class="d-title">Downstream: External Client App + OAuth 2.0 + PKCE; OBO/token-exchange</span>
+      <div class="d-rationale">Salesforce Hosted MCP requires an External Client App (legacy Connected Apps not supported); PKCE S256 mandatory; no DCR. OBO (RFC 8693) is the 2026 best practice for Easy-Auth-fronted servers needing a downstream OAuth token.</div>
+      <div class="d-source">Source: help.salesforce.com External Client Apps for MCP; developer.salesforce.com hosted-mcp; learn.microsoft.com OBO flow</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D6</span><span class="d-title">Tool curation via facade pattern</span>
+      <div class="d-rationale">Salesforce's own <code>d360-mcp-server</code> fronts <strong>187 operations behind 3 semantic tools</strong> (<code>search</code>, <code>payload_examples</code>, <code>execute</code>). MCP clients degrade beyond ~50 tools. Phase 1 ships <code>marketing-readonly</code> bundle of ~10 curated tools.</div>
+      <div class="d-source">Source: github.com/forcedotcom/d360-mcp-server; Notion onboarding guide §5</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D7</span><span class="d-title">Custom object schema map (one-time + cached)</span>
+      <div class="d-rationale">Fourth has many custom objects — Claude will hallucinate field names without a schema source of truth. Build via discovery script, cache in Cosmos <code>schema_cache</code>, expose via <code>salesforce_get_schema_summary</code>.</div>
+      <div class="d-source">Source: Notion onboarding guide §6 + §13</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D8</span><span class="d-title">Azure footprint matches playbook exactly</span>
+      <div class="d-rationale"><code>ca-mcp-salesforce</code> in <code>locmap-env</code> (Sweden Central), shared <code>agentarchacr</code>, shared <code>agent-arch-kv-prod</code>, dedicated Cosmos DB <code>mcp-salesforce</code>, SystemAssigned MI, dual-tag (semver + sha-short), deploy by digest.</div>
+      <div class="d-source">Source: playbook §Naming + §Phase 8</div>
+    </div>
+    <div class="decision">
+      <span class="d-num">D9</span><span class="d-title">Inherit <code>gong-mcp</code> shape verbatim</span>
+      <div class="d-rationale">Closest playbook-aligned reference. Reuse: <code>config.py</code> env dataclass, <code>rate_limit.py</code>, Dockerfile, <code>conftest.py</code> env-isolation, smoke tests, Railway lessons. Do NOT inherit gong-mcp's gaps (no auth.py, no workflows, Procfile in COPY).</div>
+      <div class="d-source">Source: scout audit of gong-mcp</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 Discrepancies -->
+<section id="s4">
+  <h2><span class="sec-num">§4</span> Discrepancies — Notion guide vs. Playbook</h2>
+  <div class="callout warn">
+    <strong>Recommendation: follow the playbook on every conflict.</strong> The Notion guide (last updated April 2026) has drifted from the playbook (verified 2026-05-06).
+  </div>
+  <table>
+    <thead><tr><th>Topic</th><th>Notion guide says</th><th>Playbook says</th><th>Recommend</th></tr></thead>
+    <tbody>
+      <tr><td>Sticky sessions</td><td><code>--affinity sticky</code> (§10, §15)</td><td>"No sticky sessions in production"</td><td><strong>Playbook.</strong> Stateless Streamable HTTP per MS 2026 guidance.</td></tr>
+      <tr><td>Revision mode</td><td><code>--revision-mode single</code></td><td>Multiple revisions + traffic split</td><td><strong>Playbook.</strong> Required for blue-green; only stateless can do this.</td></tr>
+      <tr><td>Container Apps Env</td><td><code>agent-architecture-env</code></td><td><code>locmap-env</code> (Sweden Central)</td><td><strong>Playbook.</strong> Verified live 2026-05-06.</td></tr>
+      <tr><td>Image repo name</td><td><code>mcp-salesforce</code></td><td><code>&lt;service&gt;</code> (no <code>mcp-</code> prefix) — i.e. <code>salesforce</code></td><td><strong>Playbook.</strong> Final ACR path: <code>agentarchacr.azurecr.io/salesforce:0.1.0</code>.</td></tr>
+      <tr><td>Image tagging</td><td>Single tag <code>${GITHUB_SHA}</code></td><td>Dual: <code>salesforce:0.1.0</code> + <code>salesforce:sha-&lt;short&gt;</code>, deploy by digest</td><td><strong>Playbook.</strong> Required for rollback + audit.</td></tr>
+      <tr><td>Easy Auth action</td><td>Not specified</td><td><code>Return401</code> (not <code>RedirectToLoginPage</code> or <code>AllowAnonymous</code>)</td><td><strong>Playbook.</strong> MCP clients can't follow HTML redirects.</td></tr>
+      <tr><td>Secrets</td><td>keyvault mentioned but no <code>keyvaultref:</code> form</td><td>All secrets via <code>keyvaultref:${KV_URI}/secrets/...,identityref:system</code></td><td><strong>Playbook.</strong> Plaintext env vars are readable by anyone with <code>containerApps/read</code>.</td></tr>
+      <tr><td>ACR pull</td><td>Not specified</td><td>Managed identity with <code>AcrPull</code> role; admin-user disabled</td><td><strong>Playbook.</strong> PSRule + MS 2026 guidance.</td></tr>
+      <tr><td>Tool GA status</td><td>"GA as of 2026-04-15" full list</td><td>Several (Flows, Named Queries, Data 360, Tableau Next) still <strong>beta</strong> per Spring '26</td><td><strong>Playbook stance.</strong> Anything beyond SObject reads + Apex Invocable = beta-tier risk in Phase 1.</td></tr>
+      <tr><td>DCR (Dynamic Client Registration)</td><td>Implied via "Anthropic Custom Connector OAuth 2.1 + DCR"</td><td>Anthropic supports DCR; <strong>Salesforce does NOT</strong> — every tenant pre-provisions an ECA</td><td><strong>Both partially right.</strong> Anthropic-side uses DCR against Fourth's Easy Auth; Salesforce-side uses pre-registered ECA. Document both legs.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 5 Architecture -->
+<section id="s5">
+  <h2><span class="sec-num">§5</span> Architecture</h2>
+  <h3>5.1 Identity & data flow (per-tool-call)</h3>
+  <pre class="arch-flow">[Marketing user in Claude.ai]
+    |
+    | (1) MCP HTTP request to Anthropic Custom Connector URL
+    v
+[Anthropic egress 160.79.104.0/21]
+    |
+    | (2) OAuth 2.1 + DCR against Fourth's Entra app (one-time per user)
+    | (3) Authorization: Bearer &lt;Entra access token&gt;
+    v
+[Easy Auth at Azure Container Apps edge — validates JWT, action=Return401]
+    |
+    | (4) X-MS-CLIENT-PRINCIPAL injected (base64 JSON of claims)
+    v
+[ca-mcp-salesforce — FastMCP server]
+    |
+    | (5) EasyAuthGate middleware decodes principal, checks Mcp.User App Role
+    | (6) AuditStart middleware writes request row to Cosmos audit_log
+    | (7) RateLimit middleware checks per-user/dept buckets
+    | (8) ToolAllowlist middleware enforces persona profile (marketing-readonly)
+    | (9) Safety middleware blocks mutations / unknown objects
+    v
+[Hosted MCP proxy layer]
+    |
+    |(10) Token exchange: Entra access token -&gt; Salesforce access token
+    |     via External Client App OAuth 2.0 + PKCE (cached per-user)
+    |(11) Forward MCP tool call to Salesforce Hosted MCP endpoint
+    |     URL pattern: https://&lt;myDomain&gt;.my.salesforce.com/services/mcp/&lt;server-name&gt;
+    |     [UNCERTAIN — confirm with Salesforce docs/AE]
+    v
+[Salesforce Hosted MCP — sobject-reads / apex-invocable / etc.]
+    |
+    |(12) Salesforce enforces sharing rules + field-level security under user identity
+    v
+[Response normalized -&gt; AuditComplete -&gt; back to Claude]</pre>
+  <div class="callout warn">
+    <strong>Identity root of trust = Microsoft Entra.</strong> Salesforce SSO must federate via Entra (SAML or OIDC) so the user's Entra identity is the same identity Salesforce sees. <strong>Open question (§9):</strong> confirm Fourth's Salesforce org is Entra-federated for Marketing pilot users.
+  </div>
+
+  <h3>5.2 Component map</h3>
+  <pre class="arch-flow">Anthropic Workspace Custom Connector
+    URL: https://ca-mcp-salesforce.happyhill-92303561.swedencentral.azurecontainerapps.io/mcp
+    Auth: OAuth 2.1 + DCR (Anthropic registers itself with Fourth's Entra app)
+        |
+        v
+Azure Container App: ca-mcp-salesforce
+    Image: agentarchacr.azurecr.io/salesforce@sha256:&lt;digest&gt;
+    SystemAssigned MI -&gt; AcrPull on agentarchacr, KV Secrets User on agent-arch-kv-prod
+    Easy Auth: enabled, Return401, Entra app "MCP: Salesforce", appRoleAssignmentRequired=true
+    Min replicas 1, max 3, CPU 0.5, Memory 1.0Gi
+    Multiple revisions, no sticky sessions, stateless_http=True
+        |
+        +-- FastMCP server (server.py)
+        |    EasyAuthGate -&gt; Audit -&gt; RateLimit -&gt; ToolAllowlist -&gt; Safety -&gt; ProxyClient
+        |
+        +-- Hosted MCP ProxyClient (FastMCP.as_proxy)
+        |    Token cache: Cosmos elicitation_sessions (encrypted) or KV per-user secrets
+        |    OBO/token-exchange: Entra token -&gt; Salesforce ECA token
+        |
+        +-- Schema map service (Cosmos schema_cache, refreshed via cron or manual command)
+        |
+        v
+Salesforce Hosted MCP
+    Servers in Phase 1: sobject-reads, schema-discovery, soql, sosl
+    Servers gated for later: data-360, tableau-next, flows, apex-invocable, named-queries
+        |
+        v
+Salesforce data (sharing rules, FLS enforced under user identity)</pre>
+
+  <h3>5.3 Storage layout — Cosmos DB <code>mcp-salesforce</code></h3>
+  <table>
+    <thead><tr><th>Container</th><th>Partition Key</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>audit_log</code></td><td><code>/user_id</code></td><td>Every tool call: who, what, when, outcome, latency, request_id, dept</td></tr>
+      <tr><td><code>rate_limit_buckets</code></td><td><code>/bucket_key</code></td><td>Sliding-window counters per user + per dept + per tool</td></tr>
+      <tr><td><code>schema_cache</code></td><td><code>/org_id</code></td><td>Salesforce schema map (objects, fields, relationships, refresh timestamp)</td></tr>
+      <tr><td><code>user_preferences</code></td><td><code>/user_id</code></td><td>Tool profile, default org, preferred summarization mode</td></tr>
+      <tr><td><code>elicitation_sessions</code></td><td><code>/session_id</code></td><td>Future FastMCP elicitation state</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <strong>Token storage:</strong> Per-user Salesforce refresh tokens go to Key Vault (one secret per user, <code>salesforce-rt-&lt;user-oid&gt;</code>), NOT Cosmos. Per-call access tokens in-memory only. <strong>Open question (§9):</strong> IT/security approval pending.
+  </div>
+</section>
+
+<!-- 6 Phase Plan -->
+<section id="s6">
+  <h2><span class="sec-num">§6</span> Phase plan</h2>
+
+  <div class="phase done">
+    <div class="phase-label">Phase 0 · BLOCKS EVERYTHING</div>
+    <h3>Discovery & alignment</h3>
+    <p>Resolve before scaffolding. Critical blockers (now mostly closed — see §13):</p>
+    <ul>
+      <li>IT-created Entra app registration <code>MCP: Salesforce</code> <span class="status closed">✅ APP_ID 56012700-...</span></li>
+      <li>Salesforce External Client App with PKCE + scopes (<code>mcp</code>, <code>api</code>, <code>refresh_token</code>, <code>offline_access</code>) <span class="status closed">✅</span></li>
+      <li>Sandbox vs. production decision for Phase 1 <span class="status closed">✅ production w/ closed pilot</span></li>
+      <li>AE confirmation on Hosted MCP pricing/SLA <span class="status open">open</span></li>
+    </ul>
+    <p style="color: var(--text-dim); font-size: 13px;"><strong>Deliverable:</strong> updated CLAUDE.md, <code>.env.example</code> with real var names, <code>docs/auth-flow.md</code> with confirmed URLs.</p>
+  </div>
+
+  <div class="phase done">
+    <div class="phase-label">Phase 1 · DONE 2026-05-07 (commit fefb034)</div>
+    <h3>Local scaffold (gong-mcp shape, playbook-compliant)</h3>
+    <p>62 files / 6,701 insertions on <code>main</code>. 33 tests pass. <code>server.py</code> boots, <code>/health</code> returns 200, <code>/mcp</code> accepts JSON-RPC.</p>
+    <pre>fourth-salesforce-mcp/
+├── server.py                                # FastMCP entry; /health route
+├── pyproject.toml                           # fastmcp[apps]>=3.2.0,<4
+├── uv.lock · Dockerfile · Procfile · railway.toml
+├── .env.example · README.md · CLAUDE.md · ROADMAP.md
+├── salesforce_mcp/
+│   ├── config.py                            # env-driven dataclass
+│   ├── auth.py                              # EasyAuthGate
+│   ├── rate_limit.py
+│   ├── hosted_mcp/  (client.py, token_exchange.py, token_store.py)
+│   ├── middleware/  (audit, tool_allowlist, safety, dept_routing, telemetry)
+│   ├── schema/      (discover, summarize, cache)
+│   ├── tools/       (schema_tools, proxy_tools)
+│   └── state/cosmos.py
+├── tests/   (test_config, test_auth, test_tool_allowlist, test_safety,
+│            test_rate_limit, test_health, conftest.py env-isolation)
+├── scripts/ (discover_schema, summarize_schema, smoke_test, smoke_test_remote)
+├── data/schema/
+├── docs/    (architecture, auth-flow, azure-deployment, salesforce-hosted-mcp,
+│            custom-object-map, risk-register, runbook)
+└── .github/workflows/deploy.yml             # OIDC + dual-tag + deploy-by-digest</pre>
+  </div>
+
+  <div class="phase pending">
+    <div class="phase-label">Phase 2 · Track A in progress</div>
+    <h3>Hosted MCP ProxyClient</h3>
+    <p>Implement <code>salesforce_mcp/hosted_mcp/client.py</code> using <code>FastMCP.as_proxy()</code> over httpx pointed at Salesforce Hosted MCP. Watch the oracle-flagged gotchas: (a) auth header forwarding requires explicit pass-through config, (b) no built-in token caching — wrap with our own.</p>
+    <p>Until Phase 0's URL is confirmed: stub with a fixture returning a hardcoded tool list matching <code>forcedotcom/mcp-hosted</code> wiki. Tests use <code>pytest-httpx</code> to mock the endpoint.</p>
+  </div>
+
+  <div class="phase pending">
+    <div class="phase-label">Phase 3 · the hard part</div>
+    <h3>Auth — edge + downstream</h3>
+    <ol>
+      <li><strong>Edge auth (Entra → our proxy):</strong> <code>EasyAuthGate</code> middleware verbatim from playbook §Phase 6. Tests: missing header denies; bad base64 denies; principal without <code>Mcp.User</code> denies; both claim forms recognized.</li>
+      <li><strong>Downstream auth (proxy → Salesforce):</strong> OBO token exchange. Caller's Entra token → MS <code>/v2.0/token</code> OBO → returns Entra token with <code>api://&lt;sf-app-id&gt;/.default</code> audience → bearer to Salesforce ECA → ECA mints SF access + refresh tokens. Cache RTs in KV; access tokens in-memory with TTL.</li>
+    </ol>
+    <div class="callout warn">
+      <strong>Open question:</strong> Salesforce ECA may not accept an Entra-issued token directly even with OBO. May need SAML SSO bridge instead. Confirm in Phase 0 with Salesforce docs / AE.
+    </div>
+  </div>
+
+  <div class="phase pending">
+    <div class="phase-label">Phase 4 · Track C</div>
+    <h3>Schema discovery</h3>
+    <p><code>scripts/discover_schema.py --org &lt;sandbox|prod&gt; --output data/schema/salesforce-schema-map.json</code>. Hits <code>services/data/v60.0/sobjects</code> + per-object describe + child-relationship walk.</p>
+    <p><strong>Output:</strong> <code>salesforce-schema-map.json</code> (full structured map) + <code>salesforce-schema-summary.md</code> (Claude-readable). Exposed via <code>salesforce_get_schema_summary</code> and <code>salesforce_describe_object</code>. Cached in Cosmos <code>schema_cache</code> (PK <code>/org_id</code>), refreshed weekly.</p>
+    <p style="color: var(--text-dim);"><strong>Critical:</strong> capture custom-object patterns (<code>__c</code>, <code>__r</code>, <code>__mdt</code>, <code>__x</code>, <code>__b</code>) and FLS per current user. Without this, Claude hallucinates field names against Fourth's custom objects.</p>
+  </div>
+
+  <div class="phase pending">
+    <div class="phase-label">Phase 5 · Track B</div>
+    <h3>Governance middleware</h3>
+    <p>Order matters:</p>
+    <pre>Request ID -&gt; Error handling -&gt; EasyAuthGate -&gt; Audit start
+  -&gt; Department routing -&gt; Tool allowlist -&gt; Safety -&gt; Rate limit
+  -&gt; ProxyClient -&gt; Audit complete</pre>
+    <h4>Phase 1 allowlist · marketing-readonly</h4>
+    <pre>allow:
+  - salesforce_list_available_objects
+  - salesforce_describe_object
+  - salesforce_get_schema_summary
+  - salesforce_query_readonly         # SOQL, default LIMIT 25, max 200
+  - salesforce_search_readonly        # SOSL
+  - salesforce_get_record
+  - salesforce_get_related_records
+  - salesforce_explain_object_relationships
+  - salesforce_refresh_schema_cache
+  - salesforce_list_allowed_tools
+deny:
+  - any_mutation · any_delete · execute_flow
+  - invoke_apex_action · any_data_360_writeback</pre>
+    <p style="color: var(--text-dim);">Safety middleware blocks: mutation tool names, queries against unmapped custom objects, unbounded queries, queries projected to return &gt;max-rows.</p>
+  </div>
+
+  <div class="phase locked">
+    <div class="phase-label">Phase 6 · DEV-ONLY</div>
+    <h3>Railway dev (no auth)</h3>
+    <p>Per playbook §Phase 5. Goals: public URL fast, design-feedback loop. <strong>Never share Railway URL outside build team.</strong> Watch playbook's Railway gotchas — <code>$PORT</code> resolution, no <code>uv run</code> at boot, healthcheck timeout 60s.</p>
+  </div>
+
+  <div class="phase pending">
+    <div class="phase-label">Phase 7 · Track D prep</div>
+    <h3>Azure Container App deploy (gated production)</h3>
+    <p>One-time setup:</p>
+    <ul>
+      <li>Entra app <code>MCP: Salesforce</code> with custom role <code>Mcp.User</code>, <code>appRoleAssignmentRequired=true</code>, Marketing pilot users assigned via <code>appRoleAssignments</code> POST</li>
+      <li>KV secrets: <code>mcp-salesforce-ext-client-id</code>, <code>-ext-client-secret</code>, <code>-cosmos-key</code>, <code>-instance-url</code> (<code>mcp-salesforce-*</code> prefix)</li>
+      <li>Cosmos DB <code>mcp-salesforce</code> with 5 containers from §5.3</li>
+      <li><code>ca-mcp-salesforce</code> with SystemAssigned MI, AcrPull on <code>agentarchacr</code>, KV Secrets User on <code>agent-arch-kv-prod</code></li>
+      <li>Dual-tag image: <code>salesforce:0.1.0</code> + <code>salesforce:sha-&lt;short&gt;</code>, deploy by digest</li>
+      <li><strong>Deploy without auth first → confirm <code>/health</code> 200 → THEN enable Easy Auth with <code>Return401</code></strong> (else 401-loops forever)</li>
+    </ul>
+    <p><strong>Tags:</strong> <code>--tags mcp-server=true mcp-connector=salesforce app=mcp-salesforce owner=ai-team</code></p>
+    <div class="callout warn">
+      <strong>Sticky sessions:</strong> Notion guide says enable. <strong>Do not.</strong> Run stateless. If a real session-affinity need surfaces, revisit — but FastMCP v3 + Streamable HTTP + <code>stateless_http=True</code> is the supported path.
+    </div>
+  </div>
+
+  <div class="phase pending">
+    <div class="phase-label">Phase 8 · Track D</div>
+    <h3>GitHub Actions CI/CD</h3>
+    <p>Verbatim from playbook §Phase 9: OIDC <code>azure/login@v2</code>, semver from latest tag, dual-tag push, deploy by digest. Repo secrets via <code>gh secret set</code>: <code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_SUBSCRIPTION_ID</code>. Federated identity one-time per repo.</p>
+  </div>
+
+  <div class="phase locked">
+    <div class="phase-label">Phase 9 · gated</div>
+    <h3>Anthropic Custom Connector + Marketing pilot</h3>
+    <p><strong>Workspace connector:</strong> Name <code>Salesforce</code>, URL <code>https://ca-mcp-salesforce.../mcp</code>, Auth OAuth 2.1 + DCR, workspace-only.</p>
+    <p><strong>Marketing user flow:</strong></p>
+    <ol>
+      <li>Claude.ai → connector install → Microsoft sign-in → consents to <code>Mcp.User</code></li>
+      <li>First SF question → OAuth + PKCE against Salesforce ECA → Marketing user signs into SF (Entra-federated) → tokens stored</li>
+      <li>Subsequent calls reuse cached tokens; refresh transparent</li>
+    </ol>
+    <p style="color: var(--text-dim);"><strong>Success criteria:</strong> 5 distinct read workflows over 1 week; full audit; no FLS violations; latency p50 &lt; 3s, p95 &lt; 8s.</p>
+  </div>
+</section>
+
+<!-- 7 Files & References -->
+<section id="s7">
+  <h2><span class="sec-num">§7</span> Critical files & references</h2>
+  <h4>Playbook (master spec)</h4>
+  <ul>
+    <li><code>C:\Users\david.hayes\continuous-claude\docs\fastmcp-connector-playbook.md</code> — follow verbatim on Azure deploy, naming, auth, secrets, image tagging</li>
+  </ul>
+  <h4>Reference implementations</h4>
+  <ul>
+    <li><code>C:\Users\david.hayes\Projects\gong-mcp\</code> — inherit project shape, config, rate_limit, Dockerfile, conftest, smoke tests, Railway lessons. <strong>Do NOT inherit:</strong> sticky sessions, Procfile-in-COPY, missing auth.py, missing deploy.yml.</li>
+    <li><code>github.com/forcedotcom/d360-mcp-server</code> — facade pattern (3 semantic tools front 187 ops). Apache 2.0. STDIO-only during preview; do NOT network-expose. Informs <code>proxy_tools.py</code>.</li>
+    <li><code>C:\Users\david.hayes\fourth-marketing-brain\</code> — patterns ONLY for FastMCP middleware + apps. <strong>Diverges on auth and secrets</strong> per playbook Addendum A.</li>
+  </ul>
+  <h4>Salesforce docs (verify in Phase 0)</h4>
+  <ul>
+    <li><code>forcedotcom/mcp-hosted</code> GitHub + wiki — current tool/server list</li>
+    <li><code>developer.salesforce.com/hosted-mcp-servers</code> — overview, setup, custom servers, client connection, ECA creation</li>
+    <li><code>help.salesforce.com/xcloud.remoteaccess_pkce.htm</code> — PKCE config</li>
+    <li><code>help.salesforce.com/platform.hosted_mcp_servers_setup.htm</code> — org setup</li>
+  </ul>
+  <h4>FastMCP docs</h4>
+  <ul>
+    <li><code>gofastmcp.com/servers/proxy</code> — <code>FastMCP.as_proxy()</code></li>
+    <li><code>gofastmcp.com/deployment/asgi#stateless-http</code> — stateless transport guidance</li>
+    <li><code>gofastmcp.com/servers/middleware</code> — middleware lifecycle</li>
+    <li>⚠️ <strong>NOT</strong> <code>gofastmcp.com/servers/auth/oauth-proxy</code> — that's <code>OAuthProxy</code>, open CVEs, dev-only</li>
+  </ul>
+  <h4>Microsoft docs</h4>
+  <ul>
+    <li><code>learn.microsoft.com/azure/container-apps/mcp-authentication</code> — Easy Auth + Return401</li>
+    <li><code>learn.microsoft.com/azure/container-apps/mcp-overview</code> — host MCP on ACA</li>
+    <li><code>learn.microsoft.com/entra/identity-platform/v2-oauth2-on-behalf-of-flow</code> — OBO</li>
+  </ul>
+</section>
+
+<!-- 8 Verification -->
+<section id="s8">
+  <h2><span class="sec-num">§8</span> Verification plan</h2>
+  <p style="color: var(--text-dim);">End-to-end before declaring Phase 1 done.</p>
+  <table>
+    <thead><tr><th>Layer</th><th>How to verify</th></tr></thead>
+    <tbody>
+      <tr><td>Local</td><td><code>uv run python server.py</code>; <code>curl localhost:8000/health</code> → 200; <code>uv run pytest -q</code> green; <code>python scripts/smoke_test.py</code> lists tools</td></tr>
+      <tr><td>Schema</td><td><code>python scripts/discover_schema.py --org sandbox</code> produces non-empty JSON; <code>salesforce_get_schema_summary</code> returns it</td></tr>
+      <tr><td>Auth (edge)</td><td><code>tests/test_auth.py</code>: missing header denies; bad base64 denies; principal without role denies; principal with role allows; both claim forms recognized</td></tr>
+      <tr><td>Auth (downstream)</td><td>One real user runs OAuth + PKCE against SF sandbox; access + refresh tokens stored; subsequent call uses cache; refresh on expiry succeeds</td></tr>
+      <tr><td>Hosted MCP proxy</td><td>Proxy lists SF Hosted MCP tools; invokes one read-only tool; respects user permissions; FLS data not returned</td></tr>
+      <tr><td>Governance</td><td>Every tool call writes audit row; rate limit triggers after threshold; mutation blocked; delete blocked; unbounded query blocked</td></tr>
+      <tr><td>Azure deploy</td><td><code>curl https://.../health</code> → 401 without token, 200 with valid Bearer; unassigned user gets <code>AADSTS50105</code>; forged X-MS-CLIENT-PRINCIPAL denied</td></tr>
+      <tr><td>Marketing pilot</td><td>5 distinct read workflows / 1 week; full audit; no FLS violations; p50 &lt; 3s, p95 &lt; 8s</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 9 Open Questions -->
+<section id="s9">
+  <h2><span class="sec-num">§9</span> Open questions — block Phase 0 closure</h2>
+  <p style="color: var(--text-dim);">From parent Notion doc + oracle research. Tracked in <code>docs/risk-register.md</code>. (Most are now closed — see §17 for current state.)</p>
+  <ol>
+    <li>Sandbox or production for Phase 1? (recommend sandbox until pilot success)</li>
+    <li>IT-created Entra app registration <code>MCP: Salesforce</code>? (ticket submitted urgent)</li>
+    <li>Salesforce External Client App created? Scopes? Callback URL? Refresh token enabled?</li>
+    <li>Fourth's Salesforce org Entra-federated for SSO? (required for clean OBO)</li>
+    <li>Which Marketing pilot users? (need Entra OIDs for <code>Mcp.User</code> assignment)</li>
+    <li>Which custom objects matter for the first real workflow? (drives schema scope)</li>
+    <li>Data 360 / Tableau Next licensed in Fourth's org? (gated to Phase 2+)</li>
+    <li>Exact Salesforce Hosted MCP base URL pattern for our org?</li>
+    <li>AE confirmed Hosted MCP pricing model? (Flex Credits? bundled? per-call?)</li>
+    <li>AE confirmed Hosted MCP SLA? (uptime, latency, support)</li>
+    <li>OBO/token-exchange the right Entra→SF mechanism, or different bridge needed?</li>
+    <li>Token storage: KV per-user RT approved by IT/security?</li>
+  </ol>
+</section>
+
+<!-- 10 Top Risks -->
+<section id="s10">
+  <h2><span class="sec-num">§10</span> Top risks</h2>
+  <table>
+    <thead><tr><th>#</th><th>Risk</th><th>Severity</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Hosted MCP tool-list / signature churn</strong> between SF releases</td><td><span class="sev high">HIGH</span></td><td>Pin schemas in our proxy; contract tests against fixture; subscribe to release notes; <code>as_proxy</code> insulates clients from renames</td></tr>
+      <tr><td>2</td><td><strong>No DCR support on Salesforce side</strong> — every tenant must pre-provision an ECA</td><td><span class="sev high">HIGH</span></td><td>One-time setup blocker only; document in <code>docs/auth-flow.md</code>; not runtime</td></tr>
+      <tr><td>3</td><td><strong>OBO/token-exchange complexity</strong> — Entra → SF bridge may need a different mechanism</td><td><span class="sev high">HIGH</span></td><td>Spike in Phase 0; if OBO fails, fall back to per-user OAuth + PKCE with RT in KV</td></tr>
+      <tr><td>4</td><td><strong>Custom objects not mapped → Claude hallucinates field names</strong></td><td><span class="sev high">HIGH</span></td><td>Schema discovery + Cosmos cache before pilot; tools enforce "describe before query"</td></tr>
+      <tr><td>5</td><td><strong>Salesforce Hosted MCP pricing surprise</strong></td><td><span class="sev medium">MED</span></td><td>AE confirmation in Phase 0; design proxy to insulate from SKU shifts (we own the call boundary)</td></tr>
+      <tr><td>6</td><td><strong>Sticky-session reflex</strong> from Notion guide gets baked in</td><td><span class="sev medium">MED</span></td><td>Reject in code review; explicitly set <code>stateless_http=True</code>; document in CLAUDE.md</td></tr>
+      <tr><td>7</td><td>First Custom Connector install surprises Marketing with Microsoft sign-in</td><td><span class="sev low">LOW</span></td><td>Document in connector README; admin preps team via Slack/email pre-pilot</td></tr>
+      <tr><td>8</td><td><strong>Fourth-marketing-brain anti-patterns leak in</strong> (sticky sessions, plaintext secrets, OAuthProxy)</td><td><span class="sev medium">MED</span></td><td>Use marketing-brain ONLY for middleware/apps reference; auth + secrets follow playbook + gong-mcp</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 11 Out of Scope -->
+<section id="s11">
+  <h2><span class="sec-num">§11</span> What I'm explicitly NOT proposing (out of scope for Phase 1)</h2>
+  <ul>
+    <li>Record creation / update / delete (any mutation)</li>
+    <li>Apex write operations, Flow execution with side effects</li>
+    <li>Multi-org production routing</li>
+    <li>Full FastMCP UI / Prefab dashboards</li>
+    <li>LMS / Skyprep integration</li>
+    <li>Hand-rolled REST clients for any object Hosted MCP covers</li>
+    <li>Direct connection from Claude.ai to Salesforce Hosted MCP (bypassing our governance proxy)</li>
+    <li>Production rollout to all departments before Marketing pilot success</li>
+  </ul>
+</section>
+
+<!-- 12 Stakeholder Summary -->
+<section id="s12">
+  <h2><span class="sec-num">§12</span> Summary for stakeholders</h2>
+  <blockquote>
+    Salesforce now ships official Hosted MCP servers as part of Headless 360 (TDX 2026). Fourth's <code>salesforce-mcp</code> becomes a FastMCP v3 governance proxy on Azure: Entra-aligned per-user authentication, audit logging, rate limiting, department-specific tool curation, custom-object schema awareness. We move faster — Salesforce owns the Salesforce-side plumbing — but the Fourth governance layer is still required for enterprise rollout. We follow the playbook and inherit the gong-mcp project shape. Phase 1 ships a Marketing read-only pilot. Pricing/SLA risks remain open with Salesforce AE.
+  </blockquote>
+</section>
+
+<!-- ADDENDUM -->
+<div class="addendum-banner">
+  <div class="label">Addendum · 2026-05-07</div>
+  <h2>v1 / v2 Plan — current state of play</h2>
+  <p>Original proposal intact above. This section reframes work as v1 (solid working) → v2 (expansion), captures status, and lays out the four parallel tracks running now while IT closes the final Phase 0 blocker.</p>
+</div>
+
+<!-- 13 Status Snapshot -->
+<section id="s13">
+  <h2><span class="sec-num">§13</span> Status snapshot · 2026-05-07</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Status</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Phase 1 scaffold</td><td><span class="status done">✅ Done</span></td><td>Commit <code>fefb034</code> on <code>main</code>, 62 files / 6,701 insertions; 33 tests pass; <code>/health</code> 200; <code>/mcp</code> accepts JSON-RPC</td></tr>
+      <tr><td>Phase 0 — Entra app <code>MCP: Salesforce</code></td><td><span class="status done">✅ Provisioned</span></td><td>APP_ID <code>56012700-c226-4122-bda6-e32a68939c33</code></td></tr>
+      <tr><td>Phase 0 — Salesforce ECA</td><td><span class="status done">✅ Configured</span></td><td>Token Exchange Flow enabled</td></tr>
+      <tr><td>Phase 0 — SF Token Exchange Handler</td><td><span class="status done">✅ Registered</span></td><td>Validated via spike — returns precise JWT errors instead of "handler not found"</td></tr>
+      <tr><td>Phase 0 — Entra JWT issuer alignment</td><td><span class="status pending">⏳ Awaiting IT</span></td><td>Manifest needs <code>accessTokenAcceptedVersion: 2</code> so tokens carry <code>iss=…/v2.0</code>. Currently v1 issuer <code>sts.windows.net/&lt;tenant&gt;/</code> rejected by handler. Message sent 2026-05-07.</td></tr>
+      <tr><td>Spike script</td><td><span class="status pending">⏳ Steps 1-2 pass</span></td><td><code>scripts/spike_token_exchange.py</code> — Step 3 fails: <code>Invalid issuer. Expected: …/v2.0, got: sts.windows.net/…</code>. Re-run to PASS once IT flips manifest.</td></tr>
+      <tr><td>AE conversation (pricing + SLA)</td><td><span class="status open">Open</span></td><td>Does NOT block v1 through Phase 8; gates Phase 9 launch</td></tr>
+    </tbody>
+  </table>
+  <div class="callout success">
+    <strong>Reality check:</strong> One config flip from IT (Entra manifest <code>accessTokenAcceptedVersion: 2</code>) is the only thing standing between us and a live downstream auth flow. All four tracks below can start now and merge cleanly when that flip lands.
+  </div>
+</section>
+
+<!-- 14 v1 / v2 Plan -->
+<section id="s14">
+  <h2><span class="sec-num">§14</span> v1 / v2 Plan</h2>
+  <div class="callout">
+    <strong>v1 — "solid working version" =</strong> production-grade Marketing pilot with full governance in place. Dave confirmed scope 2026-05-07: Cosmos-backed audit + rate limit, schema refresh cron, dept routing middleware, full FastMCP middleware lifecycle. <strong>No shortcuts.</strong>
+    <br><br>
+    <strong>v2 — expansion =</strong> add personas + capabilities + UX polish once v1 is stable in pilot.
+  </div>
+
+  <h3>v1 — the production-grade Marketing pilot</h3>
+  <table>
+    <thead><tr><th>Capability</th><th>What's in v1</th></tr></thead>
+    <tbody>
+      <tr><td>Auth — edge</td><td>Easy Auth + <code>Return401</code> + <code>EasyAuthGate</code> (App Role <code>Mcp.User</code>, <code>appRoleAssignmentRequired=true</code>)</td></tr>
+      <tr><td>Auth — downstream</td><td>OAuth 2.0 Token Exchange (RFC 8693) via Salesforce ECA with admin-registered Token Exchange Handler</td></tr>
+      <tr><td>Token cache</td><td>Per-user SF refresh tokens in Azure Key Vault (<code>salesforce-rt-&lt;user-oid&gt;</code>); access tokens in-memory with TTL</td></tr>
+      <tr><td>Tool surface</td><td>Curated <code>marketing-readonly</code> bundle (~10 tools)</td></tr>
+      <tr><td>Schema intelligence</td><td>Discovery script + Cosmos <code>schema_cache</code> + <code>salesforce_get_schema_summary</code> tool + weekly cron + manual refresh. <strong>This is the customization layer for Fourth's org.</strong></td></tr>
+      <tr><td>Audit</td><td>Cosmos <code>audit_log</code> (PK <code>/user_id</code>) — request_id, user, dept, tool, objects_touched, query_hash, outcome, latency, token_estimate</td></tr>
+      <tr><td>Rate limit</td><td>Cosmos <code>rate_limit_buckets</code> — sliding-window per-user + per-dept + per-tool, survives restarts</td></tr>
+      <tr><td>Safety</td><td>Mutation blocking, SOQL <code>LIMIT</code> enforcement (default 25, max 200), unknown-custom-object blocking until schema confirms</td></tr>
+      <tr><td>Dept routing</td><td>Middleware extension point; v1 ships with Marketing → marketing-readonly hardcoded</td></tr>
+      <tr><td>Deploy</td><td><code>ca-mcp-salesforce</code> in <code>rg-agent-architecture</code> / <code>locmap-env</code>, MI for ACR + KV, Easy Auth on, multiple revisions, stateless</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions + OIDC federated, dual-tag, deploy by digest</td></tr>
+      <tr><td>Distribution</td><td>Anthropic Custom Connector (workspace-only, OAuth 2.1 + DCR)</td></tr>
+      <tr><td>Observability</td><td>Structured logging + Cosmos audit; App Insights wired (telemetry middleware)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>v2 — expansion (after v1 pilot success)</h3>
+  <table>
+    <thead><tr><th>Track</th><th>What v2 adds</th></tr></thead>
+    <tbody>
+      <tr><td>Personas</td><td>CSM read-only (Account, Contact, Case, Customer health); Sales read-only (Account, Opportunity, Contact, Quote); RevOps analytics (Data 360 + Tableau Next, license-gated); Admin (schema discovery, DevOps Center non-prod)</td></tr>
+      <tr><td>Mutations</td><td>Gated <code>sobject-mutations</code> via Safety middleware approval flow; per-tool consent prompts</td></tr>
+      <tr><td>Apex / Flows</td><td>Apex Invocable Actions (read first, then gated write); Lightning Flows with side-effect preview; Named Queries</td></tr>
+      <tr><td>Analytics</td><td>Data 360 SQL (PostgreSQL dialect, license-gated); Tableau Next semantic models + dashboards</td></tr>
+      <tr><td>Prompt Builder</td><td>Surface SF Prompt Builder templates as MCP prompts</td></tr>
+      <tr><td>DevOps Center</td><td>DevOps Center MCP for CI/CD workflows (non-prod org first)</td></tr>
+      <tr><td>UX</td><td>FastMCP Apps / Prefab UI for in-Claude dashboards (pipeline summary, opp health); elicitation flows for mid-execution clarification; per-user preferences</td></tr>
+      <tr><td>Schema intelligence v2</td><td>Per-user FLS views (re-describe under each user); schema diffs over time; breaking-change detection alerts</td></tr>
+      <tr><td>Infrastructure</td><td>Multi-org routing (prod + sandbox + dev); ACR geo-replication to Sweden Central if pull latency matters; Cosmos co-location for hot paths</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 15 Parallel Tracks -->
+<section id="s15">
+  <h2><span class="sec-num">§15</span> Parallel work tracks — all four authorized 2026-05-07</h2>
+  <p>The Entra fix is a single config flip with no scope dependency — every track can start now and merge cleanly when the fix lands. <strong>Suggested ordering:</strong> B + D first (most independent), A and C as soon as B's middleware skeleton stabilizes.</p>
+
+  <div class="tracks-grid">
+    <div class="track-card">
+      <div class="tag">Track A · Phase 2</div>
+      <h4>Hosted MCP ProxyClient (mocked)</h4>
+      <p>Replace <code>salesforce_mcp/hosted_mcp/client.py</code> stubs with real <code>FastMCP.as_proxy()</code> over httpx pointed at Hosted MCP base URL.</p>
+      <p>Add <code>pytest-httpx</code> fixtures for <code>tools/list</code> + <code>tools/call</code>. When Entra fix lands, swap mock URL → live URL.</p>
+      <p style="color: var(--text-faint); font-size: 12px;"><strong>Blocked by:</strong> nothing — pure code.</p>
+    </div>
+
+    <div class="track-card b">
+      <div class="tag">Track B · Phase 5</div>
+      <h4>Governance middleware</h4>
+      <p>Real implementations in <code>middleware/</code>: audit (Cosmos + log mirror), tool allowlist on <code>on_call_tool</code>, safety (mutation block, LIMIT, unknown-object guard), Cosmos-backed rate limit, request ID, dept routing. Wire into <code>server.py</code> stack.</p>
+      <p style="color: var(--text-faint); font-size: 12px;"><strong>Blocked by:</strong> nothing — pure code; Cosmos nice-to-have (Track D) but in-memory works for tests.</p>
+    </div>
+
+    <div class="track-card c">
+      <div class="tag">Track C · Phase 4</div>
+      <h4>Schema discovery</h4>
+      <p><code>scripts/discover_schema.py</code> against <code>services/data/v62.0/sobjects</code> via SF REST (no Hosted MCP needed). <code>summarize_schema.py</code> for JSON → markdown. Wire <code>get_schema_summary</code> + <code>describe_object</code> tools. Commit example artifacts.</p>
+      <p style="color: var(--text-faint); font-size: 12px;"><strong>Blocked by:</strong> nothing for the script; Cosmos cache integration depends on Track D.</p>
+    </div>
+
+    <div class="track-card d">
+      <div class="tag">Track D · Phase 7 prep + 8</div>
+      <h4>Deploy plumbing + Azure infra</h4>
+      <p><code>.github/workflows/deploy.yml</code> with OIDC, dual-tag, deploy by digest. Cosmos DB <code>mcp-salesforce</code> + 5 containers. Empty KV slots (<code>mcp-salesforce-*</code>). Entra App Role <code>Mcp.User</code> + <code>appRoleAssignmentRequired=true</code>.</p>
+      <p style="color: var(--text-faint); font-size: 12px;"><strong>Blocked by:</strong> Azure CLI; IT cooperation for App Role + KV.</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>What still has to wait for the Entra fix:</strong>
+    <ul style="margin: 8px 0 0;">
+      <li>Phase 3 closure (Token Exchange end-to-end PASS in spike)</li>
+      <li>Real Hosted MCP calls against live Salesforce (mocked calls in Track A unblock everything else)</li>
+      <li>Marketing pilot rollout (Phase 9)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 16 Schema Discovery Deep Dive -->
+<section id="s16">
+  <h2><span class="sec-num">§16</span> Schema discovery — "does this customize the connector for Fourth's custom objects?"</h2>
+  <div class="callout success">
+    <strong>Yes — that is precisely what it does</strong>, and it's why v1 includes it. Fourth's Salesforce org has many custom objects (<code>__c</code>, <code>__r</code>, <code>__mdt</code>, <code>__x</code>, <code>__b</code>), each with their own fields, relationships, picklists, validation rules, and FLS policies that don't exist in any other org. Without schema discovery, Claude operates against a "generic Salesforce" mental model and hallucinates field names whenever Fourth's customization diverges from standard.
+  </div>
+
+  <h3>What the discovery process produces</h3>
+  <ol>
+    <li><strong><code>data/schema/salesforce-schema-map.json</code></strong> — full structured map of every object visible to the discovery user:
+      <ul>
+        <li>API name + label + plural label</li>
+        <li>Custom flag, queryable/searchable/createable/updateable/deletable flags</li>
+        <li>Every field: API name, label, type, picklist values, references, FLS for calling user, required, indexed, external-ID</li>
+        <li>Parent + child relationships (e.g., <code>Account → Implementation_Project__c</code> via <code>Account__c</code>)</li>
+        <li>Record types</li>
+      </ul>
+    </li>
+    <li><strong><code>data/schema/salesforce-schema-summary.md</code></strong> — Claude-optimized markdown index:
+      <ul>
+        <li>One section per object</li>
+        <li>Custom objects + fields highlighted (<code>__c</code> suffix called out)</li>
+        <li>Traversable relationships listed under each object</li>
+        <li>Designed to fit comfortably in Claude's working context for a session</li>
+      </ul>
+    </li>
+    <li><strong>Cosmos <code>schema_cache</code> container</strong> (PK <code>/org_id</code>) — same data served at runtime via the <code>salesforce_get_schema_summary</code> MCP tool</li>
+  </ol>
+
+  <h3>How it customizes the connector at runtime</h3>
+  <ul>
+    <li>The proxy ships with <code>salesforce_get_schema_summary</code> and <code>salesforce_describe_object</code> MCP tools registered out of the box</li>
+    <li>System prompt for Salesforce tools tells Claude: <em>"Consult <code>salesforce_get_schema_summary</code> before writing SOQL"</em></li>
+    <li>When a user asks "what's the Customer Health Score for AcmeCo?", Claude reads the summary, sees <code>Implementation_Project__c.Customer_Health_Score__c</code> and its <code>Account__c</code> reference, and writes correct SOQL:</li>
+  </ul>
+  <pre>SELECT Customer_Health_Score__c FROM Implementation_Project__c
+ WHERE Account__r.Name = 'AcmeCo' LIMIT 25</pre>
+  <p>…instead of guessing standard-looking field names that don't exist (<code>Account.healthScore</code>, etc.).</p>
+  <p>Safety middleware (Track B) enforces "describe before query": SOQL against an unknown custom object is blocked until Claude confirms it via <code>salesforce_describe_object</code>.</p>
+
+  <h3>Refresh strategy in v1</h3>
+  <ul>
+    <li><strong>Initial:</strong> <code>python scripts/discover_schema.py --org production</code> runs during the first deploy</li>
+    <li><strong>Periodic:</strong> weekly cron (Azure Functions or scheduled Container Apps job) re-runs discovery and refreshes Cosmos</li>
+    <li><strong>Manual:</strong> <code>salesforce_refresh_schema_cache</code> MCP tool callable by admin-tier users on demand</li>
+  </ul>
+
+  <h3>What v2 adds on top</h3>
+  <ul>
+    <li><strong>Per-user FLS views</strong> — v1 caches a baseline; v2 re-describes under each calling user's identity at first call so the summary reflects exactly what <em>that user</em> can see</li>
+    <li><strong>Schema diffs over time</strong> — audit trail of changes (governance + detecting breaking migrations)</li>
+    <li><strong>Breaking-change alerts</strong> — notify when a known field disappears (signals stale schema → tools may break)</li>
+  </ul>
+</section>
+
+<!-- 17 Updated Q&A -->
+<section id="s17">
+  <h2><span class="sec-num">§17</span> Updated open questions (most closed)</h2>
+  <p style="color: var(--text-dim);">Live tracker: <code>fourth-salesforce-mcp/docs/risk-register.md</code>.</p>
+  <table>
+    <thead><tr><th>#</th><th>Question</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Sandbox or production for Phase 1?</td><td><span class="status closed">✅ Closed</span> production with closed pilot group</td></tr>
+      <tr><td>2</td><td>IT-created Entra app <code>MCP: Salesforce</code>?</td><td><span class="status closed">✅ Closed</span> APP_ID <code>56012700-...</code></td></tr>
+      <tr><td>3</td><td>Salesforce ECA configured?</td><td><span class="status closed">✅ Closed</span> ECA + Token Exchange Flow + Token Exchange Handler all registered</td></tr>
+      <tr><td>3b</td><td>Entra JWT issuer aligned with handler expectation?</td><td><span class="status pending">⏳ Pending IT</span> <code>accessTokenAcceptedVersion: 2</code> requested 2026-05-07</td></tr>
+      <tr><td>4</td><td>SF org Entra-federated for SSO?</td><td><span class="status open">To confirm</span> with admin — likely yes since Token Exchange path works</td></tr>
+      <tr><td>5</td><td>Marketing pilot users — Entra OIDs?</td><td><span class="status open">Open</span> — needed before Phase 7 App Role assignment</td></tr>
+      <tr><td>6</td><td>First workflow's required custom objects?</td><td><span class="status open">Open</span> — drives schema discovery scope priority</td></tr>
+      <tr><td>7</td><td>Data 360 / Tableau Next licensed?</td><td><span class="status open">Open</span> — gated to v2 regardless</td></tr>
+      <tr><td>8</td><td>Exact Hosted MCP base URL pattern?</td><td><span class="status closed">✅ Likely closed</span> <code>https://hs.my.salesforce.com/services/mcp/&lt;server-name&gt;</code> per spike</td></tr>
+      <tr><td>9</td><td>AE confirmation on pricing?</td><td><span class="status open">Open</span> — does NOT block design/build through Phase 8; gates Phase 9</td></tr>
+      <tr><td>10</td><td>AE confirmation on SLA?</td><td><span class="status open">Open</span> — same gate as Q9</td></tr>
+      <tr><td>11</td><td>Token Exchange end-to-end?</td><td><span class="status pending">⏳ Pending Q3b</span> re-run spike post-Entra-fix, expect PASS</td></tr>
+      <tr><td>12</td><td>IT/security approval on per-user RT in Key Vault?</td><td><span class="status open">Open</span> — confirm in Phase 7 prep</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  Addendum reflects state as of 2026-05-07 18:30 ET. Original proposal above remains unmodified. Source: <code>we-are-ready-to-jaunty-shamir.md</code>.
+</footer>
+
+</main>
+</div>
+
+<script>
+  // Smooth scroll
+  document.querySelectorAll('aside nav a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); history.replaceState(null, '', '#' + id); }
+    });
+  });
+  // Highlight active section on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('aside nav a[href^="#"]');
+  const linkMap = {};
+  navLinks.forEach(l => linkMap[l.getAttribute('href').slice(1)] = l);
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        navLinks.forEach(l => l.style.borderLeftColor = 'transparent');
+        navLinks.forEach(l => l.style.color = '');
+        const link = linkMap[en.target.id];
+        if (link) {
+          link.style.borderLeftColor = 'var(--accent)';
+          link.style.background = 'var(--bg-elev)';
+          link.style.color = 'var(--text)';
+        }
+      } else {
+        const link = linkMap[en.target.id];
+        if (link) { link.style.background = ''; }
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
