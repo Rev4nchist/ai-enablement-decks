@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Foundry: Hosted Agents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d12;
+    --bg2: #0f1420;
+    --bg3: #141927;
+    --surface: #161d2e;
+    --surface2: #1c2538;
+    --border: #1e2d47;
+    --border-bright: #2a4070;
+    --text: #e8edf5;
+    --text-dim: #8a9ab5;
+    --text-dimmer: #4a5a78;
+    --accent: #3b82f6;
+    --accent-dim: #1d4ed8;
+    --accent-glow: rgba(59,130,246,0.15);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.12);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.1);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.1);
+    --mono: 'DM Mono', monospace;
+    --serif: 'Instrument Serif', serif;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10,13,18,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  nav .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  nav .brand .dot {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  nav .nav-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  nav .nav-links a {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dimmer);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  nav .nav-links a:hover { color: var(--text); }
+
+  nav .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    padding: 140px 2rem 100px;
+    max-width: 900px;
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-eyebrow span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+  }
+
+  .hero-eyebrow .line {
+    height: 1px;
+    width: 48px;
+    background: var(--border-bright);
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 640px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .meta-chip .icon {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .chip-green .icon { background: var(--green); }
+  .chip-amber .icon { background: var(--amber); }
+  .chip-blue .icon { background: var(--accent); }
+
+  /* Grid background glow */
+  .hero-glow {
+    position: absolute;
+    top: 80px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(59,130,246,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem 80px;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dimmer);
+    letter-spacing: 0.1em;
+    min-width: 28px;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(26px, 3.5vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .section-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-bright), transparent);
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    max-width: 900px;
+    margin: 0 auto 80px;
+    padding: 0 2rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  /* ─── CALLOUT BOX ─── */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .callout strong { color: var(--text); }
+
+  .callout.warning {
+    border-left-color: var(--amber);
+  }
+
+  .callout.success {
+    border-left-color: var(--green);
+  }
+
+  /* ─── CARDS ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    transition: border-color 0.25s, transform 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-dim), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 20px;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .card p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  /* ─── BIG NUMBER CARDS ─── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 22px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 8px;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-dimmer);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+
+  /* ─── COMPARISON TABLE ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 40px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+  }
+
+  thead th:first-child { color: var(--text-dim); }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  tbody td {
+    padding: 13px 18px;
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+
+  tbody td:first-child {
+    color: var(--text);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .td-bad { color: var(--red); }
+  .td-good { color: var(--green); }
+  .td-med { color: var(--amber); }
+
+  /* ─── AGENT TYPE CARDS ─── */
+  .agent-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 680px) {
+    .agent-types { grid-template-columns: 1fr; }
+  }
+
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s;
+  }
+
+  .agent-card.featured {
+    border-color: var(--accent-dim);
+    background: linear-gradient(160deg, rgba(59,130,246,0.06) 0%, var(--surface) 60%);
+  }
+
+  .agent-card .tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .tag-new {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .tag-ga {
+    background: var(--green-dim);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .tag-preview {
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,158,11,0.3);
+    color: var(--amber);
+  }
+
+  .agent-card .a-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .agent-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .agent-card p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .agent-card .best-for {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dimmer);
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: 4px;
+  }
+
+  .agent-card .best-for strong {
+    color: var(--text-dim);
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+  }
+
+  /* ─── LIFECYCLE STEPS ─── */
+  .lifecycle {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .lifecycle::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 24px;
+    bottom: 24px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--accent-dim), var(--border), transparent);
+  }
+
+  .lc-step {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  .lc-num {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    position: relative;
+    z-index: 1;
+  }
+
+  .lc-content { flex: 1; padding-top: 8px; }
+
+  .lc-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .lc-content p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: #080c14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .code-block::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dimmer);
+    letter-spacing: 0.06em;
+  }
+
+  .code-block pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .code-block .kw { color: var(--accent); }
+  .code-block .str { color: var(--green); }
+  .code-block .cmt { color: var(--text-dimmer); font-style: italic; }
+  .code-block .fn { color: var(--purple); }
+  .code-block .num { color: var(--amber); }
+
+  /* ─── FRAMEWORK BADGES ─── */
+  .frameworks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 24px 0 32px;
+  }
+
+  .fw-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .fw-badge .fw-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  /* ─── DECISION MATRIX ─── */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 600px) {
+    .decision-grid { grid-template-columns: 1fr; }
+  }
+
+  .decision-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px;
+  }
+
+  .decision-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .decision-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .decision-card li {
+    font-size: 13px;
+    color: var(--text-dim);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .decision-card li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  /* ─── CHECKLIST ─── */
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .check-icon {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border-radius: 50%;
+    background: var(--green-dim);
+    border: 1px solid rgba(34,197,94,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    font-size: 10px;
+    color: var(--green);
+  }
+
+  /* ─── PROTOCOL TABLE ─── */
+  .proto-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 600px) {
+    .proto-grid { grid-template-columns: 1fr; }
+  }
+
+  .proto-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+  }
+
+  .proto-card .proto-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--purple);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .proto-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .proto-card p {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ─── INLINE PROSE ─── */
+  .prose {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.75;
+    margin-bottom: 28px;
+  }
+
+  .prose strong { color: var(--text); }
+  .prose code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 6px;
+    color: var(--accent);
+  }
+
+  /* ─── QUOTE ─── */
+  .pullquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 24px;
+    margin: 32px 0;
+    font-family: var(--serif);
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--text);
+    font-style: italic;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 32px 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+
+  footer p {
+    font-size: 12px;
+    color: var(--text-dimmer);
+    font-family: var(--mono);
+  }
+
+  footer a {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: var(--mono);
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ─── SCROLL PROGRESS ─── */
+  #progress {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    transform-origin: left;
+    transform: scaleX(0);
+    z-index: 99;
+    transition: transform 0.1s linear;
+  }
+
+  /* ─── INLINE TAG ─── */
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .pill-blue {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .pill-green {
+    background: var(--green-dim);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .pill-amber {
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,158,11,0.3);
+    color: var(--amber);
+  }
+
+  /* wide text helper */
+  .text-xs { font-size: 12px; }
+  .mb-sm { margin-bottom: 12px; }
+  .mb-md { margin-bottom: 24px; }
+  .mb-lg { margin-bottom: 40px; }
+  .color-dim { color: var(--text-dim); }
+  .color-dimmer { color: var(--text-dimmer); }
+  .font-mono { font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <div class="brand">
+    <div class="dot"></div>
+    Microsoft Foundry
+    <span style="color: var(--text-dimmer); margin: 0 4px;">·</span>
+    Hosted Agents
+  </div>
+  <ul class="nav-links">
+    <li><a href="#what">What</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#types">Agent Types</a></li>
+    <li><a href="#deploy">Deploy</a></li>
+    <li><a href="#use">When to Use</a></li>
+  </ul>
+  <div class="badge">PREVIEW — Apr 22 2026</div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-eyebrow">
+    <div class="line"></div>
+    <span>Release Brief</span>
+    <div class="line"></div>
+    <span>April 22, 2026</span>
+  </div>
+
+  <h1>Foundry finally lets you<br>ship <em>your code</em> as an agent.</h1>
+
+  <p class="hero-sub">
+    Microsoft Foundry's Hosted Agents turns containerised agent code into a
+    fully managed, enterprise-grade service — with per-session isolation,
+    persistent filesystem, dedicated identity, and one-click publish to Teams.
+    No infrastructure to run. No shared-container nightmares.
+  </p>
+
+  <div class="hero-meta">
+    <div class="meta-chip chip-blue">
+      <div class="icon"></div>
+      Public Preview — April 22, 2026
+    </div>
+    <div class="meta-chip chip-green">
+      <div class="icon"></div>
+      Ground-up rebuild (not the Ignite preview)
+    </div>
+    <div class="meta-chip chip-amber">
+      <div class="icon"></div>
+      Framework-agnostic — any harness, any language
+    </div>
+  </div>
+</section>
+
+<!-- ─── SECTION 1: WHAT IS IT ─── -->
+<div id="what"></div>
+<section class="section fade-in">
+  <div class="section-label">
+    <span class="section-num">01</span>
+    <h2 class="section-title">What changed — and why it matters</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <p class="prose">
+    Until this release, Azure Foundry was primarily useful for <strong>model hosting</strong> — 
+    you could deploy and call models, but running your own agent logic meant managing your own 
+    infrastructure. Foundry Hosted Agents changes that. <strong>You can now publish containers directly 
+    to the Foundry Agent Service</strong>, and it runs your code — not just a prompt definition.
+  </p>
+
+  <div class="pullquote">
+    "No more infrastructure to run. Single-click publishing into Teams and Copilot."
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card fade-in">
+      <div class="stat-num">1</div>
+      <div class="stat-label">command to deploy<br><code style="font-size:11px; background:none; border:none; padding:0; color:var(--text-dimmer)">azd deploy</code></div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="stat-num">VM</div>
+      <div class="stat-label">hypervisor isolation<br>per session (not process)</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="stat-num">$0</div>
+      <div class="stat-label">when idle — true<br>scale-to-zero billing</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">framework support<br>LangGraph, MAF, custom…</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Important:</strong> This is a ground-up rebuild of the Ignite 2025 preview — it is not a rolling upgrade, 
+    it is a cutover. If anyone on your team ran agents on the old preview backend, those need to be inventoried and migrated.
+  </div>
+
+  <p class="prose">
+    The problem Foundry is solving here is fundamental: <strong>traditional compute wasn't designed for agents.</strong>
+    Containers, web apps, and serverless functions were built for web APIs where multiple users share the same instance.
+    That's fine for a REST endpoint, but unsafe for agents — which write files, execute code, and hold sensitive 
+    context mid-session. Sharing a container across sessions isn't just inefficient, it's a security nightmare.
+  </p>
+
+  <div class="table-wrap fade-in">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Traditional Compute</th>
+          <th>Foundry Hosted Agents</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Isolation</td>
+          <td class="td-bad">Multiple sessions share a container</td>
+          <td class="td-good">Every session gets a dedicated VM sandbox</td>
+        </tr>
+        <tr>
+          <td>Cold starts</td>
+          <td class="td-med">Seconds to minutes, high variance</td>
+          <td class="td-good">Seconds, low variance, predictable</td>
+        </tr>
+        <tr>
+          <td>Idle cost</td>
+          <td class="td-bad">Always-on billing</td>
+          <td class="td-good">Scale-to-zero with filesystem-preserving resume</td>
+        </tr>
+        <tr>
+          <td>State persistence</td>
+          <td class="td-bad">You build it (databases, external storage)</td>
+          <td class="td-good">Built in — files survive scale-to-zero</td>
+        </tr>
+        <tr>
+          <td>Identity</td>
+          <td class="td-bad">Shared service account</td>
+          <td class="td-good">Per-agent Entra ID + per-user OBO</td>
+        </tr>
+        <tr>
+          <td>Observability</td>
+          <td class="td-bad">You build it</td>
+          <td class="td-good">Built in — agent, session, fleet</td>
+        </tr>
+        <tr>
+          <td>Teams/M365 publishing</td>
+          <td class="td-bad">Complex custom deployment</td>
+          <td class="td-good">One-click publish</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── SECTION 2: HOW IT WORKS ─── -->
+<div id="how"></div>
+<section class="section fade-in">
+  <div class="section-label">
+    <span class="section-num">02</span>
+    <h2 class="section-title">How it works</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <p class="prose">
+    The architecture is clean. You write agent code in any framework, wrap it with a lightweight 
+    <strong>hosting adapter</strong> that handles HTTP, health checks, and OpenTelemetry, 
+    containerise it, push to Azure Container Registry, and deploy. Foundry handles everything else.
+  </p>
+
+  <div class="lifecycle fade-in">
+    <div class="lc-step">
+      <div class="lc-num">01</div>
+      <div class="lc-content">
+        <h4>Write your agent code</h4>
+        <p>Use any framework — Microsoft Agent Framework, LangGraph, CrewAI, OpenAI Agents SDK, 
+          Claude Agent SDK, or plain custom code. Wrap it with the hosting adapter 
+          (<code class="font-mono text-xs">azure-ai-agentserver-*</code>) which auto-exposes it as 
+          an HTTP service with Foundry-compatible protocols.</p>
+      </div>
+    </div>
+    <div class="lc-step">
+      <div class="lc-num">02</div>
+      <div class="lc-content">
+        <h4>Test locally</h4>
+        <p>The hosting adapter runs a local server on <code class="font-mono text-xs">localhost:8088</code>. 
+          Test your agent fully with the Foundry Responses API, conversation management, and auth flows 
+          before touching a container.</p>
+      </div>
+    </div>
+    <div class="lc-step">
+      <div class="lc-num">03</div>
+      <div class="lc-content">
+        <h4>Containerise and push to ACR</h4>
+        <p>Write a Dockerfile that gives your agent exactly the tools and dependencies it needs. 
+          Build for <code class="font-mono text-xs">linux/amd64</code>. Push to Azure Container Registry. 
+          Foundry pulls from there at deploy time.</p>
+      </div>
+    </div>
+    <div class="lc-step">
+      <div class="lc-num">04</div>
+      <div class="lc-content">
+        <h4>Deploy with <code class="font-mono text-xs">azd deploy</code></h4>
+        <p>Azure Developer CLI handles the heavy lifting. Foundry pulls the image, provisions compute, 
+          assigns a dedicated Entra ID, and exposes a stable endpoint at 
+          <code class="font-mono text-xs">https://&#123;project_endpoint&#125;/agents/&#123;agent_name&#125;</code>.</p>
+      </div>
+    </div>
+    <div class="lc-step">
+      <div class="lc-num">05</div>
+      <div class="lc-content">
+        <h4>Poll for active status</h4>
+        <p>Creating an agent version starts provisioning — it doesn't complete it. 
+          Poll the status until it reaches <code class="font-mono text-xs">active</code>. 
+          Handle <code class="font-mono text-xs">creating → active → failed</code> states explicitly 
+          in any automation. Don't skip this step.</p>
+      </div>
+    </div>
+    <div class="lc-step">
+      <div class="lc-num">06</div>
+      <div class="lc-content">
+        <h4>Publish to Teams / M365 (optional)</h4>
+        <p>One-click publish from the Foundry portal. The platform automatically bridges the 
+          OpenResponses protocol to Activity Protocol for Teams delivery — no separate wiring. 
+          <strong>Note:</strong> publishing provisions a new dedicated agent identity. 
+          Reconfigure RBAC after publishing.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block fade-in" data-label="DOCKERFILE — minimal example">
+    <pre><span class="cmt"># Your agent environment — total control over deps</span>
+<span class="kw">FROM</span> python:<span class="num">3.11</span>-slim
+
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span> pip install -r requirements.txt
+
+<span class="cmt"># The hosting adapter handles HTTP, health, OTel</span>
+<span class="kw">COPY</span> agent.py .
+<span class="kw">CMD</span> [<span class="str">"python"</span>, <span class="str">"agent.py"</span>]</pre>
+  </div>
+
+  <div class="code-block fade-in" data-label="azd deploy">
+    <pre><span class="cmt"># One command to build, push, and deploy</span>
+$ <span class="fn">azd deploy</span>
+
+<span class="cmt"># What happens behind the scenes:</span>
+<span class="cmt"># 1. Packages your code + builds container image</span>
+<span class="cmt"># 2. Pushes image to Azure Container Registry</span>
+<span class="cmt"># 3. Foundry pulls image, provisions compute</span>
+<span class="cmt"># 4. Assigns dedicated Entra ID to agent</span>
+<span class="cmt"># 5. Exposes endpoint with stable URL</span>
+<span class="cmt"># 6. Handles scaling, persistence, observability</span></pre>
+  </div>
+
+  <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; margin-top: 8px;">Supported Protocols</h3>
+
+  <div class="proto-grid fade-in">
+    <div class="proto-card">
+      <div class="proto-name">OpenResponses</div>
+      <h4>Conversational — use this first</h4>
+      <p>Conversation ID is the primary concept. Platform manages history automatically. 
+         Auto-bridges to Activity Protocol for Teams/M365 — no extra wiring.</p>
+    </div>
+    <div class="proto-card">
+      <div class="proto-name">Invocations</div>
+      <h4>Workflow / app integration</h4>
+      <p>Session ID is the primary concept. You manage state in your own code. 
+         Best for programmatic integrations and non-conversational workflows.</p>
+    </div>
+    <div class="proto-card">
+      <div class="proto-name">Activity</div>
+      <h4>Teams / M365 channels</h4>
+      <p>Used for Teams and Microsoft 365 channel integration. 
+         If you use OpenResponses, this is handled automatically on publish. No direct wiring needed.</p>
+    </div>
+    <div class="proto-card">
+      <div class="proto-name">A2A (preview)</div>
+      <h4>Agent-to-agent delegation</h4>
+      <p>Enables agent orchestration — one hosted agent delegating tasks to another. 
+         All four protocols can coexist in a single agent deployment.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── SECTION 3: AGENT TYPES ─── -->
+<div id="types"></div>
+<section class="section fade-in">
+  <div class="section-label">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Three types of agent</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <p class="prose">
+    Foundry Agent Service supports three distinct agent types. 
+    <strong>Hosted Agents</strong> is the new capability in this release — 
+    the other two existed before.
+  </p>
+
+  <div class="agent-types fade-in">
+    <div class="agent-card">
+      <span class="tag tag-ga">GA</span>
+      <span class="a-icon">⚙️</span>
+      <h3>Prompt Agents</h3>
+      <p>Defined through configuration — instructions, model selection, and tools. 
+         No code required. Create them in the Foundry portal or via API/SDK.</p>
+      <div class="best-for">
+        <strong>Best for</strong>
+        Rapid prototyping, internal tools, agents that don't need custom orchestration logic.
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <span class="tag tag-preview">Preview</span>
+      <span class="a-icon">🔀</span>
+      <h3>Workflow Agents</h3>
+      <p>Orchestrate sequences of actions or coordinate multiple agents using declarative definitions. 
+         Build visually in the portal or define in YAML via VS Code.</p>
+      <div class="best-for">
+        <strong>Best for</strong>
+        Multi-step orchestration, approval workflows, human-in-the-loop steps, repeatable automation without custom code.
+      </div>
+    </div>
+
+    <div class="agent-card featured">
+      <span class="tag tag-new">New Preview</span>
+      <span class="a-icon">📦</span>
+      <h3>Hosted Agents</h3>
+      <p>Your code, packaged as a container. Any framework. Foundry manages the runtime, scaling, and infrastructure.</p>
+      <div class="best-for">
+        <strong>Best for</strong>
+        Complex workflows, custom tool integrations, multi-agent systems, and scenarios where you need full control over agent behaviour.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Decision rule:</strong> Start with a Prompt Agent if you just need tools + instructions. 
+    Move to Workflow if you need visual orchestration or human-in-the-loop. 
+    Only reach for Hosted Agents when you need custom code, custom frameworks, or full runtime control. 
+    It's more powerful and more responsibility.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── SECTION 4: FRAMEWORKS ─── -->
+<div id="deploy"></div>
+<section class="section fade-in">
+  <div class="section-label">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Frameworks & deployment</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <p class="prose">
+    Hosted Agents is explicitly framework-agnostic. Microsoft supports these frameworks with 
+    official hosting adapter packages — but any container-based agent code works:
+  </p>
+
+  <div class="frameworks fade-in">
+    <div class="fw-badge"><div class="fw-dot"></div> Microsoft Agent Framework (Python + C#)</div>
+    <div class="fw-badge"><div class="fw-dot"></div> LangGraph (Python)</div>
+    <div class="fw-badge"><div class="fw-dot"></div> Custom code (Python + C#)</div>
+    <div class="fw-badge"><div class="fw-dot" style="background: var(--text-dimmer)"></div> CrewAI</div>
+    <div class="fw-badge"><div class="fw-dot" style="background: var(--text-dimmer)"></div> OpenAI Agents SDK</div>
+    <div class="fw-badge"><div class="fw-dot" style="background: var(--text-dimmer)"></div> Claude Agent SDK</div>
+    <div class="fw-badge"><div class="fw-dot" style="background: var(--text-dimmer)"></div> GitHub Copilot SDK</div>
+  </div>
+
+  <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 14px;">Prerequisites checklist</h3>
+
+  <ul class="checklist fade-in">
+    <li>
+      <div class="check-icon">✓</div>
+      <div><strong>Microsoft Foundry project</strong> — you need an active Foundry project in a supported region 
+        (East US, West US, UK South, Sweden Central, and ~20 others).</div>
+    </li>
+    <li>
+      <div class="check-icon">✓</div>
+      <div><strong>Azure Container Registry</strong> — Foundry pulls your container image from ACR. 
+        Set up ACR pull access and RBAC before deploying.</div>
+    </li>
+    <li>
+      <div class="check-icon">✓</div>
+      <div><strong>Docker / containerisation basics</strong> — you're packaging your code as a 
+        <code>linux/amd64</code> container image. If you're new to Docker, this is the prerequisite skill to build first.</div>
+    </li>
+    <li>
+      <div class="check-icon">✓</div>
+      <div><strong>Azure Developer CLI (<code>azd</code>)</strong> — the deployment tool. 
+        Install it and authenticate before trying to deploy.</div>
+    </li>
+    <li>
+      <div class="check-icon">✓</div>
+      <div><strong>No secrets in images</strong> — use managed identities and Key Vault connections. 
+        Never put credentials in Dockerfiles or environment variables.</div>
+    </li>
+  </ul>
+
+  <div class="callout warning">
+    <strong>Post-publish RBAC:</strong> When you publish an agent to Teams/M365, Foundry provisions a new, 
+    distinct agent identity. The project managed identity permissions don't transfer. 
+    You'll need to reconfigure RBAC for every Azure resource your agent accesses after publishing. 
+    This is a common gotcha.
+  </div>
+
+  <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; margin-top: 8px;">Pricing</h3>
+  <p class="prose">
+    Hosted Agents bill at <strong>$0.0994 per vCPU-hour</strong> of active compute. 
+    Idle agents scale to zero — you pay nothing. Sessions persist for up to 30 days; 
+    idle compute is deprovisioned after 15 minutes and seamlessly restored on the next request 
+    with the filesystem intact.
+  </p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── SECTION 5: WHEN TO USE ─── -->
+<div id="use"></div>
+<section class="section fade-in">
+  <div class="section-label">
+    <span class="section-num">05</span>
+    <h2 class="section-title">When to use it (and when not to)</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <p class="prose">
+    Hosted Agents isn't the right answer for everything. 
+    It's the right answer when <strong>you need full control over agent runtime behaviour</strong> 
+    and want Microsoft to handle the infrastructure. 
+    Here's the practical decision framework:
+  </p>
+
+  <div class="decision-grid fade-in">
+    <div class="decision-card">
+      <h4>✅ Use Hosted Agents when…</h4>
+      <ul>
+        <li>You have existing agent code in LangGraph, MAF, or custom Python/C# you want to run in production</li>
+        <li>You need custom tool integrations beyond what prompt agents support</li>
+        <li>Your agent writes files, executes code, or holds per-session context</li>
+        <li>You need multi-agent orchestration (A2A protocol)</li>
+        <li>You want one-click Teams/M365 publish with managed identity</li>
+        <li>Governance, auditability, and enterprise compliance are requirements</li>
+        <li>You've outgrown Copilot Studio's lifecycle ownership model</li>
+      </ul>
+    </div>
+
+    <div class="decision-card">
+      <h4>⚠️ Don't use Hosted Agents when…</h4>
+      <ul>
+        <li>A Prompt Agent (instructions + tools) is sufficient — don't over-engineer</li>
+        <li>Business users need to own and edit the agent lifecycle — use Copilot Studio</li>
+        <li>You need sub-100ms latency — in-process SDK agents are faster</li>
+        <li>You're prototyping and haven't validated the agent logic yet</li>
+        <li>Your team doesn't have containerisation skills yet — address the prerequisite first</li>
+        <li>Private VNet is a hard requirement today — BYO VNet for image pull is still in progress</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 14px;">Where this fits in the stack</h3>
+
+  <div class="table-wrap fade-in">
+    <table>
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Who owns lifecycle</th>
+          <th>When to choose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Copilot Studio</td>
+          <td>Business users</td>
+          <td>Low-code copilots; speed-to-prototype dominates; business owns lifecycle</td>
+        </tr>
+        <tr>
+          <td>M365 Copilot agents</td>
+          <td>Business users</td>
+          <td>Deep Graph + Teams integration; business-user agents inside M365</td>
+        </tr>
+        <tr>
+          <td>Prompt Agents in Foundry</td>
+          <td>Developers</td>
+          <td>Schema-driven, no custom runtime; rapid prototyping; GA since March 2026</td>
+        </tr>
+        <tr>
+          <td><strong>Foundry Hosted Agents</strong> <span class="pill pill-blue">new</span></td>
+          <td><strong>Developers</strong></td>
+          <td><strong>Custom code + framework; managed runtime; enterprise governance; this release</strong></td>
+        </tr>
+        <tr>
+          <td>In-process SDK agents</td>
+          <td>Developers</td>
+          <td>Maximum runtime control; latency-sensitive; you manage all infra</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── SECTION 6: WHAT TO DO NOW ─── -->
+<section class="section fade-in">
+  <div class="section-label">
+    <span class="section-num">06</span>
+    <h2 class="section-title">What to do now</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="card-grid fade-in">
+    <div class="card">
+      <span class="card-icon">🔍</span>
+      <h3>Audit your Ignite-preview agents</h3>
+      <p>If your team ran any hosted agents from the Ignite 2025 preview, inventory them. 
+         This is a cutover, not an upgrade — plan a migration sprint.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📋</span>
+      <h3>Identify your first real use case</h3>
+      <p>Pick something small with clear success criteria. 
+         The EBR pipeline, the RFP builder, or an internal support agent are all candidates. 
+         Validate the container approach on one before scaling.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🛡️</span>
+      <h3>Design identity upfront</h3>
+      <p>Decide which Azure resources your agent needs to access. 
+         Design RBAC before you build, not after. Remember to redo it post-publish.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🚢</span>
+      <h3>Don't skip the lifecycle check</h3>
+      <p>Build version lifecycle polling into any automation from day one. 
+         Most delays come from treating "create version" as "deployed". 
+         Check for <code>active</code> before invoking.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔗</span>
+      <h3>Plan the Teams publish path</h3>
+      <p>If the end goal is Teams or M365 Copilot delivery, test the one-click publish flow early. 
+         The RBAC reconfiguration is a known gotcha — don't discover it in production.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📚</span>
+      <h3>Start with Microsoft Agent Framework</h3>
+      <p>If you don't have strong opinions on framework yet, MAF has the deepest first-class integration 
+         with hosted agents and the most comprehensive quickstart path.</p>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <strong>Primary reading:</strong> 
+    Start with the 
+    <a href="https://devblogs.microsoft.com/foundry/introducing-the-new-hosted-agents-in-foundry-agent-service-secure-scalable-compute-built-for-agents/" target="_blank" style="color: var(--accent);">announcement blog post</a>, 
+    then the 
+    <a href="https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/hosted-agents" target="_blank" style="color: var(--accent);">Microsoft Learn concepts page</a>. 
+    Run the 
+    <a href="https://learn.microsoft.com/en-us/azure/foundry/agents/quickstarts/quickstart-hosted-agent" target="_blank" style="color: var(--accent);">hosted agent quickstart</a> 
+    to get a container deployed end-to-end before going deeper on identity and protocols.
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <p>Compiled from Microsoft Foundry Blog + Microsoft Learn · May 2026</p>
+  <a href="https://devblogs.microsoft.com/foundry/whats-new-in-microsoft-foundry-apr-2026/" target="_blank">April 2026 Release Notes →</a>
+</footer>
+
+<script>
+  // Scroll progress bar
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${scrolled / total})`;
+  });
+
+  // Intersection observer for fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
