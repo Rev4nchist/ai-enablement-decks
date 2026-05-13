@@ -1,0 +1,1212 @@
+<!-- Generated: 2026-03-24 | Topic: Cowork Reference Guide — Fourth AI Enablement -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cowork Reference Guide — Fourth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A1929;
+  --bg2: #0F2A3F;
+  --bg3: #153650;
+  --surface: rgba(15, 42, 63, 0.65);
+  --border: rgba(111, 180, 227, 0.12);
+  --border-accent: rgba(111, 180, 227, 0.25);
+  --text: #FFFFFF;
+  --text2: #CFD1D1;
+  --muted: #8DA8C4;
+  --accent: #6FB4E3;
+  --teal: #00B69F;
+  --sunrise: #FAA51A;
+  --purple: #9678B6;
+  --deep-blue: #0C4A7D;
+  --danger: #D81632;
+  --font: 'Poppins', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --nav-height: 64px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 17px; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+/* ══════════ TOP NAVBAR ══════════ */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height);
+  background: rgba(5, 21, 38, 0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 32px;
+  z-index: 100;
+}
+.topnav-brand { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; text-transform: uppercase; margin-right: 40px; white-space: nowrap; text-decoration: none; }
+.topnav-brand span { color: var(--muted); font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; margin-left: 10px; }
+
+.nav-menu { display: flex; align-items: center; gap: 0; flex: 1; }
+
+.nav-group { position: relative; }
+.nav-group-btn {
+  font-family: var(--font); font-size: 13px; font-weight: 500; color: var(--text2);
+  background: none; border: none; padding: 20px 16px; cursor: pointer;
+  display: flex; align-items: center; gap: 5px; transition: color 0.15s;
+}
+.nav-group-btn:hover, .nav-group.open .nav-group-btn { color: var(--accent); }
+.nav-group-btn svg { width: 12px; height: 12px; transition: transform 0.2s; }
+.nav-group.open .nav-group-btn svg { transform: rotate(180deg); }
+
+.nav-dropdown {
+  display: none; position: absolute; top: 100%; left: 0; min-width: 240px;
+  background: #071422; border: 1px solid var(--border-accent); border-radius: 8px;
+  padding: 8px 0; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.nav-group.open .nav-dropdown { display: block; }
+.nav-dropdown a {
+  display: block; padding: 8px 20px; font-size: 13px; color: var(--text2);
+  text-decoration: none; transition: all 0.15s;
+}
+.nav-dropdown a:hover { color: var(--text); background: rgba(111,180,227,0.08); }
+.nav-dropdown a.active { color: var(--accent); }
+.nav-dropdown .dropdown-divider { height: 1px; background: var(--border); margin: 6px 16px; }
+
+/* Mobile menu */
+.mobile-toggle { display: none; background: none; border: none; color: var(--text2); cursor: pointer; padding: 8px; }
+.mobile-toggle svg { width: 24px; height: 24px; }
+
+/* ══════════ MAIN CONTENT ══════════ */
+.main {
+  max-width: 860px; margin: 0 auto;
+  padding: calc(var(--nav-height) + 40px) 40px 80px;
+}
+
+/* ══════════ HERO ══════════ */
+.hero { margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+.hero h1 { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 12px; }
+.hero h1 span { color: var(--teal); }
+.hero .subtitle { font-size: 16px; color: var(--text2); max-width: 640px; line-height: 1.6; }
+.hero .meta { font-size: 12px; color: var(--muted); margin-top: 16px; display: flex; gap: 16px; }
+
+/* ══════════ SECTIONS ══════════ */
+section { margin-bottom: 48px; scroll-margin-top: calc(var(--nav-height) + 24px); }
+h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+h2 .section-num { color: var(--accent); font-size: 14px; font-weight: 600; margin-right: 8px; }
+h3 { font-size: 17px; font-weight: 600; color: var(--accent); margin: 24px 0 10px; }
+h4 { font-size: 15px; font-weight: 600; color: var(--text2); margin: 16px 0 8px; }
+p { color: var(--text2); margin-bottom: 14px; }
+strong { color: var(--text); font-weight: 600; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ══════════ CALLOUT BOXES ══════════ */
+.callout { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin: 16px 0 20px; }
+.callout.tip { border-left: 3px solid var(--teal); }
+.callout.warn { border-left: 3px solid var(--sunrise); }
+.callout.important { border-left: 3px solid var(--accent); }
+.callout.donna { border-left: 3px solid var(--purple); background: rgba(150,120,182,0.06); }
+.callout-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.callout.tip .callout-label { color: var(--teal); }
+.callout.warn .callout-label { color: var(--sunrise); }
+.callout.important .callout-label { color: var(--accent); }
+.callout.donna .callout-label { color: var(--purple); }
+.callout p { margin-bottom: 6px; font-size: 14px; }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ══════════ CODE ══════════ */
+code { font-family: var(--mono); background: rgba(111,180,227,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; color: var(--accent); }
+pre { background: #071422; border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; overflow-x: auto; margin: 12px 0 20px; }
+pre code { background: none; padding: 0; font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+/* ══════════ TABLES ══════════ */
+table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+th { text-align: left; padding: 10px 14px; background: var(--bg2); color: var(--accent); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border-accent); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tr:hover td { background: rgba(111,180,227,0.03); }
+
+/* ══════════ LISTS ══════════ */
+ul, ol { padding-left: 20px; margin: 8px 0 16px; color: var(--text2); }
+li { margin-bottom: 6px; font-size: 15px; }
+li strong { color: var(--text); }
+
+/* ══════════ COMPARISON GRID ══════════ */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0 20px; }
+.compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; }
+.compare-card.bad { border-top: 3px solid var(--danger); }
+.compare-card.good { border-top: 3px solid var(--teal); }
+.compare-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.compare-card.bad .compare-label { color: var(--danger); }
+.compare-card.good .compare-label { color: var(--teal); }
+.compare-card pre { background: rgba(0,0,0,0.3); border: none; font-size: 12px; }
+
+/* ══════════ FOLDER TREE ══════════ */
+.tree { background: #071422; border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; font-family: var(--mono); font-size: 13px; line-height: 1.8; color: var(--text2); margin: 12px 0 20px; }
+.tree .folder { color: var(--accent); font-weight: 500; }
+.tree .file { color: var(--text2); }
+.tree .desc { color: var(--muted); font-size: 12px; }
+
+/* ══════════ STEP INDICATORS ══════════ */
+.step { display: flex; gap: 16px; margin: 20px 0; align-items: flex-start; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,182,159,0.15); color: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; border: 1px solid rgba(0,182,159,0.3); }
+.step-content { flex: 1; }
+.step-content h4 { margin-top: 4px; }
+
+/* ══════════ CHECKLIST PANEL ══════════ */
+.checklist-toggle {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--accent));
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(0, 182, 159, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.checklist-toggle:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(0, 182, 159, 0.5); }
+.checklist-toggle svg { width: 24px; height: 24px; color: #fff; }
+.checklist-toggle .badge {
+  position: absolute; top: -4px; right: -4px; min-width: 22px; height: 22px; border-radius: 11px;
+  background: var(--sunrise); color: #0A1929; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; padding: 0 5px;
+}
+
+.checklist-panel {
+  position: fixed; bottom: 92px; right: 24px; z-index: 200;
+  width: 380px; max-height: calc(100vh - 140px);
+  background: #071422; border: 1px solid var(--border-accent); border-radius: 16px;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+  display: none; flex-direction: column; overflow: hidden;
+}
+.checklist-panel.open { display: flex; }
+
+.cl-header {
+  padding: 20px 20px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.cl-header h3 { font-size: 15px; font-weight: 700; color: var(--text); margin: 0; }
+.cl-close { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px; }
+.cl-close:hover { color: var(--text); }
+
+.cl-progress { padding: 0 20px 16px; flex-shrink: 0; }
+.cl-progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+.cl-progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--accent)); border-radius: 2px; transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.cl-progress-text { font-size: 11px; color: var(--muted); }
+
+.cl-body { overflow-y: auto; padding: 0 20px 20px; flex: 1; scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
+
+.cl-phase { margin-bottom: 20px; }
+.cl-phase:last-child { margin-bottom: 0; }
+.cl-phase-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer;
+  user-select: none;
+}
+.cl-phase-icon {
+  width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.cl-phase-icon.phase-1 { background: rgba(150, 120, 182, 0.2); color: var(--purple); }
+.cl-phase-icon.phase-2 { background: rgba(0, 182, 159, 0.15); color: var(--teal); }
+.cl-phase-icon.phase-3 { background: rgba(111, 180, 227, 0.15); color: var(--accent); }
+.cl-phase-icon.phase-4 { background: rgba(250, 165, 26, 0.12); color: var(--sunrise); }
+.cl-phase-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text2); }
+.cl-phase-count { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+.cl-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.cl-checkbox {
+  width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border-accent);
+  background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px; transition: all 0.15s;
+}
+.cl-checkbox:hover { border-color: var(--teal); background: rgba(0, 182, 159, 0.08); }
+.cl-checkbox.checked { background: var(--teal); border-color: var(--teal); }
+.cl-checkbox.checked svg { opacity: 1; }
+.cl-checkbox svg { width: 12px; height: 12px; color: #fff; opacity: 0; }
+
+.cl-item-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.cl-item.done .cl-item-text { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--muted); }
+.cl-item-link { color: var(--accent); text-decoration: none; font-size: 12px; }
+.cl-item-link:hover { text-decoration: underline; }
+
+.cl-footer { padding: 12px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+.cl-footer p { font-size: 10px; color: var(--muted); margin: 0; line-height: 1.4; }
+
+/* ══════════ RESPONSIVE ══════════ */
+@media (max-width: 900px) {
+  .nav-menu { display: none; }
+  .nav-menu.mobile-open { display: flex; flex-direction: column; position: absolute; top: var(--nav-height); left: 0; right: 0; background: #071422; border-bottom: 1px solid var(--border); padding: 12px 0; }
+  .nav-menu.mobile-open .nav-group { width: 100%; }
+  .nav-menu.mobile-open .nav-group-btn { padding: 12px 24px; width: 100%; }
+  .nav-menu.mobile-open .nav-dropdown { position: static; box-shadow: none; border: none; border-radius: 0; padding-left: 24px; }
+  .mobile-toggle { display: block; margin-left: auto; }
+  .main { padding: 80px 20px 60px; }
+  .compare { grid-template-columns: 1fr; }
+  .topnav { padding: 0 16px; }
+  .checklist-panel { width: calc(100vw - 32px); right: 16px; bottom: 84px; }
+  .checklist-toggle { bottom: 16px; right: 16px; }
+}
+
+/* ══════════ PRINT ══════════ */
+@media print {
+  .topnav, .checklist-toggle, .cl-footer { display: none !important; }
+  .checklist-panel { display: flex !important; position: static !important; width: 100% !important; max-height: none !important; border: 2px solid #333 !important; box-shadow: none !important; border-radius: 0 !important; page-break-before: always; background: #fff !important; }
+  .cl-header { background: #f5f5f5 !important; border-bottom: 1px solid #ccc !important; }
+  .cl-header h3 { color: #000 !important; }
+  .cl-phase-label { color: #333 !important; }
+  .cl-item-text { color: #333 !important; }
+  .cl-checkbox { border-color: #999 !important; background: #fff !important; }
+  .cl-checkbox.checked { background: #333 !important; }
+  .cl-progress-bar { background: #ddd !important; }
+  .cl-progress-fill { background: #333 !important; }
+  .cl-progress-text { color: #666 !important; }
+  .cl-phase-count { color: #666 !important; }
+  .cl-phase-icon { border: 1px solid #999 !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .main { padding-top: 20px !important; }
+  section, .hero, .callout, .compare, .tree, table, pre { page-break-inside: avoid; }
+  h2, h3 { color: #000 !important; border-color: #ccc !important; }
+  p, li, td { color: #333 !important; }
+  .callout { border-color: #ccc !important; background: #f9f9f9 !important; }
+  code { background: #eee !important; color: #333 !important; }
+}
+</style>
+  <!-- ae-hub:og -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI Enablement · Fourth">
+  <meta property="og:title" content="Cowork Reference Guide">
+  <meta property="og:description" content="Deep reference for Claude Cowork — memory, projects, custom instructions, integrations, and the patterns that hold it all together.">
+  <meta property="og:url" content="https://rev4nchist.github.io/ai-enablement-decks/cowork-reference-guide/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cowork Reference Guide">
+  <meta name="twitter:description" content="Deep reference for Claude Cowork — memory, projects, custom instructions, integrations, and the patterns that hold it all together.">
+</head>
+<body>
+<!-- ae-hub:nav -->
+<style id="ae-hub-style">#ae-back-to-hub{position:fixed;bottom:16px;right:16px;z-index:9999;padding:.55rem 1rem;background:rgba(7,9,30,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#EEF2FF;font:500 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.05em;border:1px solid rgba(255,255,255,.15);border-radius:999px;text-decoration:none;opacity:.75;transition:opacity .2s,transform .2s}#ae-back-to-hub:hover{opacity:1;transform:translateY(-1px)}</style>
+<a href="../" id="ae-back-to-hub">← All Decks</a>
+
+
+<!-- ═══════════════════════════════════ TOP NAVBAR ═══════════════════════════ -->
+<nav class="topnav">
+  <a href="#" class="topnav-brand">Cowork Guide <span>Fourth AI Enablement</span></a>
+
+  <div class="nav-menu" id="navMenu">
+    <div class="nav-group">
+      <button class="nav-group-btn">Getting Started <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      <div class="nav-dropdown">
+        <a href="#what-is-cowork">What is Cowork?</a>
+        <a href="#before-after">Before &amp; After</a>
+        <a href="#how-claude-thinks">How Claude Thinks</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-group-btn">Your Workspace <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      <div class="nav-dropdown">
+        <a href="#workspace-anatomy">Workspace Anatomy</a>
+        <a href="#claude-md">CLAUDE.md &mdash; The Brain</a>
+        <a href="#context-files">Context Files</a>
+        <a href="#memory">Memory &amp; Glossary</a>
+        <a href="#outputs">Outputs Folder</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-group-btn">Skills &amp; Plugins <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      <div class="nav-dropdown">
+        <a href="#what-are-skills">What Are Skills?</a>
+        <a href="#using-skills">Using Skills</a>
+        <a href="#scaffold-skill">The Scaffold Skill</a>
+        <div class="dropdown-divider"></div>
+        <a href="#skill-forge">Creating Custom Skills</a>
+        <a href="#plugins">Plugins</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-group-btn">Tool Connections <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      <div class="nav-dropdown">
+        <a href="#what-are-mcps">What Are MCPs?</a>
+        <a href="#connecting-tools">Connecting Your Tools</a>
+        <a href="#what-changes">What Changes</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-group-btn">Mastery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      <div class="nav-dropdown">
+        <a href="#good-instructions">Writing Good Instructions</a>
+        <a href="#prompting">Prompting That Works</a>
+        <a href="#maintaining">Maintaining Your Workspace</a>
+        <a href="#common-mistakes">Common Mistakes</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-group-btn">Setup <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      <div class="nav-dropdown">
+        <a href="#setup">Build Your Workspace</a>
+        <a href="#first-sessions">First 3 Sessions</a>
+      </div>
+    </div>
+  </div>
+
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════ MAIN CONTENT ═══════════════════════ -->
+<main class="main">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>The Cowork <span>Reference Guide</span></h1>
+  <p class="subtitle">Everything you need to understand Cowork, build your workspace, and use Claude like it actually knows your job. Written for people who've used ChatGPT or Claude chat — no prior setup experience required.</p>
+  <div class="meta">
+    <span>Fourth AI Enablement</span>
+    <span>March 2026</span>
+    <span>~20 min read</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 1: GETTING STARTED                                         -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section id="what-is-cowork">
+  <h2><span class="section-num">01</span> What is Cowork?</h2>
+
+  <p>You've probably used ChatGPT or Claude before — typed a question, got an answer, started a new conversation, and lost all context. Every session starts from zero. Claude doesn't know your name, your role, your company, or what you worked on yesterday.</p>
+
+  <p><strong>Cowork changes that.</strong></p>
+
+  <p>Cowork is a mode of Claude that gives it a persistent workspace — a folder on your computer with files that tell Claude who you are, how you work, what you're working on, and what tools you use. Instead of starting every conversation blank, Claude reads your workspace at the start of each session and picks up where you left off.</p>
+
+  <p>Think of it this way:</p>
+
+  <table>
+    <tr><th>Regular Claude</th><th>Cowork</th></tr>
+    <tr><td>New intern every morning — needs everything explained</td><td>Sharp colleague who was briefed before you walked in</td></tr>
+    <tr><td>Forgets everything between conversations</td><td>Remembers your projects, team, preferences, and terminology</td></tr>
+    <tr><td>Generic responses to generic prompts</td><td>Specific, contextual responses calibrated to your role</td></tr>
+    <tr><td>You adapt to the tool</td><td>The tool adapts to you</td></tr>
+  </table>
+
+  <div class="callout donna">
+    <div class="callout-label">The real difference</div>
+    <p>Cowork doesn't make Claude smarter. It makes Claude <strong>informed</strong>. The same way a new hire becomes useful not when they learn more, but when they understand your team, your priorities, and your way of working.</p>
+  </div>
+</section>
+
+<section id="before-after">
+  <h2><span class="section-num">02</span> Before &amp; After</h2>
+
+  <p>Here's what the same request looks like with and without a properly configured workspace:</p>
+
+  <div class="compare">
+    <div class="compare-card bad">
+      <div class="compare-label">Without Cowork</div>
+      <p><strong>You:</strong> "Summarise this meeting transcript"</p>
+      <p><strong>Claude:</strong> Generic bullet list of topics discussed. No context on who matters, what's urgent, or what action to take. You spend 10 minutes editing it into something useful.</p>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">With Cowork</div>
+      <p><strong>You:</strong> "Summarise this meeting transcript"</p>
+      <p><strong>Claude:</strong> Executive summary led by the decision. Your action items separated from others. Strategic flags about things you'd miss. Suggested next steps routed to the right person. Saved to your outputs folder. Done.</p>
+    </div>
+  </div>
+
+  <p>The difference isn't the prompt. It's the context. Claude knows your team, your priorities, your communication style, and your filing system — because you told it once, in your workspace files.</p>
+</section>
+
+<section id="how-claude-thinks">
+  <h2><span class="section-num">03</span> How Claude Thinks</h2>
+
+  <p>Before building your workspace, it helps to understand how Claude processes information. This isn't technical — it's practical.</p>
+
+  <h3>The Context Window</h3>
+  <p>Claude has a "working memory" — everything it can see at once in a conversation. This includes your messages, its responses, any files you've shared, AND your workspace files. Think of it as a desk: the more relevant documents on the desk, the better the work.</p>
+
+  <h3>System Prompts and Instructions</h3>
+  <p>When you start a Cowork session, Claude reads your <code>CLAUDE.md</code> file first — before you say anything. This is like a briefing document that a colleague reads before a meeting. It tells Claude: "Here's who I am, here's what I'm working on, here's how I want you to communicate."</p>
+
+  <p>The quality of this briefing document directly determines the quality of Claude's help.</p>
+
+  <h3>Skills and Plugins</h3>
+  <p>Skills are pre-written workflows that Claude can follow. Instead of you explaining a process every time ("take this transcript, extract decisions, list action items with owners..."), a skill contains those instructions. You just trigger it: "Parse this meeting." Claude loads the skill, follows the steps, and produces a structured output.</p>
+  <p>Plugins bundle multiple skills, tool connections, and configurations into installable packages. More on both in the <a href="#what-are-skills">Skills</a> and <a href="#plugins">Plugins</a> sections.</p>
+
+  <h3>Tool Connections (MCPs)</h3>
+  <p>By default, Claude can only see what you paste into the conversation. Tool connections let Claude reach into your actual work systems — Slack, Asana, Outlook, Notion — to read messages, search documents, create tasks, and more. This is where Cowork goes from "helpful chat" to "operational assistant."</p>
+
+  <div class="callout tip">
+    <div class="callout-label">Key insight</div>
+    <p>Everything in Cowork is about giving Claude the right context. Workspace files give it knowledge about you. Skills give it knowledge about processes. Tool connections give it access to your live data. All three together is where the real value is.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 2: YOUR WORKSPACE                                          -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section id="workspace-anatomy">
+  <h2><span class="section-num">04</span> Workspace Anatomy</h2>
+
+  <p>A Cowork workspace is a folder on your computer. Claude reads it at the start of every session. Here's the structure:</p>
+
+  <div class="tree">
+<span class="folder">my-workspace/</span>
+├── <span class="file">CLAUDE.md</span> <span class="desc">← The brain. Claude reads this first. Your operating instructions.</span>
+├── <span class="file">TASKS.md</span> <span class="desc">← Running task list. Updated across sessions.</span>
+├── <span class="folder">context/</span> <span class="desc">← Who you are, how you work, your company, your team.</span>
+│   ├── <span class="file">who-i-am.md</span>
+│   ├── <span class="file">how-i-talk.md</span>
+│   ├── <span class="file">how-you-work.md</span>
+│   ├── <span class="file">company.md</span>
+│   └── <span class="file">team-directory.md</span>
+├── <span class="folder">memory/</span> <span class="desc">← Persistent knowledge. Glossary, people profiles, project notes.</span>
+│   └── <span class="file">glossary.md</span>
+└── <span class="folder">outputs/</span> <span class="desc">← Everything Claude generates. Organised by type.</span>
+    └── <span class="file">CLAUDE.md</span> <span class="desc">← Filing rules for outputs.</span>
+  </div>
+
+  <p>Every file has a job. None are optional if you want a workspace that works well. Let's walk through each one.</p>
+</section>
+
+<section id="claude-md">
+  <h2><span class="section-num">05</span> CLAUDE.md — The Brain</h2>
+
+  <p>This is the most important file in your workspace. Claude reads it at the start of every session. It's your standing instructions — the briefing document that shapes every response Claude gives you.</p>
+
+  <h3>What goes in CLAUDE.md</h3>
+
+  <ul>
+    <li><strong>Session-start instructions:</strong> Which context files to load and in what order</li>
+    <li><strong>Workspace map:</strong> What's in each folder and what it's for</li>
+    <li><strong>Current priorities:</strong> What you're working on right now (update this regularly)</li>
+    <li><strong>Preferences:</strong> Communication style, output formats, theme choices, VP vocabulary</li>
+    <li><strong>Quick-reference terms:</strong> The 10 most relevant terms for your role</li>
+  </ul>
+
+  <h3>What makes a good CLAUDE.md vs. a bad one</h3>
+
+  <div class="compare">
+    <div class="compare-card bad">
+      <div class="compare-label">Weak</div>
+<pre><code>I work in marketing at Fourth.
+Help me with content and emails.
+Be concise.</code></pre>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">Strong</div>
+<pre><code>## Current Priorities
+1. Q2 campaign launch — email sequences due April 4
+2. Blog pipeline — 3 posts/week, brand voice review
+3. Competitive research for SHRM conference pitch
+4. Weekly content performance report for VP Marketing
+
+## Preferences
+| Topic | Preference |
+|-------|-----------|
+| Style | Direct, scannable, data-backed |
+| Brand | Fourth iQ (lowercase i, uppercase Q) |
+| Tone | Energetic, insightful, human |
+| Format | Bullets for lists, two-phase delivery |</code></pre>
+    </div>
+  </div>
+
+  <p>The strong version tells Claude exactly what you're working on, how you want to communicate, and what brand rules to follow. Every session starts with this context already loaded.</p>
+
+  <div class="callout warn">
+    <div class="callout-label">Common mistake</div>
+    <p>People write their CLAUDE.md once and never update it. Your priorities change weekly. If CLAUDE.md says your priority is a project that finished last month, Claude will keep optimising for it. <strong>Update your priorities every Monday.</strong> It takes 2 minutes and changes everything.</p>
+  </div>
+</section>
+
+<section id="context-files">
+  <h2><span class="section-num">06</span> Context Files</h2>
+
+  <p>The <code>context/</code> folder holds the stable facts about you and your environment. These change less often than CLAUDE.md — think of them as your professional profile that Claude references when it needs background.</p>
+
+  <h3>who-i-am.md</h3>
+  <p>Your identity, role, reporting structure, and what you spend time on. Claude uses this to understand the weight of your requests — a VP asking for a report gets different framing than an IC asking for a draft.</p>
+
+  <h3>how-i-talk.md</h3>
+  <p>Your communication preferences. Do you want bullets or prose? Direct or detailed? This also includes Fourth's brand voice rules (energetic, insightful, human, confident) and the VP Translation table — the standard conversions from technical language to executive language.</p>
+
+  <h3>how-you-work.md</h3>
+  <p>Operating rules: what Claude should just do (research, draft, organise files) vs. what it should ask permission for (delete files, send to external tools). Also covers your quality bar — what "done" looks like.</p>
+
+  <h3>company.md</h3>
+  <p>Fourth company context. This is the same for everyone: products, proof points, key teams, NorthStar program, brand essentials. You don't need to write this — it's provided.</p>
+
+  <h3>team-directory.md</h3>
+  <p>Your direct team, key stakeholders, and what they care about. When you say "send this to Carly," Claude knows Carly is the VP of Transformation who cares about measurable outcomes and data-driven updates.</p>
+</section>
+
+<section id="memory">
+  <h2><span class="section-num">07</span> Memory &amp; Glossary</h2>
+
+  <p>The <code>memory/</code> folder is Claude's long-term knowledge base. The most important file here is <code>glossary.md</code>.</p>
+
+  <h3>glossary.md</h3>
+  <p>Contains three things:</p>
+  <ol>
+    <li><strong>Fourth brand terms</strong> — iQ capitalisation, product names, taglines</li>
+    <li><strong>Company acronyms</strong> — ELT, SLT, CSM, EBR, SPARK, ARR, NRR, and dozens more</li>
+    <li><strong>VP-Friendly Translations</strong> — the conversion table from technical terms to executive language</li>
+  </ol>
+
+  <p>When Claude sees "commits" in your meeting notes and needs to write a report for Carly, it translates to "capabilities delivered" automatically — because the glossary told it to.</p>
+
+  <p>You can add department-specific terms here too. If your team says "tiger team" or "war room" or uses shorthand that an outsider wouldn't understand, put it in the glossary. Claude will decode it without asking.</p>
+</section>
+
+<section id="outputs">
+  <h2><span class="section-num">08</span> Outputs Folder</h2>
+
+  <p>Everything Claude generates — reports, presentations, guides, dashboards — goes in <code>outputs/</code>. This folder has its own <code>CLAUDE.md</code> with filing rules:</p>
+
+  <table>
+    <tr><th>Folder</th><th>What Goes Here</th><th>Naming</th></tr>
+    <tr><td><code>guides/</code></td><td>How-to guides, tutorials</td><td><code>{topic}-guide.html</code></td></tr>
+    <tr><td><code>presentations/</code></td><td>Slide decks, reports</td><td><code>{YYYY-MM-DD}-{topic}.html</code></td></tr>
+    <tr><td><code>dashboards/</code></td><td>Dashboards, data viz</td><td><code>{name}-dashboard.html</code></td></tr>
+    <tr><td><code>reports/</code></td><td>Analysis, one-pagers</td><td><code>{YYYY-MM-DD}-{topic}-report.ext</code></td></tr>
+  </table>
+
+  <p>The rules keep your outputs organised across sessions. Without them, Claude creates files with random names in random locations.</p>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 3: SKILLS & PLUGINS                                        -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section id="what-are-skills">
+  <h2><span class="section-num">09</span> What Are Skills?</h2>
+
+  <p>Skills are reusable workflows that Claude can follow. Instead of writing instructions every time, a skill packages them into a file that Claude loads when triggered.</p>
+
+  <p>Think of it like a recipe vs. cooking from memory. You <em>could</em> tell Claude step-by-step how to parse a meeting transcript every time. Or you could have a <strong>meeting-parser</strong> skill that knows the format, extracts the right sections, handles edge cases, and saves the output correctly — every time, consistently.</p>
+
+  <h3>What a skill contains</h3>
+  <ul>
+    <li><strong>A trigger description</strong> — what phrases activate it ("parse this meeting", "summarise this call")</li>
+    <li><strong>A workflow</strong> — the exact steps Claude follows</li>
+    <li><strong>An output format</strong> — what the result looks like</li>
+    <li><strong>Optional reference files</strong> — supporting data, templates, or scripts the skill uses</li>
+  </ul>
+
+  <h3>Skills you already have access to</h3>
+  <p>Fourth has built skills for common workflows across departments:</p>
+
+  <table>
+    <tr><th>Skill</th><th>What It Does</th><th>Best For</th></tr>
+    <tr><td>meeting-parser</td><td>Parses meeting transcripts into structured summaries with decisions, action items, strategic flags</td><td>Everyone</td></tr>
+    <tr><td>project-intake</td><td>Turns a raw idea into a structured project brief with problem framing, MVP scope, VP pitch</td><td>Project leads</td></tr>
+    <tr><td>fourth-translator</td><td>Checks and rewrites content against Fourth's brand voice rubric (0-100 scoring)</td><td>Marketing, anyone writing externally</td></tr>
+    <tr><td>fourth-presentation-suite</td><td>Generates Fourth-branded HTML and PPTX presentations</td><td>Anyone presenting to leadership</td></tr>
+    <tr><td>ebr-orchestrator</td><td>Full EBR/QBR build pipeline from data to branded slides</td><td>Customer Success</td></tr>
+    <tr><td>sales-enablement</td><td>Meeting prep, battle cards, discovery questions, objection handling</td><td>Sales</td></tr>
+    <tr><td>cowork-scaffold</td><td>Builds your entire workspace through a guided interview</td><td>Everyone (first setup)</td></tr>
+  </table>
+</section>
+
+<section id="using-skills">
+  <h2><span class="section-num">10</span> Using Skills</h2>
+
+  <p>Skills activate based on what you say. You don't need to type a special command — just describe what you need in natural language.</p>
+
+  <div class="compare">
+    <div class="compare-card bad">
+      <div class="compare-label">Not needed</div>
+      <p>"Please activate the meeting-parser skill and run it on this transcript"</p>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">Just say</div>
+      <p>"Parse this meeting" or "What were the action items from this call?"</p>
+    </div>
+  </div>
+
+  <p>Claude recognises the trigger phrases and loads the skill automatically. If a skill exists for what you're asking, it'll use it.</p>
+
+  <h3>How to know a skill is active</h3>
+  <p>When Claude loads a skill, you'll see a brief indicator that the skill has been activated. The output will follow the skill's structured format rather than a generic response.</p>
+
+  <h3>Skills in your workspace</h3>
+  <p>Your workspace can also have local skills in a <code>skills/</code> folder. These are custom to your setup — workflows that are specific to your role or department. The Scaffold skill (covered next) can help identify which skills are most relevant for you.</p>
+</section>
+
+<section id="scaffold-skill">
+  <h2><span class="section-num">11</span> The Scaffold Skill</h2>
+
+  <p>This is how you build your workspace without doing it manually.</p>
+
+  <p>The <strong>Cowork Scaffold</strong> skill is a guided interview — about 10 questions — that generates your entire workspace: CLAUDE.md, context files, memory, glossary, outputs structure, and task tracker. All populated with real content based on your answers.</p>
+
+  <h3>How it works</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>Start the interview</h4>
+      <p>Open a Cowork session and say: <strong>"Set up my Cowork workspace"</strong> or <strong>"Help me build my workspace."</strong> The Scaffold skill activates and starts asking questions.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>Answer the questions</h4>
+      <p>Some are multiple choice (department, tools, output types). Some ask for your own words (weekly rhythm, team members, department jargon). <strong>Give detail.</strong> "I make reports" produces a generic workspace. "I produce weekly EBR presentations for enterprise customers using data from the macro workbook" produces a workspace that actually helps.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>Review what's generated</h4>
+      <p>The skill creates all files and shows you a summary: what was built, recommended tool connections, and your first three sessions to try.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>Start using it</h4>
+      <p>Open a new session in your workspace. Claude loads your context automatically. Ask it something you'd normally spend 30 minutes on — a meeting summary, a draft email, a report outline. Notice the difference.</p>
+    </div>
+  </div>
+
+  <div class="callout donna">
+    <div class="callout-label">Donna says</div>
+    <p>The interview takes 10-15 minutes. That's the upfront investment that determines whether Claude works like a sharp colleague or a confused chatbot for every session that follows. The people who invest the time are the ones who stop rewriting the same instructions every conversation.</p>
+  </div>
+</section>
+
+<section id="skill-forge">
+  <h2><span class="section-num">12</span> Creating Custom Skills</h2>
+
+  <p>The built-in skills cover common workflows, but the real power is building skills for <em>your</em> specific processes. The <strong>Skill Forge</strong> is the tool for that.</p>
+
+  <h3>What Skill Forge does</h3>
+  <p>Skill Forge creates, tests, and optimises skills through a structured workflow. You describe the process you want to automate — the inputs, the steps, the output format — and Skill Forge builds a production-ready skill file with trigger descriptions, reference data, and evaluation tests.</p>
+
+  <h3>When to use it</h3>
+  <ul>
+    <li><strong>You do the same multi-step process repeatedly</strong> — weekly reports, client updates, data formatting, review checklists</li>
+    <li><strong>You want consistent output quality</strong> — same structure, same sections, same brand compliance every time</li>
+    <li><strong>You want to share a workflow with your team</strong> — a skill built once works for everyone in the same workspace or plugin</li>
+  </ul>
+
+  <h3>How to use it</h3>
+  <p>Say something like: <strong>"Create a skill for [your process]"</strong> or <strong>"Build a skill that [does what you need]."</strong> Skill Forge walks you through defining the workflow, generates the skill, then runs parallel evaluations comparing the new skill against a baseline to verify it actually improves output quality.</p>
+
+  <div class="callout tip">
+    <div class="callout-label">Best practice</div>
+    <p>Start by describing a process you've explained to Claude more than twice. If you've written the same instructions three times, that's a skill waiting to be built. Skill Forge turns your tribal knowledge into a reusable, testable workflow.</p>
+  </div>
+</section>
+
+<section id="plugins">
+  <h2><span class="section-num">13</span> Plugins</h2>
+
+  <p>Plugins are packaged bundles of skills, tool connections, and configurations that install as a single unit. If skills are recipes, plugins are complete cookbooks — curated sets of workflows designed for a specific domain or role.</p>
+
+  <h3>What a plugin contains</h3>
+  <ul>
+    <li><strong>Multiple related skills</strong> — a coordinated set of workflows that work together</li>
+    <li><strong>MCP configurations</strong> — pre-configured tool connections the skills depend on</li>
+    <li><strong>Reference data</strong> — templates, brand assets, evaluation criteria</li>
+  </ul>
+
+  <h3>Examples at Fourth</h3>
+
+  <table>
+    <tr><th>Plugin</th><th>What It Bundles</th><th>Best For</th></tr>
+    <tr><td>Fourth EBR Builder</td><td>Data prep + competitive research + presentation suite (3 skills)</td><td>CSMs building executive business reviews</td></tr>
+    <tr><td>Fourth Sales Brain</td><td>Deal coach + RFP responder + product specialist + orchestrator (4 skills)</td><td>Sales reps preparing for meetings</td></tr>
+    <tr><td>Enterprise Search</td><td>Multi-source search + digest + knowledge synthesis (5 skills)</td><td>Anyone searching across work tools</td></tr>
+  </table>
+
+  <p>Plugins are installed in Cowork settings. Once installed, their skills activate automatically — same as workspace-level skills, but maintained centrally by the team that built them.</p>
+
+  <div class="callout important">
+    <div class="callout-label">Skills vs. plugins</div>
+    <p><strong>Workspace skills</strong> are local to your folder — custom workflows only you use. <strong>Plugins</strong> are shared, versioned, and can be installed by anyone. If you build a skill that your whole team should use, Skill Forge can package it into a plugin for distribution.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 4: TOOL CONNECTIONS                                        -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section id="what-are-mcps">
+  <h2><span class="section-num">14</span> What Are Tool Connections?</h2>
+
+  <p>By default, Claude can only see what you paste into the conversation. Tool connections (technically called MCPs — Model Context Protocol) let Claude reach directly into your work systems.</p>
+
+  <p>Connected Claude can:</p>
+  <ul>
+    <li><strong>Read your Slack channels</strong> — search messages, summarise discussions, find decisions</li>
+    <li><strong>Search your email and calendar</strong> — find meeting details, prep for calls, review threads</li>
+    <li><strong>Create and manage Asana tasks</strong> — turn action items into tracked work without leaving the conversation</li>
+    <li><strong>Search SharePoint and Notion</strong> — find documents, policies, and knowledge base content</li>
+    <li><strong>Read and write Confluence pages</strong> — update documentation directly</li>
+  </ul>
+
+  <p>This is where Cowork goes from "helpful chat" to "operational tool." The workspace gives Claude context about you. Tool connections give Claude access to your live data.</p>
+</section>
+
+<section id="connecting-tools">
+  <h2><span class="section-num">15</span> Connecting Your Tools</h2>
+
+  <p>Tool connections are set up in Cowork's settings. The Scaffold skill will recommend which ones to connect based on your daily tools.</p>
+
+  <table>
+    <tr><th>If you use</th><th>Connect</th><th>What it enables</th></tr>
+    <tr><td>Slack</td><td>Slack connector</td><td>Read channels, search messages, send messages</td></tr>
+    <tr><td>Outlook / Teams</td><td>M365 connector</td><td>Email search, calendar, SharePoint, Teams chat</td></tr>
+    <tr><td>Asana</td><td>Asana connector</td><td>Read/create tasks, search projects</td></tr>
+    <tr><td>Notion</td><td>Notion connector</td><td>Read/write pages, query databases</td></tr>
+    <tr><td>Confluence / Jira</td><td>Atlassian connector</td><td>Pages, issues, search</td></tr>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-label">Priority order</div>
+    <p>If you're connecting for the first time, start with <strong>Slack</strong> (highest daily impact) and <strong>M365</strong> (email + calendar are universal). Add the rest as you get comfortable.</p>
+  </div>
+</section>
+
+<section id="what-changes">
+  <h2><span class="section-num">16</span> What Changes With Connections</h2>
+
+  <p>Before and after connecting tools:</p>
+
+  <div class="compare">
+    <div class="compare-card bad">
+      <div class="compare-label">Without connections</div>
+      <p><strong>"What did the team discuss about the Q2 launch?"</strong></p>
+      <p>Claude: "I don't have access to your team conversations. Could you paste the relevant messages?"</p>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">With Slack connected</div>
+      <p><strong>"What did the team discuss about the Q2 launch?"</strong></p>
+      <p>Claude searches #marketing and #product channels, finds 23 relevant messages, synthesises them into a summary with decisions highlighted and action items extracted.</p>
+    </div>
+  </div>
+
+  <p>The prompt is identical. The capability is transformatively different.</p>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 5: PRACTICAL MASTERY                                       -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section id="good-instructions">
+  <h2><span class="section-num">17</span> Writing Good Instructions</h2>
+
+  <p>The biggest mistake people make with Cowork isn't the technology — it's writing vague instructions. Claude follows what you tell it. If the instructions are thin, the output is thin.</p>
+
+  <h3>Rules for good CLAUDE.md instructions</h3>
+
+  <ul>
+    <li><strong>Be specific about format.</strong> "Use bullet points for multi-item responses, prose for explanations" is better than "be clear."</li>
+    <li><strong>Name your stakeholders.</strong> "Reports go to Carly Hodges (VP Transformation) who cares about measurable outcomes" — now Claude knows how to frame every report.</li>
+    <li><strong>State what NOT to do.</strong> "Never use passive voice in customer comms" or "Don't use corporate jargon — translate everything to plain language." Constraints shape output as much as instructions do.</li>
+    <li><strong>Include examples of what "good" looks like.</strong> If you have a report you loved, a meeting summary that nailed the format — include a sample. Claude pattern-matches from examples better than from abstract rules.</li>
+    <li><strong>Update your priorities regularly.</strong> Stale priorities produce stale recommendations.</li>
+  </ul>
+</section>
+
+<section id="prompting">
+  <h2><span class="section-num">18</span> Prompting That Works</h2>
+
+  <p>With a properly set up workspace, you need less complex prompts — the context does the heavy lifting. But good prompting still matters.</p>
+
+  <h3>Patterns that work well</h3>
+
+  <table>
+    <tr><th>Pattern</th><th>Example</th><th>Why it works</th></tr>
+    <tr><td>Give the end state</td><td>"I need a one-pager Carly can share with ELT"</td><td>Claude knows the audience, format, and quality bar</td></tr>
+    <tr><td>Name the constraint</td><td>"Keep this under 200 words"</td><td>Prevents Claude from over-producing</td></tr>
+    <tr><td>Provide the raw material</td><td>"Here's the transcript — parse it"</td><td>Skills handle the rest</td></tr>
+    <tr><td>Ask for what you'd miss</td><td>"What am I not seeing in this plan?"</td><td>Uses Claude's strength at pattern-matching across contexts</td></tr>
+    <tr><td>Iterate, don't restart</td><td>"Make the executive summary sharper"</td><td>Claude improves in-session better than from scratch</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <div class="callout-label">Anti-pattern</div>
+    <p>Don't write a 200-word prompt explaining what you want when a 10-word prompt + a good workspace achieves the same thing. The workspace is the detailed instruction. The prompt is the trigger. If you're writing complex prompts every time, your workspace needs work.</p>
+  </div>
+</section>
+
+<section id="maintaining">
+  <h2><span class="section-num">19</span> Maintaining Your Workspace</h2>
+
+  <p>A workspace set up in session one goes stale by session three if nobody maintains it. Here's the maintenance rhythm:</p>
+
+  <table>
+    <tr><th>When</th><th>What to do</th><th>Time</th></tr>
+    <tr><td>Every Monday</td><td>Update "Current Priorities" in CLAUDE.md</td><td>2 minutes</td></tr>
+    <tr><td>After a team change</td><td>Update team-directory.md</td><td>5 minutes</td></tr>
+    <tr><td>When you learn new jargon</td><td>Add it to glossary.md</td><td>1 minute</td></tr>
+    <tr><td>Monthly</td><td>Review all context files — still accurate?</td><td>10 minutes</td></tr>
+    <tr><td>After a big project ships</td><td>Update priorities, archive old tasks</td><td>5 minutes</td></tr>
+  </table>
+
+  <p>Total ongoing investment: roughly 15 minutes per week. The return: every Claude session starts informed instead of blank.</p>
+</section>
+
+<section id="common-mistakes">
+  <h2><span class="section-num">20</span> Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+    <tr><td>Vague CLAUDE.md</td><td>Generic responses that need heavy editing</td><td>Add specific priorities, stakeholder names, format preferences</td></tr>
+    <tr><td>Never updating priorities</td><td>Claude optimises for last month's work</td><td>Update every Monday — 2 minutes</td></tr>
+    <tr><td>Skipping context files</td><td>Claude doesn't know your team or communication style</td><td>Use the Scaffold skill — it generates everything</td></tr>
+    <tr><td>No tool connections</td><td>Claude can only work with what you paste</td><td>Connect Slack and M365 first</td></tr>
+    <tr><td>Saving outputs randomly</td><td>Can't find generated content across sessions</td><td>Follow the outputs/CLAUDE.md filing rules</td></tr>
+    <tr><td>Writing long prompts</td><td>Duplicating what should be in workspace files</td><td>Put recurring instructions in CLAUDE.md, keep prompts short</td></tr>
+    <tr><td>"Fourth IQ"</td><td>Brand violation</td><td>Always: <strong>Fourth iQ</strong> (lowercase i, uppercase Q)</td></tr>
+  </table>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 6: YOUR SETUP                                              -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section id="setup">
+  <h2><span class="section-num">21</span> Build Your Workspace</h2>
+
+  <p>You have two options:</p>
+
+  <h3>Option A: Use the Scaffold Skill (recommended)</h3>
+  <p>Open a Cowork session and say:</p>
+  <pre><code>"Set up my Cowork workspace"</code></pre>
+  <p>The skill runs a 10-question interview and generates everything — CLAUDE.md, context files, memory, glossary, outputs structure, and task tracker. All populated with your actual information. Takes 10-15 minutes.</p>
+
+  <h3>Option B: Build manually</h3>
+  <p>Create the folder structure from the <a href="#workspace-anatomy">Workspace Anatomy</a> section. Write each file yourself using the guidance in sections 5-8. Use the example CLAUDE.md formats as a starting point. This takes longer but gives you full control over every line.</p>
+
+  <div class="callout important">
+    <div class="callout-label">Recommendation</div>
+    <p>Use Option A (the Scaffold skill) to generate the initial workspace, then customise it. You get a working setup in 15 minutes and can refine it as you go — instead of staring at blank files trying to figure out what to write.</p>
+  </div>
+</section>
+
+<section id="first-sessions">
+  <h2><span class="section-num">22</span> Your First 3 Sessions</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>Test drive</h4>
+      <p>Ask Claude something you'd normally spend 30 minutes on: a meeting summary, a draft email, a report outline, a competitive brief. Notice how the context changes the output quality.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>Refine</h4>
+      <p>After your first 2-3 sessions, you'll notice gaps — things Claude gets wrong, context it's missing, formats it doesn't nail. Edit CLAUDE.md directly. Add what's missing, remove what doesn't apply. This is normal and expected.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>Connect</h4>
+      <p>Set up your recommended tool connections. Start with Slack and M365. This is where Cowork goes from "better chat" to "operational tool." Once Claude can read your messages and search your documents, the use cases multiply.</p>
+    </div>
+  </div>
+
+  <div class="callout donna">
+    <div class="callout-label">Donna says</div>
+    <p>The first session with a properly configured workspace is the moment people stop treating AI as a novelty and start treating it as infrastructure. That shift is the entire point.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════════════════════════ NAVBAR INTERACTION ═══════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Dropdown toggle
+  const groups = document.querySelectorAll('.nav-group');
+  groups.forEach(group => {
+    const btn = group.querySelector('.nav-group-btn');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = group.classList.contains('open');
+      groups.forEach(g => g.classList.remove('open'));
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+
+  // Close dropdowns on click outside
+  document.addEventListener('click', () => {
+    groups.forEach(g => g.classList.remove('open'));
+  });
+
+  // Close dropdown after clicking a link
+  document.querySelectorAll('.nav-dropdown a').forEach(link => {
+    link.addEventListener('click', () => {
+      groups.forEach(g => g.classList.remove('open'));
+    });
+  });
+
+  // Mobile toggle
+  const mobileToggle = document.getElementById('mobileToggle');
+  const navMenu = document.getElementById('navMenu');
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('mobile-open');
+    });
+  }
+
+  // Active link highlighting on scroll
+  const allLinks = document.querySelectorAll('.nav-dropdown a');
+  const sections = [];
+  allLinks.forEach(l => {
+    const id = l.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ id, el, link: l });
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        allLinks.forEach(l => l.classList.remove('active'));
+        const match = sections.find(s => s.id === entry.target.id);
+        if (match) match.link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s.el));
+});
+</script>
+
+<!-- ═══════════════════════════════ CHECKLIST PANEL ═══════════════════════ -->
+<button class="checklist-toggle" id="checklistToggle" aria-label="Open setup checklist">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  <span class="badge" id="checklistBadge">0/16</span>
+</button>
+
+<div class="checklist-panel" id="checklistPanel">
+  <div class="cl-header">
+    <h3>Your Setup Checklist</h3>
+    <button class="cl-close" id="checklistClose" aria-label="Close checklist">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="cl-progress">
+    <div class="cl-progress-bar"><div class="cl-progress-fill" id="progressFill" style="width: 0%"></div></div>
+    <span class="cl-progress-text" id="progressText">0 of 16 complete</span>
+  </div>
+
+  <div class="cl-body">
+
+    <!-- PHASE 1 -->
+    <div class="cl-phase" data-phase="1">
+      <div class="cl-phase-header">
+        <div class="cl-phase-icon phase-1">1</div>
+        <span class="cl-phase-label">Before You Start</span>
+        <span class="cl-phase-count" data-phase-count="1">0/3</span>
+      </div>
+      <div class="cl-item" data-id="p1-1">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Download and install the Claude desktop app</span></div>
+      </div>
+      <div class="cl-item" data-id="p1-2">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Confirm you have Cowork access (check with AI Enablement if unsure)</span></div>
+      </div>
+      <div class="cl-item" data-id="p1-3">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Identify your top 3 workflows that eat the most time each week</span></div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="cl-phase" data-phase="2">
+      <div class="cl-phase-header">
+        <div class="cl-phase-icon phase-2">2</div>
+        <span class="cl-phase-label">Build Your Workspace</span>
+        <span class="cl-phase-count" data-phase-count="2">0/5</span>
+      </div>
+      <div class="cl-item" data-id="p2-1">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Open Cowork and say "Set up my workspace" to run the Scaffold skill</span>
+          <br><a href="#scaffold-skill" class="cl-item-link">See: The Scaffold Skill &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p2-2">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Complete all 10 interview questions — give detail, not minimums</span></div>
+      </div>
+      <div class="cl-item" data-id="p2-3">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Review your generated CLAUDE.md — edit priorities to match this week</span>
+          <br><a href="#claude-md" class="cl-item-link">See: CLAUDE.md &mdash; The Brain &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p2-4">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Add at least 5 terms your team uses to glossary.md</span>
+          <br><a href="#memory" class="cl-item-link">See: Memory &amp; Glossary &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p2-5">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Add key stakeholders to team-directory.md (name, role, what they care about)</span>
+          <br><a href="#context-files" class="cl-item-link">See: Context Files &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="cl-phase" data-phase="3">
+      <div class="cl-phase-header">
+        <div class="cl-phase-icon phase-3">3</div>
+        <span class="cl-phase-label">Connect &amp; Test</span>
+        <span class="cl-phase-count" data-phase-count="3">0/4</span>
+      </div>
+      <div class="cl-item" data-id="p3-1">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Connect the Slack MCP connector in Cowork settings</span>
+          <br><a href="#connecting-tools" class="cl-item-link">See: Connecting Your Tools &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p3-2">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Connect the M365 connector (email, calendar, SharePoint)</span></div>
+      </div>
+      <div class="cl-item" data-id="p3-3">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Run your first real task: meeting summary, draft email, or report outline</span></div>
+      </div>
+      <div class="cl-item" data-id="p3-4">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Check the output quality — did it use your brand voice and terminology?</span></div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="cl-phase" data-phase="4">
+      <div class="cl-phase-header">
+        <div class="cl-phase-icon phase-4">4</div>
+        <span class="cl-phase-label">Sharpen (Week 1+)</span>
+        <span class="cl-phase-count" data-phase-count="4">0/4</span>
+      </div>
+      <div class="cl-item" data-id="p4-1">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">After 3 sessions, update CLAUDE.md with what's missing or wrong</span>
+          <br><a href="#maintaining" class="cl-item-link">See: Maintaining Your Workspace &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p4-2">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Try a built-in skill: meeting-parser or fourth-translator</span>
+          <br><a href="#using-skills" class="cl-item-link">See: Using Skills &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p4-3">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div>
+          <span class="cl-item-text">Ask Claude to build a custom skill for one of your top 3 workflows</span>
+          <br><a href="#skill-forge" class="cl-item-link">See: Creating Custom Skills &rarr;</a>
+        </div>
+      </div>
+      <div class="cl-item" data-id="p4-4">
+        <button class="cl-checkbox" aria-label="Mark complete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button>
+        <div><span class="cl-item-text">Connect any remaining MCPs recommended by the Scaffold skill</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cl-footer">
+    <p>Progress resets on page refresh — bookmark where you left off. Print this page (Ctrl+P) for a permanent copy.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CHECKLIST JS ═══════════════════════════ -->
+<script>
+(function() {
+  const panel = document.getElementById('checklistPanel');
+  const toggle = document.getElementById('checklistToggle');
+  const close = document.getElementById('checklistClose');
+  const badge = document.getElementById('checklistBadge');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+
+  const items = document.querySelectorAll('.cl-item');
+  const total = items.length;
+  let completed = 0;
+
+  function updateProgress() {
+    completed = document.querySelectorAll('.cl-item.done').length;
+    const pct = Math.round((completed / total) * 100);
+    progressFill.style.width = pct + '%';
+    progressText.textContent = completed + ' of ' + total + ' complete';
+    badge.textContent = completed + '/' + total;
+
+    // Update phase counts
+    document.querySelectorAll('.cl-phase').forEach(phase => {
+      const phaseNum = phase.dataset.phase;
+      const phaseItems = phase.querySelectorAll('.cl-item');
+      const phaseDone = phase.querySelectorAll('.cl-item.done');
+      const counter = phase.querySelector('[data-phase-count]');
+      if (counter) counter.textContent = phaseDone.length + '/' + phaseItems.length;
+    });
+
+    // Celebration state
+    if (completed === total) {
+      badge.style.background = 'var(--teal)';
+      progressText.textContent = 'All done — you\'re set up!';
+    } else {
+      badge.style.background = '';
+    }
+  }
+
+  // Toggle panel
+  toggle.addEventListener('click', () => {
+    panel.classList.toggle('open');
+  });
+  close.addEventListener('click', () => {
+    panel.classList.remove('open');
+  });
+
+  // Checkbox interactions
+  items.forEach(item => {
+    const checkbox = item.querySelector('.cl-checkbox');
+    checkbox.addEventListener('click', () => {
+      item.classList.toggle('done');
+      checkbox.classList.toggle('checked');
+      updateProgress();
+    });
+  });
+
+  // Close panel when clicking a section link (so they can read the guide)
+  panel.querySelectorAll('.cl-item-link').forEach(link => {
+    link.addEventListener('click', () => {
+      panel.classList.remove('open');
+    });
+  });
+
+  // Initial state
+  updateProgress();
+})();
+</script>
+
+</body>
+</html>

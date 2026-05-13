@@ -1,0 +1,1100 @@
+<!-- Generated: 2026-04-10 | Topic: AI Operating System — Eve / Donna / Claude Bridge Overview -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AI Operating System — Fourth</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================================================
+           MIDNIGHT EXECUTIVE THEME — AI OPERATING SYSTEM
+           Fourth internal — Dave Hayes, AI Enablement Lead
+           ================================================ */
+        :root {
+            --bg-primary:    #0a0f1c;
+            --bg-secondary:  #111827;
+            --bg-card:       rgba(17, 24, 39, 0.7);
+
+            --text-primary:  #f1f5f9;
+            --text-secondary:#94a3b8;
+            --text-muted:    #475569;
+
+            /* Eve = purple | Donna = teal | Code = amber */
+            --eve:           #a78bfa;
+            --eve-glow:      rgba(167,139,250,0.15);
+            --donna:         #00B69F;
+            --donna-glow:    rgba(0,182,159,0.15);
+            --code:          #f59e0b;
+            --code-glow:     rgba(245,158,11,0.15);
+
+            --accent:        #00B69F;
+            --accent-glow:   rgba(0,182,159,0.15);
+            --border:        rgba(148,163,184,0.08);
+            --border-soft:   rgba(148,163,184,0.14);
+
+            --font-display:  'Libre Baskerville', Georgia, serif;
+            --font-body:     'Source Sans 3', -apple-system, sans-serif;
+            --font-mono:     'JetBrains Mono', monospace;
+
+            --slide-padding: clamp(2.5rem, 5vw, 6rem);
+            --max-width:     1080px;
+            --ease-expo:     cubic-bezier(0.16, 1, 0.3, 1);
+            --dur:           0.7s;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            font-size: 17px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ---- PROGRESS BAR ---- */
+        .progress-bar {
+            position: fixed; top: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--donna), var(--eve), var(--code));
+            width: 0%; z-index: 200;
+            transition: width 0.15s ease-out;
+        }
+
+        /* ---- NAV DOTS ---- */
+        .nav-dots {
+            position: fixed; right: 1.75rem; top: 50%;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 0.6rem;
+            z-index: 100;
+        }
+        .nav-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--text-muted); border: none; cursor: pointer;
+            transition: all 0.3s var(--ease-expo); opacity: 0.35;
+        }
+        .nav-dot:hover { opacity: 0.7; transform: scale(1.4); }
+        .nav-dot.active { background: var(--donna); opacity: 1; box-shadow: 0 0 10px var(--donna-glow); }
+
+        /* ---- SLIDES ---- */
+        .slide {
+            min-height: 100vh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide-content {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ---- REVEAL ANIMATIONS ---- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity var(--dur) var(--ease-expo), transform var(--dur) var(--ease-expo);
+        }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.15s; }
+        .reveal:nth-child(3) { transition-delay: 0.25s; }
+        .reveal:nth-child(4) { transition-delay: 0.35s; }
+        .reveal:nth-child(5) { transition-delay: 0.45s; }
+        .reveal:nth-child(6) { transition-delay: 0.55s; }
+        .reveal:nth-child(7) { transition-delay: 0.65s; }
+        .reveal:nth-child(8) { transition-delay: 0.75s; }
+
+        /* ---- GLOW ORBS ---- */
+        .glow {
+            position: absolute; border-radius: 50%;
+            filter: blur(90px); pointer-events: none; z-index: 0;
+        }
+        .glow-donna { background: radial-gradient(circle, var(--donna-glow) 0%, transparent 70%); }
+        .glow-eve   { background: radial-gradient(circle, var(--eve-glow)   0%, transparent 70%); }
+        .glow-code  { background: radial-gradient(circle, var(--code-glow)  0%, transparent 70%); }
+
+        /* ---- TYPOGRAPHY ---- */
+        .label {
+            font-family: var(--font-body);
+            font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 0.22em; text-transform: uppercase;
+            color: var(--donna); margin-bottom: 1rem;
+        }
+        .label-eve    { color: var(--eve); }
+        .label-code   { color: var(--code); }
+        .label-muted  { color: var(--text-muted); }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+            font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem;
+        }
+        h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            font-weight: 700; line-height: 1.2; margin-bottom: 1.25rem;
+        }
+        h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; }
+        h4 { font-family: var(--font-body); font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-primary); }
+
+        p { color: var(--text-secondary); margin-bottom: 0.9rem; }
+        .lead { font-size: 1.2rem; color: var(--text-secondary); max-width: 650px; line-height: 1.7; }
+
+        /* ---- DIVIDERS ---- */
+        .accent-line {
+            width: 64px; height: 2px;
+            background: var(--donna); margin: 1.5rem 0;
+        }
+        .accent-line-center { margin: 1.5rem auto; }
+
+        /* ---- CARDS ---- */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-soft), transparent);
+        }
+        .card-donna { border-color: rgba(0,182,159,0.25); }
+        .card-eve   { border-color: rgba(167,139,250,0.25); }
+        .card-code  { border-color: rgba(245,158,11,0.25); }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem; margin-top: 1.75rem;
+        }
+        .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+        /* ---- ICON BADGE ---- */
+        .icon-badge {
+            width: 46px; height: 46px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 1rem;
+        }
+        .ib-donna { background: var(--donna-glow); }
+        .ib-eve   { background: var(--eve-glow); }
+        .ib-code  { background: var(--code-glow); }
+        .ib-muted { background: rgba(148,163,184,0.1); }
+
+        /* ---- PERSONA PILL ---- */
+        .persona-pill {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.3rem 0.8rem; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .pp-donna { background: var(--donna-glow); color: var(--donna); border: 1px solid rgba(0,182,159,0.3); }
+        .pp-eve   { background: var(--eve-glow);   color: var(--eve);   border: 1px solid rgba(167,139,250,0.3); }
+        .pp-code  { background: var(--code-glow);  color: var(--code);  border: 1px solid rgba(245,158,11,0.3); }
+
+        /* ---- FLOW DIAGRAM ---- */
+        .flow-row {
+            display: flex; align-items: center;
+            gap: 0; margin: 2rem 0;
+        }
+        .flow-node {
+            flex: 1; text-align: center;
+            padding: 1.25rem 1rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-soft);
+        }
+        .flow-node .node-emoji { font-size: 2rem; margin-bottom: 0.4rem; }
+        .flow-node .node-name  { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+        .flow-node .node-role  { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+        .fn-donna { background: var(--donna-glow); border-color: rgba(0,182,159,0.3); }
+        .fn-eve   { background: var(--eve-glow);   border-color: rgba(167,139,250,0.3); }
+        .fn-code  { background: var(--code-glow);  border-color: rgba(245,158,11,0.3); }
+        .fn-bridge{ background: rgba(241,245,249,0.04); border-color: var(--border-soft); }
+
+        .flow-arrow {
+            font-size: 1.1rem; color: var(--text-muted);
+            padding: 0 0.6rem; flex-shrink: 0;
+        }
+        .flow-arrow-v {
+            text-align: center; color: var(--text-muted); font-size: 1.2rem;
+            padding: 0.4rem 0; line-height: 1;
+        }
+
+        /* ---- BRIDGE COLUMN LAYOUT ---- */
+        .bridge-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr 1fr;
+            gap: 1.25rem;
+            margin-top: 1.75rem;
+            align-items: start;
+        }
+        .bridge-center-label {
+            text-align: center; margin-bottom: 0.6rem;
+            font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ---- QUEUE ITEM ---- */
+        .queue-item {
+            display: flex; gap: 0.6rem;
+            align-items: flex-start;
+            padding: 0.7rem 0.9rem;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
+            margin-bottom: 0.6rem;
+            font-size: 0.82rem;
+        }
+        .queue-item .qi-status { flex-shrink: 0; margin-top: 0.1rem; }
+        .queue-item .qi-text { color: var(--text-secondary); }
+        .queue-item .qi-text strong { color: var(--text-primary); display: block; font-size: 0.8rem; }
+
+        /* ---- STEP ITEMS ---- */
+        .step-list { list-style: none; margin: 1.25rem 0; }
+        .step-list li {
+            display: flex; gap: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 0.65rem;
+            align-items: flex-start;
+            background: rgba(0,0,0,0.2);
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+        .step-list li:hover {
+            border-color: var(--border-soft);
+            background: rgba(0,182,159,0.04);
+        }
+        .step-num {
+            font-family: var(--font-mono); font-size: 0.7rem;
+            color: var(--donna); background: var(--donna-glow);
+            border-radius: 6px; padding: 0.2rem 0.5rem;
+            flex-shrink: 0; margin-top: 0.1rem; font-weight: 500;
+        }
+        .step-text { color: var(--text-secondary); font-size: 0.9rem; }
+        .step-text strong { color: var(--text-primary); }
+
+        /* ---- BENEFIT TAGS ---- */
+        .benefit-tag {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.35rem 0.75rem; border-radius: 6px;
+            font-size: 0.78rem; font-weight: 600;
+            background: var(--donna-glow); color: var(--donna);
+            border: 1px solid rgba(0,182,159,0.2);
+            margin: 0.25rem;
+        }
+
+        /* ---- STAT BLOCK ---- */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 1.75rem;
+        }
+        .stat-block {
+            padding: 1.25rem; text-align: center;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            background: var(--bg-card);
+        }
+        .stat-num {
+            font-family: var(--font-display);
+            font-size: 2.2rem; font-weight: 700;
+            line-height: 1; margin-bottom: 0.4rem;
+        }
+        .stat-label {
+            font-size: 0.72rem; text-transform: uppercase;
+            letter-spacing: 0.12em; color: var(--text-muted);
+        }
+        .s-donna { color: var(--donna); }
+        .s-eve   { color: var(--eve); }
+        .s-code  { color: var(--code); }
+        .s-white { color: var(--text-primary); }
+
+        /* ---- COMPARISON TABLE ---- */
+        table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+        th { font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--donna); }
+        td { color: var(--text-secondary); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(0,182,159,0.03); }
+
+        /* ---- NOTION BADGE ---- */
+        .notion-chip {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.3rem 0.75rem; border-radius: 6px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid var(--border-soft);
+            font-size: 0.78rem; color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* ---- KEYBOARD HINT ---- */
+        .keyboard-hint {
+            position: fixed; bottom: 1.75rem; left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.72rem; color: var(--text-muted);
+            display: flex; align-items: center; gap: 0.5rem;
+            opacity: 0; animation: fadeHint 1s ease 2.5s forwards;
+            z-index: 50;
+        }
+        .keyboard-hint kbd {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-soft);
+            padding: 0.2rem 0.5rem; border-radius: 4px;
+            font-family: var(--font-mono);
+        }
+        @keyframes fadeHint { to { opacity: 0.6; } }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 960px) {
+            .card-grid, .card-grid-2, .bridge-layout { grid-template-columns: 1fr; }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .flow-row  { flex-direction: column; }
+            .flow-arrow{ transform: rotate(90deg); }
+        }
+        @media (max-width: 768px) {
+            .nav-dots, .keyboard-hint { display: none; }
+            .slide { padding: 2rem 1.5rem; }
+            html { font-size: 15px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { transition: opacity 0.3s ease; transform: none; }
+        }
+    </style>
+  <!-- ae-hub:og -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI Enablement · Fourth">
+  <meta property="og:title" content="The AI Operating System">
+  <meta property="og:description" content="How Eve, Donna, and Claude Code interlock — the Notion Bridge, the handoff model, and the day-to-day operating loop.">
+  <meta property="og:url" content="https://rev4nchist.github.io/ai-enablement-decks/ai-operating-system/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="The AI Operating System">
+  <meta name="twitter:description" content="How Eve, Donna, and Claude Code interlock — the Notion Bridge, the handoff model, and the day-to-day operating loop.">
+</head>
+<body>
+<!-- ae-hub:nav -->
+<style id="ae-hub-style">#ae-back-to-hub{position:fixed;bottom:16px;right:16px;z-index:9999;padding:.55rem 1rem;background:rgba(7,9,30,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#EEF2FF;font:500 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.05em;border:1px solid rgba(255,255,255,.15);border-radius:999px;text-decoration:none;opacity:.75;transition:opacity .2s,transform .2s}#ae-back-to-hub:hover{opacity:1;transform:translateY(-1px)}</style>
+<a href="../" id="ae-back-to-hub">← All Decks</a>
+
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots"></nav>
+
+<div class="keyboard-hint">
+    <kbd>↑</kbd><kbd>↓</kbd> to navigate &nbsp;·&nbsp; <kbd>Space</kbd> to advance
+</div>
+
+<!-- ================================================
+     SLIDE 1 — TITLE
+     ================================================ -->
+<section class="slide title-slide" id="slide-0" style="text-align:center;">
+    <div class="glow glow-donna" style="width:600px;height:600px;top:-100px;left:-150px;opacity:0.3;"></div>
+    <div class="glow glow-eve"   style="width:500px;height:500px;top:50px;right:-150px;opacity:0.2;"></div>
+    <div class="glow glow-code"  style="width:400px;height:400px;bottom:-100px;left:30%;opacity:0.15;"></div>
+
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal" style="justify-content:center;display:flex;">Fourth AI Enablement</div>
+        <h1 class="reveal">The AI<br><em>Operating System</em></h1>
+        <div class="accent-line accent-line-center reveal"></div>
+        <p class="lead reveal" style="margin:0 auto;text-align:center;">
+            How Eve, Donna, and Claude Code work together<br>through Notion to run a coordinated AI workflow.
+        </p>
+        <div class="reveal" style="margin-top:2.5rem;display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;">
+            <span class="persona-pill pp-eve">🌙 Eve — Strategic</span>
+            <span class="persona-pill pp-donna">⚡ Donna — Operational</span>
+            <span class="persona-pill pp-code">🔨 Code — Execution</span>
+        </div>
+        <p class="reveal" style="margin-top:2.5rem;font-size:0.8rem;color:var(--text-muted);text-align:center;">
+            Dave Hayes · AI Enablement Lead · Fourth · April 2026
+        </p>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 2 — THE PROBLEM
+     ================================================ -->
+<section class="slide" id="slide-1">
+    <div class="glow glow-code" style="width:500px;height:500px;top:-100px;right:-100px;opacity:0.2;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">The Starting Point</div>
+        <h2 class="reveal">AI without coordination<br>is just <em>noise.</em></h2>
+        <div class="accent-line reveal"></div>
+        <p class="lead reveal">Most AI usage today is one-shot — a prompt, an answer, forgotten. No memory. No handoffs. No continuity between strategy and execution.</p>
+
+        <div class="card-grid reveal" style="margin-top:2rem;">
+            <div class="card">
+                <div class="icon-badge ib-muted">📂</div>
+                <h4>No Persistent Memory</h4>
+                <p style="font-size:0.88rem;margin:0;">Each session starts cold. Decisions, context, and history are lost between conversations.</p>
+            </div>
+            <div class="card">
+                <div class="icon-badge ib-muted">🔀</div>
+                <h4>Strategy / Execution Gap</h4>
+                <p style="font-size:0.88rem;margin:0;">Ideas from a planning session never automatically reach the person building the thing.</p>
+            </div>
+            <div class="card">
+                <div class="icon-badge ib-muted">🔁</div>
+                <h4>Manual Re-briefing</h4>
+                <p style="font-size:0.88rem;margin:0;">Every handoff requires the human to re-explain context that the AI already knew last session.</p>
+            </div>
+        </div>
+
+        <div class="reveal" style="margin-top:1.75rem;padding:1.25rem 1.5rem;border-radius:10px;border:1px solid rgba(245,158,11,0.2);background:var(--code-glow);">
+            <p style="margin:0;font-size:0.92rem;color:var(--text-secondary);">
+                <strong style="color:var(--code);">The fix:</strong> treat AI like a team, not a tool. Give each AI a role, a memory layer, and a communication protocol — then wire them together.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 3 — THE THREE INSTANCES
+     ================================================ -->
+<section class="slide" id="slide-2">
+    <div class="glow glow-donna" style="width:600px;height:600px;bottom:-200px;left:-100px;opacity:0.2;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">The System</div>
+        <h2 class="reveal">Three AI personalities.<br><em>One coherent system.</em></h2>
+        <div class="accent-line reveal"></div>
+
+        <div class="card-grid reveal" style="margin-top:1.75rem;">
+            <div class="card card-eve">
+                <div class="persona-pill pp-eve">🌙 Eve</div>
+                <h3>Personal Strategic Layer</h3>
+                <p style="font-size:0.88rem;">Lives in Claude.ai. Handles Dave's personal projects — 𝕏 Research, Minions delegations, personal direction-setting.</p>
+                <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                    <div class="notion-chip">Claude.ai — Personal</div>
+                </div>
+                <ul style="list-style:none;margin-top:1rem;">
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;border-bottom:1px solid var(--border);">Owns Eve→Code handoff queue</li>
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;border-bottom:1px solid var(--border);">Reads Code→Eve results</li>
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;">Personal decisions & direction</li>
+                </ul>
+            </div>
+
+            <div class="card card-donna">
+                <div class="persona-pill pp-donna">⚡ Donna</div>
+                <h3>Work Strategic Layer</h3>
+                <p style="font-size:0.88rem;">Lives in Claude.ai. Scoped exclusively to Fourth AI work — SPARK, RFPs, competitive intel, AI dashboards, weekly reports.</p>
+                <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                    <div class="notion-chip">Claude.ai — Fourth Work</div>
+                </div>
+                <ul style="list-style:none;margin-top:1rem;">
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;border-bottom:1px solid var(--border);">Owns Donna→Code handoff queue</li>
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;border-bottom:1px solid var(--border);">Reads Code→Donna results</li>
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;">Runs the weekly report pipeline</li>
+                </ul>
+            </div>
+
+            <div class="card card-code">
+                <div class="persona-pill pp-code">🔨 Code</div>
+                <h3>Execution Layer</h3>
+                <p style="font-size:0.88rem;">Lives in Claude Code (CLI). Shared resource — builds, deploys, and implements what Eve or Donna specify in their handoff queues.</p>
+                <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                    <div class="notion-chip">Claude Code — Terminal</div>
+                </div>
+                <ul style="list-style:none;margin-top:1rem;">
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;border-bottom:1px solid var(--border);">Receives specs from Eve or Donna</li>
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;border-bottom:1px solid var(--border);">Writes results back to Bridge HQ</li>
+                    <li style="font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0;">Ships code, reports, deployments</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 4 — THE CLAUDE BRIDGE
+     ================================================ -->
+<section class="slide" id="slide-3">
+    <div class="glow glow-donna" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.12;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">Communication Infrastructure</div>
+        <h2 class="reveal">The Claude Bridge:<br><em>shared memory, zero confusion.</em></h2>
+        <div class="accent-line reveal"></div>
+        <p class="lead reveal">A dedicated Notion page that acts as the shared working memory between all three AI instances — and Dave.</p>
+
+        <div class="bridge-layout reveal" style="margin-top:1.75rem;">
+            <!-- EVE COLUMN -->
+            <div>
+                <div class="bridge-center-label" style="color:var(--eve);">🌙 Eve</div>
+                <div class="card card-eve" style="padding:1rem;">
+                    <div class="queue-item">
+                        <div class="qi-status">🟡</div>
+                        <div class="qi-text"><strong>Eve→Code</strong>Build 𝕏 post scheduler</div>
+                    </div>
+                    <div class="queue-item">
+                        <div class="qi-status">✅</div>
+                        <div class="qi-text"><strong>Code→Eve</strong>Scheduler shipped — v1.2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRIDGE CENTER -->
+            <div>
+                <div class="bridge-center-label" style="color:var(--donna);">⚡ Bridge HQ (Notion)</div>
+                <div class="card" style="padding:1.1rem;border-color:var(--border-soft);">
+                    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Shared Sections</div>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <div style="padding:0.5rem 0.75rem;border-radius:7px;background:rgba(0,0,0,0.3);border:1px solid var(--border);font-size:0.8rem;color:var(--text-secondary);">📌 Active Context</div>
+                        <div style="padding:0.5rem 0.75rem;border-radius:7px;background:rgba(0,0,0,0.3);border:1px solid var(--border);font-size:0.8rem;color:var(--text-secondary);">🔑 Key Decisions Log</div>
+                        <div style="padding:0.5rem 0.75rem;border-radius:7px;background:rgba(0,0,0,0.3);border:1px solid var(--border);font-size:0.8rem;color:var(--text-secondary);">🏗️ Architecture Notes</div>
+                        <div style="padding:0.5rem 0.75rem;border-radius:7px;background:rgba(0,0,0,0.3);border:1px solid var(--border);font-size:0.8rem;color:var(--text-secondary);">📋 Sprint State</div>
+                        <div style="padding:0.5rem 0.75rem;border-radius:7px;background:rgba(0,0,0,0.3);border:1px solid var(--border);font-size:0.8rem;color:var(--text-secondary);">🚀 Implementation Log</div>
+                    </div>
+                    <div style="margin-top:0.75rem;text-align:center;">
+                        <div class="notion-chip" style="font-size:0.7rem;">notion.so/bridge-hq</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DONNA COLUMN -->
+            <div>
+                <div class="bridge-center-label" style="color:var(--donna);">⚡ Donna</div>
+                <div class="card card-donna" style="padding:1rem;">
+                    <div class="queue-item">
+                        <div class="qi-status">🔵</div>
+                        <div class="qi-text"><strong>Donna→Code</strong>Deploy SPARK dashboard v2</div>
+                    </div>
+                    <div class="queue-item">
+                        <div class="qi-status">🟡</div>
+                        <div class="qi-text"><strong>Code→Donna</strong>RFP Builder update — unread</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="reveal" style="margin-top:1.25rem;font-size:0.85rem;color:var(--text-muted);">
+            Eve and Donna each own their own queue sections. They never write to each other's. Dave edits anything, anytime — his edits always take priority.
+        </p>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 5 — NOTION TASK MANAGER
+     ================================================ -->
+<section class="slide" id="slide-4">
+    <div class="glow glow-eve" style="width:500px;height:500px;top:-100px;right:-100px;opacity:0.18;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">Organisation Layer</div>
+        <h2 class="reveal">The Notion Task Manager:<br><em>three tiers, one source of truth.</em></h2>
+        <div class="accent-line reveal"></div>
+
+        <div class="two-col reveal" style="display:grid;grid-template-columns:1.1fr 1fr;gap:2.5rem;align-items:start;margin-top:1.75rem;">
+            <div>
+                <p style="font-size:0.95rem;">All work flows through a consistent hierarchy. Every task lives in a project, every project lives in a bucket. Nothing orphaned. Nothing duplicated.</p>
+
+                <div style="margin-top:1.25rem;display:flex;flex-direction:column;gap:0.75rem;">
+                    <div style="padding:1rem 1.25rem;border-radius:10px;border:1px solid rgba(167,139,250,0.2);background:var(--eve-glow);">
+                        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--eve);margin-bottom:0.3rem;">Life Buckets</div>
+                        <p style="font-size:0.85rem;margin:0;color:var(--text-secondary);">Top-level containers — <strong style="color:var(--text-primary);">Fourth AI</strong>, 𝕏 Research, Minions, Claude Bridge</p>
+                    </div>
+                    <div style="text-align:center;font-size:1.1rem;color:var(--text-muted);">↓</div>
+                    <div style="padding:1rem 1.25rem;border-radius:10px;border:1px solid rgba(0,182,159,0.2);background:var(--donna-glow);">
+                        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--donna);margin-bottom:0.3rem;">Projects</div>
+                        <p style="font-size:0.85rem;margin:0;color:var(--text-secondary);">Work units within a bucket — SPARK, RFP Builder, EBR Suite, AI Reporting…</p>
+                    </div>
+                    <div style="text-align:center;font-size:1.1rem;color:var(--text-muted);">↓</div>
+                    <div style="padding:1rem 1.25rem;border-radius:10px;border:1px solid rgba(245,158,11,0.2);background:var(--code-glow);">
+                        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--code);margin-bottom:0.3rem;">Tasks</div>
+                        <p style="font-size:0.85rem;margin:0;color:var(--text-secondary);">Actionable items with priority (High / Mid / Low), due date, and completion status.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>What Donna Creates</th>
+                            <th>Where It Lives</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Projects</td><td style="color:var(--donna);">Fourth AI bucket</td></tr>
+                        <tr><td>Tasks</td><td style="color:var(--donna);">Linked to project</td></tr>
+                        <tr><td>Bridge handoffs</td><td style="color:var(--donna);">Bridge HQ child pages</td></tr>
+                        <tr><td>Key decisions</td><td style="color:var(--donna);">Key Decisions Log</td></tr>
+                        <tr><td>Sprint state</td><td style="color:var(--donna);">Bridge HQ callouts</td></tr>
+                        <tr><td>Archived items</td><td style="color:var(--text-muted);">Bridge Archive page</td></tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top:1.25rem;padding:1rem 1.25rem;border-radius:10px;border:1px solid var(--border-soft);background:rgba(0,0,0,0.25);">
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);margin-bottom:0.5rem;">Key Rule</div>
+                    <p style="font-size:0.85rem;margin:0;color:var(--text-secondary);">Relations are <em>never</em> set on creation — always a second call. This prevents Notion API conflicts and keeps data clean.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 6 — HANDOFF PROTOCOL
+     ================================================ -->
+<section class="slide" id="slide-5">
+    <div class="glow glow-donna" style="width:500px;height:500px;bottom:-100px;right:-100px;opacity:0.2;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">How Work Moves</div>
+        <h2 class="reveal">Handoffs: child pages<br><em>+ one-liners in HQ.</em></h2>
+        <div class="accent-line reveal"></div>
+        <p class="lead reveal">Every time Donna passes work to Code, it creates two things: a richly-specified child page and a single-line status entry in the Bridge HQ queue.</p>
+
+        <div class="two-col reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.75rem;align-items:start;">
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--donna);margin-bottom:0.75rem;">The Child Page (Full Spec)</div>
+                <div class="card card-donna" style="font-family:var(--font-mono);font-size:0.76rem;line-height:1.7;color:var(--text-muted);padding:1.1rem;">
+                    <span style="color:var(--donna);"># [Donna→Code]</span> Deploy SPARK v2 — 2026-04-10<br><br>
+                    <span style="color:var(--text-secondary);"><strong>From:</strong></span> Donna<br>
+                    <span style="color:var(--text-secondary);"><strong>Priority:</strong></span> High<br>
+                    <span style="color:var(--text-secondary);"><strong>Status:</strong></span> 🟡 Pending<br><br>
+                    <span style="color:var(--donna);">## Context</span><br>
+                    <span style="color:var(--text-muted);">Dave approved v2 scope…</span><br><br>
+                    <span style="color:var(--donna);">## Spec / Steps</span><br>
+                    <span style="color:var(--text-muted);">1. Pull latest from main…</span><br><br>
+                    <span style="color:var(--donna);">## Acceptance Criteria</span><br>
+                    <span style="color:var(--text-muted);">Dashboard loads under 2s…</span><br><br>
+                    <span style="color:var(--donna);">## Write Back</span><br>
+                    <span style="color:var(--text-muted);">Confirm deploy URL…</span>
+                </div>
+            </div>
+
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--donna);margin-bottom:0.75rem;">The HQ One-Liner (Status View)</div>
+                <div class="card" style="padding:1.1rem;">
+                    <div class="queue-item" style="margin-bottom:0.75rem;">
+                        <div class="qi-status">🟡</div>
+                        <div class="qi-text" style="font-family:var(--font-mono);font-size:0.78rem;">
+                            <strong>[HANDOFF] 2026-04-10 — Deploy SPARK v2</strong>
+                            From: Donna | Priority: High | Deploy dashboard to Railway, confirm live URL.
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:1.5rem;">
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-bottom:0.75rem;">Status Lifecycle</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        <span style="font-size:0.85rem;">🟡 Pending</span>
+                        <span style="color:var(--text-muted);">→</span>
+                        <span style="font-size:0.85rem;">🔵 In Progress</span>
+                        <span style="color:var(--text-muted);">→</span>
+                        <span style="font-size:0.85rem;">✅ Done</span>
+                    </div>
+                    <p style="font-size:0.82rem;margin-top:0.75rem;color:var(--text-muted);">Status is synced in both places — HQ one-liner emoji AND the child page header. One always reflects the other.</p>
+                </div>
+
+                <div style="margin-top:1.5rem;padding:1rem;border-radius:10px;border:1px solid rgba(0,182,159,0.2);background:var(--donna-glow);">
+                    <p style="font-size:0.85rem;margin:0;color:var(--text-secondary);"><strong style="color:var(--donna);">Bridge Sync command</strong> — sweep completed items to Archive, refresh Active Context, and surface any unread Code→Donna results. One command, full audit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 7 — WEEKLY REPORT PIPELINE
+     ================================================ -->
+<section class="slide" id="slide-6">
+    <div class="glow glow-eve" style="width:500px;height:500px;top:-50px;left:-100px;opacity:0.18;"></div>
+    <div class="glow glow-code" style="width:400px;height:400px;bottom:-100px;right:-50px;opacity:0.15;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">Reporting Pipeline</div>
+        <h2 class="reveal">From Notion data to<br><em>VP-ready report.</em></h2>
+        <div class="accent-line reveal"></div>
+
+        <div class="two-col reveal" style="display:grid;grid-template-columns:1fr 1.1fr;gap:2.5rem;align-items:start;margin-top:1.75rem;">
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-bottom:0.75rem;">Three Data Sources</div>
+                <div style="display:flex;flex-direction:column;gap:0.65rem;">
+                    <div style="padding:0.85rem 1rem;border-radius:10px;border:1px solid rgba(245,158,11,0.2);background:var(--code-glow);font-size:0.85rem;">
+                        <strong style="color:var(--code);">Code→Donna child pages</strong>
+                        <p style="font-size:0.82rem;margin-top:0.25rem;margin-bottom:0;color:var(--text-muted);">Per-project dev updates: what shipped, what's next, narrative seed, business impact.</p>
+                    </div>
+                    <div style="padding:0.85rem 1rem;border-radius:10px;border:1px solid rgba(0,182,159,0.2);background:var(--donna-glow);font-size:0.85rem;">
+                        <strong style="color:var(--donna);">Fourth AI Projects DB</strong>
+                        <p style="font-size:0.82rem;margin-top:0.25rem;margin-bottom:0;color:var(--text-muted);">Active projects, statuses, tasks, owners, milestones — the business portfolio view.</p>
+                    </div>
+                    <div style="padding:0.85rem 1rem;border-radius:10px;border:1px solid rgba(167,139,250,0.2);background:var(--eve-glow);font-size:0.85rem;">
+                        <strong style="color:var(--eve);">Bridge HQ</strong>
+                        <p style="font-size:0.82rem;margin-top:0.25rem;margin-bottom:0;color:var(--text-muted);">Key decisions, sprint state, active context, strategic shifts — the narrative layer.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-bottom:0.75rem;">Two Outputs</div>
+                <div style="display:flex;flex-direction:column;gap:0.65rem;margin-bottom:1.25rem;">
+                    <div style="padding:0.85rem 1rem;border-radius:10px;border:1px solid rgba(0,182,159,0.25);background:rgba(0,182,159,0.06);font-size:0.85rem;">
+                        <strong style="color:var(--donna);">📊 Live Dashboard Report</strong>
+                        <p style="font-size:0.82rem;margin-top:0.25rem;margin-bottom:0;color:var(--text-muted);">15-section structured report published to the AI Weekly Report dashboard. Shareable URL for Carly.</p>
+                    </div>
+                    <div style="padding:0.85rem 1rem;border-radius:10px;border:1px solid rgba(167,139,250,0.25);background:rgba(167,139,250,0.06);font-size:0.85rem;">
+                        <strong style="color:var(--eve);">🎞️ Executive HTML Slides</strong>
+                        <p style="font-size:0.82rem;margin-top:0.25rem;margin-bottom:0;color:var(--text-muted);">Presentation-grade deck generated from the same synthesis — built for leadership meetings.</p>
+                    </div>
+                </div>
+
+                <div style="padding:1rem 1.25rem;border-radius:10px;border:1px solid var(--border-soft);background:rgba(0,0,0,0.3);">
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-bottom:0.5rem;">Trigger</div>
+                    <div style="font-family:var(--font-mono);font-size:0.88rem;color:var(--donna);">weekly report</div>
+                    <p style="font-size:0.82rem;margin-top:0.5rem;margin-bottom:0;color:var(--text-muted);">Donna collects → synthesises → presents summary for approval → publishes both outputs. One confirmation gate.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 8 — COMMAND REFERENCE
+     ================================================ -->
+<section class="slide" id="slide-7">
+    <div class="glow glow-donna" style="width:600px;height:600px;bottom:-200px;right:-150px;opacity:0.18;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">How It Works Day-to-Day</div>
+        <h2 class="reveal">Speak the command.<br><em>Donna handles the rest.</em></h2>
+        <div class="accent-line reveal"></div>
+
+        <div class="two-col reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.75rem;align-items:start;">
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--donna);margin-bottom:0.75rem;">Task & Bridge Commands</div>
+                <table>
+                    <thead>
+                        <tr><th>You type</th><th>What happens</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--donna);">create a task: [name]</code></td>
+                            <td>Task created in Fourth AI bucket, right priority inferred</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--donna);">pass to Code: [spec]</code></td>
+                            <td>Child page created + HQ one-liner inserted</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--donna);">what did Code build</code></td>
+                            <td>Reads all unread Code→Donna items, surfaces in plain English</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--donna);">log decision: [thing]</code></td>
+                            <td>Inserts dated entry at top of Key Decisions Log</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--donna);">bridge sync</code></td>
+                            <td>Full audit, sweep archive, update Active Context</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--donna);">morning routine</code></td>
+                            <td>Check active tasks + any waiting Code→Donna handoffs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;color:var(--eve);margin-bottom:0.75rem;">Reporting Commands</div>
+                <table>
+                    <thead>
+                        <tr><th>You type</th><th>What happens</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--eve);">weekly report</code></td>
+                            <td>Full pipeline — collect, synthesise, confirm, publish + slides</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--eve);">report status</code></td>
+                            <td>Synthesis summary only — no publish</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--eve);">push report</code></td>
+                            <td>Skip to publish — uses synthesis already in session</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.78rem;color:var(--eve);">slides only</code></td>
+                            <td>Generates HTML deck, skips dashboard push</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top:1.25rem;padding:1rem 1.25rem;border-radius:10px;border:1px solid rgba(245,158,11,0.2);background:var(--code-glow);">
+                    <p style="font-size:0.85rem;margin:0;color:var(--text-secondary);">
+                        <strong style="color:var(--code);">One confirmation gate rule:</strong> Donna infers, announces what she's doing, and acts. She only pauses for irreversible actions — publishes, deletes — where a single confirm is enough.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 9 — KEY BENEFITS
+     ================================================ -->
+<section class="slide" id="slide-8">
+    <div class="glow glow-donna" style="width:500px;height:500px;top:-100px;left:-50px;opacity:0.22;"></div>
+    <div class="glow glow-code"  style="width:400px;height:400px;bottom:-100px;right:-50px;opacity:0.15;"></div>
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal">Why It Matters</div>
+        <h2 class="reveal">Benefits of a<br><em>coordinated AI system.</em></h2>
+        <div class="accent-line reveal"></div>
+
+        <div class="stat-grid reveal">
+            <div class="stat-block">
+                <div class="stat-num s-donna">3×</div>
+                <div class="stat-label">AI personalities in sync</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-num s-eve">0</div>
+                <div class="stat-label">Manual re-briefings needed</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-num s-code">1</div>
+                <div class="stat-label">Confirm gate per action</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-num s-white">∞</div>
+                <div class="stat-label">Persistent memory across sessions</div>
+            </div>
+        </div>
+
+        <div class="card-grid-2 reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:1.5rem;">
+            <div class="card">
+                <div class="icon-badge ib-donna">🧠</div>
+                <h4>Persistent Memory</h4>
+                <p style="font-size:0.88rem;margin:0;">Decisions, sprint state, and project history live in Notion — not in someone's head. Any session picks up where the last left off.</p>
+            </div>
+            <div class="card">
+                <div class="icon-badge ib-eve">🛡️</div>
+                <h4>Clean Separation of Concerns</h4>
+                <p style="font-size:0.88rem;margin:0;">Personal work stays with Eve. Fourth work stays with Donna. Code builds what it's told. No cross-contamination. No scope creep.</p>
+            </div>
+            <div class="card">
+                <div class="icon-badge ib-code">🚀</div>
+                <h4>Strategy to Execution Without Friction</h4>
+                <p style="font-size:0.88rem;margin:0;">A decision in a Claude.ai session becomes a spec in Notion, becomes working code — without Dave manually translating between systems.</p>
+            </div>
+            <div class="card">
+                <div class="icon-badge ib-muted">📈</div>
+                <h4>VP-Ready Output, Automatically</h4>
+                <p style="font-size:0.88rem;margin:0;">Weekly reports synthesise three data sources and publish in two formats — dashboard and slides — with a single trigger command.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================
+     SLIDE 10 — CLOSING / SUMMARY
+     ================================================ -->
+<section class="slide" id="slide-9" style="text-align:center;">
+    <div class="glow glow-donna" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.18;"></div>
+    <div class="glow glow-eve"   style="width:450px;height:450px;top:-50px;right:-100px;opacity:0.12;"></div>
+    <div class="glow glow-code"  style="width:400px;height:400px;bottom:-50px;left:-80px;opacity:0.12;"></div>
+
+    <div class="slide-content" style="position:relative;z-index:1;">
+        <div class="label reveal" style="justify-content:center;display:flex;">Summary</div>
+        <h2 class="reveal">Not three AI tools.<br><em>One operating system.</em></h2>
+        <div class="accent-line accent-line-center reveal"></div>
+        <p class="lead reveal" style="margin:0 auto;">
+            Eve owns strategy. Donna owns Fourth work. Code owns execution.<br>
+            The Bridge holds their shared memory. Notion ties it all together.
+        </p>
+
+        <div class="reveal" style="margin-top:2.5rem;display:flex;justify-content:center;gap:0;align-items:center;flex-wrap:wrap;">
+            <div class="flow-node fn-eve" style="max-width:180px;">
+                <div class="node-emoji">🌙</div>
+                <div class="node-name" style="color:var(--eve);">Eve</div>
+                <div class="node-role">Personal strategy</div>
+            </div>
+            <div class="flow-arrow">⇄</div>
+            <div class="flow-node fn-bridge" style="max-width:190px;">
+                <div class="node-emoji">📋</div>
+                <div class="node-name">Bridge HQ</div>
+                <div class="node-role">Shared memory</div>
+            </div>
+            <div class="flow-arrow">⇄</div>
+            <div class="flow-node fn-donna" style="max-width:180px;">
+                <div class="node-emoji">⚡</div>
+                <div class="node-name" style="color:var(--donna);">Donna</div>
+                <div class="node-role">Fourth work</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node fn-code" style="max-width:180px;">
+                <div class="node-emoji">🔨</div>
+                <div class="node-name" style="color:var(--code);">Code</div>
+                <div class="node-role">Execution</div>
+            </div>
+        </div>
+
+        <div class="reveal" style="margin-top:2.5rem;display:flex;justify-content:center;gap:0.5rem;flex-wrap:wrap;">
+            <span class="benefit-tag">🔁 Persistent memory</span>
+            <span class="benefit-tag">🤝 Zero re-briefing</span>
+            <span class="benefit-tag">📊 Auto-generated reports</span>
+            <span class="benefit-tag">🛡️ Clean role separation</span>
+            <span class="benefit-tag">⚡ One command, full action</span>
+        </div>
+
+        <p class="reveal" style="margin-top:2.5rem;font-size:0.8rem;color:var(--text-muted);">
+            Dave Hayes · Fourth AI Enablement · david.hayes@fourth.com
+        </p>
+    </div>
+</section>
+
+<!-- ================================================
+     JAVASCRIPT — PRESENTATION CONTROLLER
+     ================================================ -->
+<script>
+class AISystemPresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.progressBar = document.getElementById('progressBar');
+        this.navDotsEl = document.getElementById('navDots');
+        this.currentSlide = 0;
+        this.isScrolling = false;
+
+        this.buildNavDots();
+        this.initIntersectionObserver();
+        this.initKeyboardNav();
+        this.initScrollProgress();
+        this.initWheelNav();
+        this.initTouchNav();
+
+        // Trigger first slide immediately
+        setTimeout(() => {
+            this.slides[0].classList.add('visible');
+            this.updateNavDots(0);
+        }, 100);
+    }
+
+    buildNavDots() {
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot';
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goToSlide(i));
+            this.navDotsEl.appendChild(dot);
+        });
+    }
+
+    updateNavDots(index) {
+        this.currentSlide = index;
+        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+
+        // Update progress bar
+        const progress = ((index + 1) / this.slides.length) * 100;
+        this.progressBar.style.width = `${progress}%`;
+    }
+
+    goToSlide(index) {
+        this.slides[index].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    initIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const index = this.slides.indexOf(entry.target);
+                    if (index !== -1) this.updateNavDots(index);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        this.slides.forEach(slide => observer.observe(slide));
+    }
+
+    initKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowDown':
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    this.goToSlide(Math.max(this.currentSlide - 1, 0));
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goToSlide(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    initScrollProgress() {
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollFraction = scrollTop / docHeight;
+            this.progressBar.style.width = `${scrollFraction * 100}%`;
+        }, { passive: true });
+    }
+
+    initWheelNav() {
+        let lastWheelTime = 0;
+        window.addEventListener('wheel', (e) => {
+            const now = Date.now();
+            if (now - lastWheelTime < 800) return;
+            lastWheelTime = now;
+            if (e.deltaY > 30) {
+                this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+            } else if (e.deltaY < -30) {
+                this.goToSlide(Math.max(this.currentSlide - 1, 0));
+            }
+        }, { passive: true });
+    }
+
+    initTouchNav() {
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            const delta = touchStartY - e.changedTouches[0].clientY;
+            if (Math.abs(delta) > 50) {
+                if (delta > 0) {
+                    this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                } else {
+                    this.goToSlide(Math.max(this.currentSlide - 1, 0));
+                }
+            }
+        }, { passive: true });
+    }
+}
+
+// Initialise when DOM is ready
+document.addEventListener('DOMContentLoaded', () => new AISystemPresentation());
+</script>
+</body>
+</html>

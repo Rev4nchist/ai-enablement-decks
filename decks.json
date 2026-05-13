@@ -1,0 +1,166 @@
+{
+  "site": {
+    "title": "AI Enablement Decks",
+    "heading": "Decks & Briefings",
+    "tagline": "A shared home for AI Enablement presentations, orientations, and capability briefings. Each card links to a standalone deck.",
+    "url": "https://rev4nchist.github.io/ai-enablement-decks/",
+    "siteName": "AI Enablement · Fourth",
+    "ogDescription": "AI Enablement presentations, orientations, and capability briefings — Fourth."
+  },
+  "sections": [
+    { "id": "portfolio",             "title": "Portfolio Reviews" },
+    { "id": "project-presentations", "title": "Project Presentations" },
+    { "id": "claude-cowork",         "title": "Claude Cowork" },
+    { "id": "claude-code-ccv3",      "title": "Claude Code · CCv3" },
+    { "id": "mcp-capabilities",      "title": "MCP Capabilities" },
+    { "id": "msft-ai",               "title": "Microsoft AI" }
+  ],
+  "decks": [
+    {
+      "id": "vp-briefing-april-2026",
+      "section": "portfolio",
+      "tag": "VP Briefing",
+      "title": "AI Enablement · VP Portfolio Review",
+      "description": "Twenty-slide story deck for VP+ leadership — what we shipped, what's in build, and how the projects add up to Fourth's intelligence platform.",
+      "href": "./vp-briefing-april-2026/",
+      "meta": "April 2026",
+      "date": "2026-04",
+      "status": "shipped",
+      "featured": true
+    },
+    {
+      "id": "portfolio-april-2026",
+      "section": "portfolio",
+      "tag": "Leave-behind",
+      "title": "AI Enablement · Portfolio Landing",
+      "description": "Long-scroll leave-behind covering all 14 projects across Customer Success, Marketing, Sales, Support, and Platform.",
+      "href": "./portfolio-april-2026/",
+      "meta": "April 2026",
+      "date": "2026-04",
+      "status": "shipped",
+      "featured": true
+    },
+    {
+      "id": "ebr-builder-onboarding",
+      "section": "project-presentations",
+      "tag": "Onboarding",
+      "title": "EBR Builder System — Team Onboarding",
+      "description": "How the Fourth Executive Business Review builder works and how the team uses it end-to-end.",
+      "href": "./ebr-builder-onboarding/",
+      "meta": "Onboarding",
+      "date": "2026-04",
+      "status": "shipped"
+    },
+    {
+      "id": "gtm-risk-report-apr16",
+      "section": "project-presentations",
+      "tag": "Status Report",
+      "title": "GTM Risk Intelligence Report",
+      "description": "Cross-channel GTM risk read for April 14–16, 2026 — pipeline conversion, P2V health, and the customer-segment hotspots that need attention.",
+      "href": "./gtm-status-presentations/gtm-risk-report-apr16.html",
+      "meta": "April 14–16, 2026",
+      "date": "2026-04-16",
+      "status": "shipped"
+    },
+    {
+      "id": "cowork-mastery-guide",
+      "section": "claude-cowork",
+      "tag": "Mastery Guide",
+      "title": "Claude Cowork Mastery Guide",
+      "description": "2026 starter pack + 10 power prompts for getting the most out of Claude Cowork day-to-day.",
+      "href": "./cowork-mastery-guide/",
+      "meta": "2026 Starter Pack",
+      "date": "2026-03",
+      "status": "shipped"
+    },
+    {
+      "id": "cowork-reference-guide",
+      "section": "claude-cowork",
+      "tag": "Reference",
+      "title": "Cowork Reference Guide",
+      "description": "Deep reference for Claude Cowork — memory, projects, custom instructions, integrations, and the patterns that hold it all together.",
+      "href": "./cowork-reference-guide/",
+      "meta": "Reference",
+      "date": "2026-03-24",
+      "status": "shipped"
+    },
+    {
+      "id": "ai-operating-system",
+      "section": "claude-cowork",
+      "tag": "Operating Model",
+      "title": "The AI Operating System",
+      "description": "How Eve, Donna, and Claude Code interlock — the Notion Bridge, the handoff model, and the day-to-day operating loop.",
+      "href": "./ai-operating-system/",
+      "meta": "April 2026",
+      "date": "2026-04-10",
+      "status": "shipped"
+    },
+    {
+      "id": "continuous-claude",
+      "section": "claude-code-ccv3",
+      "tag": "Dev Environment",
+      "title": "Continuous Claude",
+      "description": "The AI development environment — hooks, memory, agents, and the full Claude Code operating model.",
+      "href": "./continuous-claude/",
+      "meta": "CCv3",
+      "date": "2026-04",
+      "status": "shipped"
+    },
+    {
+      "id": "continuous-claude-architecture",
+      "section": "claude-code-ccv3",
+      "tag": "Architecture",
+      "title": "Continuous Claude v3 — Architecture & Flows",
+      "description": "Interactive node-link map of CCv3's 15 subsystems and 15 flows — click a flow to trace it through the system. Pairs with a portable JSON for other AI tooling.",
+      "href": "./continuous-claude-architecture/",
+      "meta": "Interactive Map",
+      "date": "2026-05",
+      "status": "shipped"
+    },
+    {
+      "id": "fastmcp-capabilities",
+      "section": "mcp-capabilities",
+      "tag": "Capabilities",
+      "title": "FastMCP — What We Can Build",
+      "description": "The full capability surface of FastMCP v3 and the shape of projects we can stand up on it.",
+      "href": "./fastmcp-capabilities/",
+      "meta": "Capabilities Guide",
+      "date": "2026-04",
+      "status": "shipped"
+    },
+    {
+      "id": "salesforce-mcp-kickoff",
+      "section": "mcp-capabilities",
+      "tag": "Kick-Off",
+      "title": "Fourth Salesforce MCP — Kick-Off",
+      "description": "Project kick-off for the Fourth Salesforce MCP server — scope, architecture, and milestones.",
+      "href": "./salesforce-mcp-kickoff/",
+      "meta": "Kick-Off",
+      "date": "2026-03-27",
+      "status": "shipped"
+    },
+    {
+      "id": "salesforce-mcp-build-plan",
+      "section": "mcp-capabilities",
+      "tag": "Build Plan",
+      "title": "Fourth Salesforce MCP — Build & Deployment Plan",
+      "description": "Post-Headless 360 architecture, phased build (v1 Marketing pilot → v2 expansion), Token Exchange auth design, parallel work tracks, and Phase 0 status.",
+      "href": "./salesforce-mcp-build-plan/",
+      "meta": "v1 / v2 Plan · May 2026",
+      "date": "2026-05",
+      "status": "in-build",
+      "featured": true
+    },
+    {
+      "id": "foundry-hosted-agents",
+      "section": "msft-ai",
+      "tag": "Briefing",
+      "title": "Microsoft Foundry — Hosted Agents",
+      "description": "Foundry finally lets you ship your code as an agent — what hosted agents are, how they fit alongside MCP, and where they land in our stack.",
+      "href": "./foundry-hosted-agents/",
+      "meta": "Briefing · May 2026",
+      "date": "2026-05",
+      "status": "briefing"
+    }
+  ]
+}
