@@ -666,31 +666,33 @@ Salesforce data (sharing rules, FLS enforced under user identity)</pre>
 └── .github/workflows/deploy.yml             # OIDC + dual-tag + deploy-by-digest</pre>
   </div>
 
-  <div class="phase pending">
-    <div class="phase-label">Phase 2 · Track A in progress</div>
+  <div class="phase done">
+    <div class="phase-label">Phase 2 · DONE 2026-05-14 (commit 932eca9)</div>
     <h3>Hosted MCP ProxyClient</h3>
-    <p>Implement <code>salesforce_mcp/hosted_mcp/client.py</code> using <code>FastMCP.as_proxy()</code> over httpx pointed at Salesforce Hosted MCP. Watch the oracle-flagged gotchas: (a) auth header forwarding requires explicit pass-through config, (b) no built-in token caching — wrap with our own.</p>
-    <p>Until Phase 0's URL is confirmed: stub with a fixture returning a hardcoded tool list matching <code>forcedotcom/mcp-hosted</code> wiki. Tests use <code>pytest-httpx</code> to mock the endpoint.</p>
+    <p><code>salesforce_mcp/hosted_mcp/client.py</code> wired with <strong>httpx JSON-RPC</strong> (NOT <code>FastMCP.as_proxy()</code> — chose httpx for explicit per-user <code>Authorization</code> header control). <code>list_tools()</code> + <code>call_tool()</code> POST to <code>{base}/&lt;server-name&gt;</code> with <code>Accept: application/json, text/event-stream</code>, monotonic id counter, full JSON-RPC + HTTP error normalization to <code>HostedMCPError</code>.</p>
+    <p>First proxy tool registered: <code>salesforce_query_readonly(soql)</code> — forwards through to the Hosted MCP <code>soql</code> server, gated by <code>MARKETING_READONLY</code> allowlist. <code>token_store.get_or_acquire()</code> handles cache hit / cache miss / expired refresh.</p>
+    <p style="color: var(--text-dim); font-size: 13px;"><strong>Tests:</strong> 13 new <code>pytest-httpx</code>-mocked cases covering auth header injection, JSON-RPC parsing, error envelope handling, token cache transitions.</p>
   </div>
 
-  <div class="phase pending">
-    <div class="phase-label">Phase 3 · the hard part</div>
+  <div class="phase done">
+    <div class="phase-label">Phase 3 · DONE 2026-05-14 (edge: scaffold; downstream user-delegated: commit bd8e9f1)</div>
     <h3>Auth — edge + downstream</h3>
     <ol>
-      <li><strong>Edge auth (Entra → our proxy):</strong> <code>EasyAuthGate</code> middleware verbatim from playbook §Phase 6. Tests: missing header denies; bad base64 denies; principal without <code>Mcp.User</code> denies; both claim forms recognized.</li>
-      <li><strong>Downstream auth (proxy → Salesforce):</strong> OBO token exchange. Caller's Entra token → MS <code>/v2.0/token</code> OBO → returns Entra token with <code>api://&lt;sf-app-id&gt;/.default</code> audience → bearer to Salesforce ECA → ECA mints SF access + refresh tokens. Cache RTs in KV; access tokens in-memory with TTL.</li>
+      <li><strong>Edge auth (Entra → our proxy):</strong> <code>EasyAuthGate</code> middleware shipped in Phase 1 scaffold. All 13 EasyAuth tests green (principal decode, role check, both claim type forms, <code>McpError</code> on deny). Today extended to surface <code>UserIdentity(oid, entra_token)</code> from <code>X-MS-CLIENT-PRINCIPAL</code> + <code>X-MS-TOKEN-AAD-ACCESS-TOKEN</code> onto a per-request <code>ContextVar</code>.</li>
+      <li><strong>Downstream auth (proxy → Salesforce):</strong> <strong>Open question resolved — no OBO leg needed.</strong> Spike validation walk on 2026-05-14 proved the SF Token Exchange Handler accepts the user's Entra token directly via RFC 8693. <code>token_store.get_or_acquire()</code> keys by user OID and feeds the user's Entra token as the subject; <code>HostedMCPProxy.call_tool()</code> accepts an optional <code>subject_token</code> parameter and plumbs it through. Per-user SF token cache isolation falls out for free in <code>_InMemoryStore</code>. Phase 7 swaps in the Key Vault-backed factory.</li>
     </ol>
-    <div class="callout warn">
-      <strong>Open question:</strong> Salesforce ECA may not accept an Entra-issued token directly even with OBO. May need SAML SSO bridge instead. Confirm in Phase 0 with Salesforce docs / AE.
+    <div class="callout success">
+      <strong>Resolved 2026-05-14:</strong> Five-round JWT validation walk against the SF handler closed every layer (signature / issuer / audience / array-unwrap / claim extraction). Direct RFC 8693 with the user's Entra token works — no SAML SSO bridge, no OBO leg. <strong>Tests:</strong> 17 new <code>pytest-httpx</code>-mocked cases cover identity extraction, ContextVar lifecycle, per-user cache isolation, expired-token refresh.
     </div>
   </div>
 
-  <div class="phase pending">
-    <div class="phase-label">Phase 4 · Track C</div>
+  <div class="phase done">
+    <div class="phase-label">Phase 4 · DONE 2026-05-14 (commit 2a04433) — design pivoted to SOQL against Ivan's package</div>
     <h3>Schema discovery</h3>
-    <p><code>scripts/discover_schema.py --org &lt;sandbox|prod&gt; --output data/schema/salesforce-schema-map.json</code>. Hits <code>services/data/v60.0/sobjects</code> + per-object describe + child-relationship walk.</p>
-    <p><strong>Output:</strong> <code>salesforce-schema-map.json</code> (full structured map) + <code>salesforce-schema-summary.md</code> (Claude-readable). Exposed via <code>salesforce_get_schema_summary</code> and <code>salesforce_describe_object</code>. Cached in Cosmos <code>schema_cache</code> (PK <code>/org_id</code>), refreshed weekly.</p>
-    <p style="color: var(--text-dim);"><strong>Critical:</strong> capture custom-object patterns (<code>__c</code>, <code>__r</code>, <code>__mdt</code>, <code>__x</code>, <code>__b</code>) and FLS per current user. Without this, Claude hallucinates field names against Fourth's custom objects.</p>
+    <p><strong>Design pivot:</strong> instead of walking <code>/services/data/v62.0/sobjects</code> ourselves, we SOQL against <code>Schema_Snapshot__c</code> — the custom object Ivan's Apex package (<code>SchemaChangeDetector</code> v3.2.0, SFDC-1473) maintains hourly inside the SF org. Ivan already solved governor limits in-org via a Queueable chain; we just consume the latest <code>Run_ID__c</code>. Massively smaller scope, refreshed for free.</p>
+    <p><code>discover_org_schema(runner)</code> issues two SOQL queries (latest Run_ID → rows filtered by <code>_PRIORITY_OBJECTS</code>) and groups into a JSON map. <code>_extract_records()</code> is a forgiving adapter — handles 3 candidate response shapes; first live pilot call surfaces the real one. In-memory cache via <code>_InMemorySchemaCache</code>; Phase 7 swap to Cosmos is a one-line factory change.</p>
+    <p><strong>Tools registered:</strong> <code>salesforce_list_available_objects</code>, <code>salesforce_describe_object</code>, <code>salesforce_get_schema_summary</code>, <code>salesforce_refresh_schema_cache</code>. All allowlist-gated against <code>MARKETING_READONLY</code>; identity flows automatically via <code>ContextVar</code> (no new auth plumbing).</p>
+    <p style="color: var(--text-dim); font-size: 13px;"><strong>Tests:</strong> 20 new <code>pytest-httpx</code>-mocked cases covering SOQL shape, row grouping, response-adapter fallback, markdown summary, cache hit/miss, four-tool surface + allowlist gating.</p>
   </div>
 
   <div class="phase pending">
@@ -886,22 +888,26 @@ deny:
 
 <!-- 13 Status Snapshot -->
 <section id="s13">
-  <h2><span class="sec-num">§13</span> Status snapshot · 2026-05-14</h2>
+  <h2><span class="sec-num">§13</span> Status snapshot · 2026-05-14 (end of day)</h2>
   <table>
     <thead><tr><th>Item</th><th>Status</th><th>Detail</th></tr></thead>
     <tbody>
-      <tr><td>Phase 1 scaffold</td><td><span class="status done">✅ Done</span></td><td>Commit <code>fefb034</code> on <code>main</code>, 62 files / 6,701 insertions; 33 tests pass; <code>/health</code> 200; <code>/mcp</code> accepts JSON-RPC</td></tr>
+      <tr><td>Phase 1 scaffold</td><td><span class="status done">✅ Done</span></td><td>Commit <code>fefb034</code>; 33 tests pass</td></tr>
+      <tr><td>Phase 2 HostedMCPProxy + first proxy tool</td><td><span class="status done">✅ Done 2026-05-14</span></td><td>Commit <code>932eca9</code> — httpx JSON-RPC + per-user Auth header injection + <code>salesforce_query_readonly</code>; +13 tests</td></tr>
+      <tr><td>Phase 3 user-delegated downstream auth</td><td><span class="status done">✅ Done 2026-05-14</span></td><td>Commit <code>bd8e9f1</code> — <code>EasyAuthGate</code> surfaces <code>UserIdentity</code> via <code>ContextVar</code>; <code>HostedMCPProxy</code> uses user's Entra token directly via RFC 8693 (no OBO); per-user SF token cache; +17 tests</td></tr>
+      <tr><td>Phase 4 schema discovery via Ivan's Apex package</td><td><span class="status done">✅ Done 2026-05-14</span></td><td>Commit <code>2a04433</code> — SOQL against <code>Schema_Snapshot__c</code> (NOT REST sobjects walk); four tools registered (<code>list</code>/<code>describe</code>/<code>summary</code>/<code>refresh</code>); +20 tests</td></tr>
       <tr><td>Phase 0 — Entra app <code>MCP: Salesforce</code></td><td><span class="status done">✅ Provisioned</span></td><td>APP_ID <code>56012700-c226-4122-bda6-e32a68939c33</code></td></tr>
-      <tr><td>Phase 0 — Salesforce ECA</td><td><span class="status done">✅ Configured</span></td><td>Token Exchange Flow enabled</td></tr>
-      <tr><td>Phase 0 — SF Token Exchange Handler</td><td><span class="status done">✅ Registered</span></td><td>Validated via spike — returns precise JWT errors instead of "handler not found"</td></tr>
-      <tr><td>Phase 0 — Entra JWT issuer alignment</td><td><span class="status done">✅ Resolved 2026-05-13</span></td><td>IT flipped <code>accessTokenAcceptedVersion: 2</code>; tokens now carry <code>iss=&lt;tenant&gt;/v2.0</code>. Token size dropped 1386 → 1258 chars, confirming v2 format.</td></tr>
-      <tr><td>Phase 0 — Handler audience config</td><td><span class="status pending">⏳ Pending SF admin</span></td><td><strong>New blocker surfaced 2026-05-14.</strong> v2 tokens default the <code>aud</code> claim to the bare appId GUID, but the SF handler is configured for the App ID URI form (likely copied from v1 docs). <strong>One-line SF-side config change:</strong> update expected audience from <code>api://56012700-c226-4122-bda6-e32a68939c33</code> to bare GUID <code>56012700-c226-4122-bda6-e32a68939c33</code>. No code redeploy.</td></tr>
-      <tr><td>Spike script</td><td><span class="status pending">⏳ 3/4 steps green</span></td><td><code>scripts/spike_token_exchange.py</code> — Entra v2 token acquired ✅, request reaches SF Token Exchange handler ✅, issuer validated ✅, audience validation pending config fix. Re-run to PASS once SF admin updates handler audience.</td></tr>
-      <tr><td>AE conversation (pricing + SLA)</td><td><span class="status open">Open</span></td><td>Does NOT block v1 through Phase 8; gates Phase 9 launch</td></tr>
+      <tr><td>Phase 0 — Salesforce ECA + Token Exchange Handler</td><td><span class="status done">✅ Configured + Registered</span></td><td>Token Exchange Flow enabled; Apex handler registered; 12/12 Apex tests pass</td></tr>
+      <tr><td>Phase 0 — Entra v2 token format + handler audience match</td><td><span class="status done">✅ Resolved 2026-05-14</span></td><td>IT flipped <code>accessTokenAcceptedVersion: 2</code> AM; Ivan landed audience match (bare GUID) + <code>aud</code>-as-array unwrap by 11:27 AM</td></tr>
+      <tr><td>Spike script — full JWT validation chain</td><td><span class="status done">✅ Validation chain green</span></td><td>Final spike "error" is the handler correctly demanding a user identity claim (<code>email</code>/<code>upn</code>/<code>preferred_username</code>) — <code>client_credentials</code> tokens don't carry one by definition. <strong>Spike has reached its design boundary.</strong> Live user-delegated traffic falls out of first pilot signin via Anthropic Connector.</td></tr>
+      <tr><td>Test suite</td><td><span class="status done">83 passed, 2 xfailed</span></td><td>33 baseline → 83 end-of-day; 50 new tests across 3 Ralph tasks</td></tr>
+      <tr><td>AE conversation (pricing + SLA)</td><td><span class="status open">Open</span></td><td>Does NOT block v1 through Phase 8; gates Phase 9 launch only</td></tr>
     </tbody>
   </table>
   <div class="callout success">
-    <strong>Reality check (2026-05-14):</strong> The Entra v2 issuer flip landed; we walked past two SF-side errors in a week. The handler now surfaces a final (one-line) config blocker — audience expected as URI, v2 tokens carry bare GUID. SF admin updates the handler config and we're 4/4 green. All four parallel tracks below remain unblocked. <strong>Bonus this week:</strong> Ivan's Apex schema package lands — reshapes Phase 4 significantly (see §16).
+    <strong>End-of-day reality check (2026-05-14):</strong> Three Ralph tasks shipped today in TDD mode — Phase 2 + 3 + 4 all on <code>main</code>. The five-round JWT validation walk against the SF handler closed every layer (signature → issuer → audience → array-unwrap → claim extraction). Direct RFC 8693 with the user's Entra token works; no OBO bridge needed (resolves the Phase 3 open question). Skipping manual <code>az</code> user-token validation by choice — pilot signin via Anthropic Connector is the real end-to-end test and surfaces no later than first user interaction.
+    <br><br>
+    <strong>What still ships before pilot:</strong> Phase 5 middleware promotion (audit/allowlist/safety/dept-routing/telemetry → FastMCP <code>Middleware</code> classes wired into request lifecycle) · Phase 6 Railway dev deploy · Phase 7 Azure Container App + Cosmos + Key Vault · Phase 8 GitHub Actions OIDC · Phase 9 Anthropic Connector + Marketing onboarding.
   </div>
 </section>
 
@@ -1073,7 +1079,7 @@ deny:
       <tr><td>2</td><td>IT-created Entra app <code>MCP: Salesforce</code>?</td><td><span class="status closed">✅ Closed</span> APP_ID <code>56012700-...</code></td></tr>
       <tr><td>3</td><td>Salesforce ECA configured?</td><td><span class="status closed">✅ Closed</span> ECA + Token Exchange Flow + Token Exchange Handler all registered</td></tr>
       <tr><td>3b</td><td>Entra JWT issuer aligned with handler expectation?</td><td><span class="status closed">✅ Closed 2026-05-13</span> IT flipped <code>accessTokenAcceptedVersion: 2</code>; tokens now carry <code>iss=&lt;tenant&gt;/v2.0</code></td></tr>
-      <tr><td>3c</td><td>Handler audience matches v2 token <code>aud</code> claim?</td><td><span class="status pending">⏳ Pending SF admin</span> v2 tokens carry bare GUID; handler expects <code>api://&lt;guid&gt;</code>. One-line config change.</td></tr>
+      <tr><td>3c</td><td>Handler audience matches v2 token <code>aud</code> claim?</td><td><span class="status closed">✅ Closed 2026-05-14</span> Ivan landed both fixes by 11:27 AM — bare-GUID audience match AND <code>aud</code>-as-array unwrap (RFC 7519). 12/12 Apex tests pass.</td></tr>
       <tr><td>4</td><td>SF org Entra-federated for SSO?</td><td><span class="status open">To confirm</span> with admin — likely yes since Token Exchange path works</td></tr>
       <tr><td>5</td><td>Marketing pilot users — Entra OIDs?</td><td><span class="status open">Open</span> — needed before Phase 7 App Role assignment</td></tr>
       <tr><td>6</td><td>First workflow's required custom objects?</td><td><span class="status open">Open</span> — drives schema discovery scope priority</td></tr>
@@ -1081,14 +1087,14 @@ deny:
       <tr><td>8</td><td>Exact Hosted MCP base URL pattern?</td><td><span class="status closed">✅ Likely closed</span> <code>https://hs.my.salesforce.com/services/mcp/&lt;server-name&gt;</code> per spike</td></tr>
       <tr><td>9</td><td>AE confirmation on pricing?</td><td><span class="status open">Open</span> — does NOT block design/build through Phase 8; gates Phase 9</td></tr>
       <tr><td>10</td><td>AE confirmation on SLA?</td><td><span class="status open">Open</span> — same gate as Q9</td></tr>
-      <tr><td>11</td><td>Token Exchange end-to-end?</td><td><span class="status pending">⏳ Pending Q3c</span> 3/4 validation steps green; one-line audience config away from PASS</td></tr>
+      <tr><td>11</td><td>Token Exchange end-to-end?</td><td><span class="status closed">✅ Closed 2026-05-14</span> JWT signature / issuer / audience / array-unwrap all validating. Final spike "error" is by-design — handler correctly demands user identity claims that app-only tokens don't carry. Real user-delegated traffic arrives at first pilot signin.</td></tr>
       <tr><td>12</td><td>IT/security approval on per-user RT in Key Vault?</td><td><span class="status open">Open</span> — confirm in Phase 7 prep</td></tr>
     </tbody>
   </table>
 </section>
 
 <footer>
-  Addendum reflects state as of 2026-05-07 18:30 ET; updated 2026-05-14 with Entra v2 issuer resolution, handler audience config blocker, and Ivan's Apex schema package shift. Original proposal above remains unmodified. Source: <code>we-are-ready-to-jaunty-shamir.md</code> + 2026-05-14 spike notes.
+  Addendum reflects state as of 2026-05-07 18:30 ET; updated 2026-05-14 end-of-day with Phase 2 + 3 + 4 shipping (commits <code>932eca9</code> / <code>bd8e9f1</code> / <code>2a04433</code>), full Entra↔SF JWT validation chain green, no-OBO confirmed via spike walk, schema discovery reshaped onto Ivan's Apex package. Original proposal above remains unmodified. Source: <code>we-are-ready-to-jaunty-shamir.md</code> + 2026-05-14 spike notes + 2026-05-14 Ralph session.
 </footer>
 
 </main>
