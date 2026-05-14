@@ -423,8 +423,8 @@
   <div class="pills">
     <span class="pill accent">Draft for Dave's review</span>
     <span class="pill success">Scaffold ✅ done (commit fefb034)</span>
-    <span class="pill amber">⏳ Awaiting Entra v2 issuer flip</span>
-    <span class="pill">v1 → v2 framing · 2026-05-07</span>
+    <span class="pill amber">⏳ SF handler audience config fix pending</span>
+    <span class="pill">v1 → v2 framing · 2026-05-07 · updated 2026-05-14</span>
   </div>
 </div>
 
@@ -886,7 +886,7 @@ deny:
 
 <!-- 13 Status Snapshot -->
 <section id="s13">
-  <h2><span class="sec-num">§13</span> Status snapshot · 2026-05-07</h2>
+  <h2><span class="sec-num">§13</span> Status snapshot · 2026-05-14</h2>
   <table>
     <thead><tr><th>Item</th><th>Status</th><th>Detail</th></tr></thead>
     <tbody>
@@ -894,13 +894,14 @@ deny:
       <tr><td>Phase 0 — Entra app <code>MCP: Salesforce</code></td><td><span class="status done">✅ Provisioned</span></td><td>APP_ID <code>56012700-c226-4122-bda6-e32a68939c33</code></td></tr>
       <tr><td>Phase 0 — Salesforce ECA</td><td><span class="status done">✅ Configured</span></td><td>Token Exchange Flow enabled</td></tr>
       <tr><td>Phase 0 — SF Token Exchange Handler</td><td><span class="status done">✅ Registered</span></td><td>Validated via spike — returns precise JWT errors instead of "handler not found"</td></tr>
-      <tr><td>Phase 0 — Entra JWT issuer alignment</td><td><span class="status pending">⏳ Awaiting IT</span></td><td>Manifest needs <code>accessTokenAcceptedVersion: 2</code> so tokens carry <code>iss=…/v2.0</code>. Currently v1 issuer <code>sts.windows.net/&lt;tenant&gt;/</code> rejected by handler. Message sent 2026-05-07.</td></tr>
-      <tr><td>Spike script</td><td><span class="status pending">⏳ Steps 1-2 pass</span></td><td><code>scripts/spike_token_exchange.py</code> — Step 3 fails: <code>Invalid issuer. Expected: …/v2.0, got: sts.windows.net/…</code>. Re-run to PASS once IT flips manifest.</td></tr>
+      <tr><td>Phase 0 — Entra JWT issuer alignment</td><td><span class="status done">✅ Resolved 2026-05-13</span></td><td>IT flipped <code>accessTokenAcceptedVersion: 2</code>; tokens now carry <code>iss=&lt;tenant&gt;/v2.0</code>. Token size dropped 1386 → 1258 chars, confirming v2 format.</td></tr>
+      <tr><td>Phase 0 — Handler audience config</td><td><span class="status pending">⏳ Pending SF admin</span></td><td><strong>New blocker surfaced 2026-05-14.</strong> v2 tokens default the <code>aud</code> claim to the bare appId GUID, but the SF handler is configured for the App ID URI form (likely copied from v1 docs). <strong>One-line SF-side config change:</strong> update expected audience from <code>api://56012700-c226-4122-bda6-e32a68939c33</code> to bare GUID <code>56012700-c226-4122-bda6-e32a68939c33</code>. No code redeploy.</td></tr>
+      <tr><td>Spike script</td><td><span class="status pending">⏳ 3/4 steps green</span></td><td><code>scripts/spike_token_exchange.py</code> — Entra v2 token acquired ✅, request reaches SF Token Exchange handler ✅, issuer validated ✅, audience validation pending config fix. Re-run to PASS once SF admin updates handler audience.</td></tr>
       <tr><td>AE conversation (pricing + SLA)</td><td><span class="status open">Open</span></td><td>Does NOT block v1 through Phase 8; gates Phase 9 launch</td></tr>
     </tbody>
   </table>
   <div class="callout success">
-    <strong>Reality check:</strong> One config flip from IT (Entra manifest <code>accessTokenAcceptedVersion: 2</code>) is the only thing standing between us and a live downstream auth flow. All four tracks below can start now and merge cleanly when that flip lands.
+    <strong>Reality check (2026-05-14):</strong> The Entra v2 issuer flip landed; we walked past two SF-side errors in a week. The handler now surfaces a final (one-line) config blocker — audience expected as URI, v2 tokens carry bare GUID. SF admin updates the handler config and we're 4/4 green. All four parallel tracks below remain unblocked. <strong>Bonus this week:</strong> Ivan's Apex schema package lands — reshapes Phase 4 significantly (see §16).
   </div>
 </section>
 
@@ -921,7 +922,7 @@ deny:
       <tr><td>Auth — downstream</td><td>OAuth 2.0 Token Exchange (RFC 8693) via Salesforce ECA with admin-registered Token Exchange Handler</td></tr>
       <tr><td>Token cache</td><td>Per-user SF refresh tokens in Azure Key Vault (<code>salesforce-rt-&lt;user-oid&gt;</code>); access tokens in-memory with TTL</td></tr>
       <tr><td>Tool surface</td><td>Curated <code>marketing-readonly</code> bundle (~10 tools)</td></tr>
-      <tr><td>Schema intelligence</td><td>Discovery script + Cosmos <code>schema_cache</code> + <code>salesforce_get_schema_summary</code> tool + weekly cron + manual refresh. <strong>This is the customization layer for Fourth's org.</strong></td></tr>
+      <tr><td>Schema intelligence</td><td><strong>Reshaped 2026-05-14.</strong> We now consume <strong>Ivan's Apex schema package</strong> — a <code>Schema_Snapshot__c</code> custom object refreshed hourly via Queueable chain inside the org. Our proxy SOQLs the latest <code>Run_ID__c</code> through <code>salesforce_query_readonly</code>, parses into JSON map, caches in Cosmos. Governor limits solved in-org; we get a stable, refreshable schema source for free. <strong>The customization layer for Fourth's org.</strong></td></tr>
       <tr><td>Audit</td><td>Cosmos <code>audit_log</code> (PK <code>/user_id</code>) — request_id, user, dept, tool, objects_touched, query_hash, outcome, latency, token_estimate</td></tr>
       <tr><td>Rate limit</td><td>Cosmos <code>rate_limit_buckets</code> — sliding-window per-user + per-dept + per-tool, survives restarts</td></tr>
       <tr><td>Safety</td><td>Mutation blocking, SOQL <code>LIMIT</code> enforcement (default 25, max 200), unknown-custom-object blocking until schema confirms</td></tr>
@@ -972,10 +973,10 @@ deny:
     </div>
 
     <div class="track-card c">
-      <div class="tag">Track C · Phase 4</div>
-      <h4>Schema discovery</h4>
-      <p><code>scripts/discover_schema.py</code> against <code>services/data/v62.0/sobjects</code> via SF REST (no Hosted MCP needed). <code>summarize_schema.py</code> for JSON → markdown. Wire <code>get_schema_summary</code> + <code>describe_object</code> tools. Commit example artifacts.</p>
-      <p style="color: var(--text-faint); font-size: 12px;"><strong>Blocked by:</strong> nothing for the script; Cosmos cache integration depends on Track D.</p>
+      <div class="tag">Track C · Phase 4 · reshaped 2026-05-14</div>
+      <h4>Schema discovery — via Ivan's Apex package</h4>
+      <p><strong>Updated approach:</strong> instead of walking <code>services/data/v62.0/sobjects</code> ourselves, we SOQL the <code>Schema_Snapshot__c</code> custom object that Ivan's Apex package maintains hourly inside the org. <code>scripts/discover_schema.py</code> becomes a thin SOQL client; <code>summarize_schema.py</code> parses snapshot rows → JSON map → markdown. <code>get_schema_summary</code> + <code>describe_object</code> tools stay unchanged from the consumer side.</p>
+      <p style="color: var(--text-faint); font-size: 12px;"><strong>Blocked by:</strong> nothing; massively smaller scope. <strong>Why better:</strong> Ivan's Queueable chain solves governor limits in-org; we get hourly-fresh schema for free.</p>
     </div>
 
     <div class="track-card d">
@@ -987,12 +988,13 @@ deny:
   </div>
 
   <div class="callout warn">
-    <strong>What still has to wait for the Entra fix:</strong>
+    <strong>What still has to wait for the SF handler audience fix (2026-05-14):</strong>
     <ul style="margin: 8px 0 0;">
-      <li>Phase 3 closure (Token Exchange end-to-end PASS in spike)</li>
+      <li>Phase 3 closure (Token Exchange end-to-end PASS in spike — currently 3/4 steps green)</li>
       <li>Real Hosted MCP calls against live Salesforce (mocked calls in Track A unblock everything else)</li>
       <li>Marketing pilot rollout (Phase 9)</li>
     </ul>
+    <p style="margin-top:10px; color: var(--text-dim); font-size: 13px;"><strong>Track C scope shrinks dramatically</strong> thanks to Ivan's Apex schema package — see §16.</p>
   </div>
 </section>
 
@@ -1001,6 +1003,14 @@ deny:
   <h2><span class="sec-num">§16</span> Schema discovery — "does this customize the connector for Fourth's custom objects?"</h2>
   <div class="callout success">
     <strong>Yes — that is precisely what it does</strong>, and it's why v1 includes it. Fourth's Salesforce org has many custom objects (<code>__c</code>, <code>__r</code>, <code>__mdt</code>, <code>__x</code>, <code>__b</code>), each with their own fields, relationships, picklists, validation rules, and FLS policies that don't exist in any other org. Without schema discovery, Claude operates against a "generic Salesforce" mental model and hallucinates field names whenever Fourth's customization diverges from standard.
+  </div>
+
+  <div class="callout">
+    <strong>Updated 2026-05-14 — we now consume Ivan's Apex package.</strong> Ivan built a Salesforce-side schema detector that runs inside the org and maintains a <code>Schema_Snapshot__c</code> custom object hourly (7am–7pm Mon–Fri). Our proxy queries this snapshot via SOQL through the existing <code>salesforce_query_readonly</code> tool, rather than walking <code>/services/data/v62.0/sobjects</code> ourselves. Ivan already solved governor limits in-org via a Queueable chain (<code>SnapshotObjectsJob → FieldsBatch1Job → FieldsBatch2Job → ComparisonBatch</code>); we just consume the output.
+    <br><br>
+    <strong>Schema_Snapshot__c fields:</strong> <code>Run_ID__c</code> (groups hourly run), <code>Type__c</code> (<em>Object</em> or <em>Field</em>), <code>Object_API_Name__c</code>, <code>Field_API_Name__c</code>, <code>Label__c</code>, <code>Data_Type__c</code>.
+    <br><br>
+    <strong>What this changes:</strong> Phase 4 scope shrinks dramatically. <code>scripts/discover_schema.py</code> becomes a thin SOQL client. Refresh is now hourly (Ivan's job) instead of weekly (our cron). Our governor-limit risk goes to zero. The downstream tool surface (<code>salesforce_get_schema_summary</code>, <code>salesforce_describe_object</code>) is unchanged — only the source of truth shifts.
   </div>
 
   <h3>What the discovery process produces</h3>
@@ -1036,11 +1046,12 @@ deny:
   <p>…instead of guessing standard-looking field names that don't exist (<code>Account.healthScore</code>, etc.).</p>
   <p>Safety middleware (Track B) enforces "describe before query": SOQL against an unknown custom object is blocked until Claude confirms it via <code>salesforce_describe_object</code>.</p>
 
-  <h3>Refresh strategy in v1</h3>
+  <h3>Refresh strategy in v1 (updated 2026-05-14)</h3>
   <ul>
-    <li><strong>Initial:</strong> <code>python scripts/discover_schema.py --org production</code> runs during the first deploy</li>
-    <li><strong>Periodic:</strong> weekly cron (Azure Functions or scheduled Container Apps job) re-runs discovery and refreshes Cosmos</li>
-    <li><strong>Manual:</strong> <code>salesforce_refresh_schema_cache</code> MCP tool callable by admin-tier users on demand</li>
+    <li><strong>Source of truth:</strong> Ivan's Apex <code>SnapshotObjectsJob</code> Queueable chain runs hourly 7am–7pm Mon–Fri, writing fresh rows to <code>Schema_Snapshot__c</code></li>
+    <li><strong>Initial:</strong> <code>python scripts/discover_schema.py --org production</code> SOQLs the latest <code>Run_ID__c</code> from Ivan's snapshot and builds our JSON map</li>
+    <li><strong>Periodic:</strong> our cron pulls the latest Run_ID (lightweight SOQL, no REST-walk, no governor risk)</li>
+    <li><strong>Manual:</strong> <code>salesforce_refresh_schema_cache</code> MCP tool callable by admin-tier users on demand — just re-pulls latest Run_ID</li>
   </ul>
 
   <h3>What v2 adds on top</h3>
@@ -1061,7 +1072,8 @@ deny:
       <tr><td>1</td><td>Sandbox or production for Phase 1?</td><td><span class="status closed">✅ Closed</span> production with closed pilot group</td></tr>
       <tr><td>2</td><td>IT-created Entra app <code>MCP: Salesforce</code>?</td><td><span class="status closed">✅ Closed</span> APP_ID <code>56012700-...</code></td></tr>
       <tr><td>3</td><td>Salesforce ECA configured?</td><td><span class="status closed">✅ Closed</span> ECA + Token Exchange Flow + Token Exchange Handler all registered</td></tr>
-      <tr><td>3b</td><td>Entra JWT issuer aligned with handler expectation?</td><td><span class="status pending">⏳ Pending IT</span> <code>accessTokenAcceptedVersion: 2</code> requested 2026-05-07</td></tr>
+      <tr><td>3b</td><td>Entra JWT issuer aligned with handler expectation?</td><td><span class="status closed">✅ Closed 2026-05-13</span> IT flipped <code>accessTokenAcceptedVersion: 2</code>; tokens now carry <code>iss=&lt;tenant&gt;/v2.0</code></td></tr>
+      <tr><td>3c</td><td>Handler audience matches v2 token <code>aud</code> claim?</td><td><span class="status pending">⏳ Pending SF admin</span> v2 tokens carry bare GUID; handler expects <code>api://&lt;guid&gt;</code>. One-line config change.</td></tr>
       <tr><td>4</td><td>SF org Entra-federated for SSO?</td><td><span class="status open">To confirm</span> with admin — likely yes since Token Exchange path works</td></tr>
       <tr><td>5</td><td>Marketing pilot users — Entra OIDs?</td><td><span class="status open">Open</span> — needed before Phase 7 App Role assignment</td></tr>
       <tr><td>6</td><td>First workflow's required custom objects?</td><td><span class="status open">Open</span> — drives schema discovery scope priority</td></tr>
@@ -1069,14 +1081,14 @@ deny:
       <tr><td>8</td><td>Exact Hosted MCP base URL pattern?</td><td><span class="status closed">✅ Likely closed</span> <code>https://hs.my.salesforce.com/services/mcp/&lt;server-name&gt;</code> per spike</td></tr>
       <tr><td>9</td><td>AE confirmation on pricing?</td><td><span class="status open">Open</span> — does NOT block design/build through Phase 8; gates Phase 9</td></tr>
       <tr><td>10</td><td>AE confirmation on SLA?</td><td><span class="status open">Open</span> — same gate as Q9</td></tr>
-      <tr><td>11</td><td>Token Exchange end-to-end?</td><td><span class="status pending">⏳ Pending Q3b</span> re-run spike post-Entra-fix, expect PASS</td></tr>
+      <tr><td>11</td><td>Token Exchange end-to-end?</td><td><span class="status pending">⏳ Pending Q3c</span> 3/4 validation steps green; one-line audience config away from PASS</td></tr>
       <tr><td>12</td><td>IT/security approval on per-user RT in Key Vault?</td><td><span class="status open">Open</span> — confirm in Phase 7 prep</td></tr>
     </tbody>
   </table>
 </section>
 
 <footer>
-  Addendum reflects state as of 2026-05-07 18:30 ET. Original proposal above remains unmodified. Source: <code>we-are-ready-to-jaunty-shamir.md</code>.
+  Addendum reflects state as of 2026-05-07 18:30 ET; updated 2026-05-14 with Entra v2 issuer resolution, handler audience config blocker, and Ivan's Apex schema package shift. Original proposal above remains unmodified. Source: <code>we-are-ready-to-jaunty-shamir.md</code> + 2026-05-14 spike notes.
 </footer>
 
 </main>
