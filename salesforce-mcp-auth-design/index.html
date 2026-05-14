@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Auth Design — fourth-salesforce-mcp</title>
+<meta name="description" content="Authentication architecture for fourth-salesforce-mcp and the reusable pattern for other SaaS connectors (Zendesk, NetSuite, etc.)." />
+<style>
+  :root {
+    --navy: #0b1c3d;
+    --navy-soft: #1a2b4d;
+    --ink: #0f172a;
+    --slate: #334155;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --cyan: #06b6d4;
+    --magenta: #db2777;
+    --green: #059669;
+    --green-soft: #d1fae5;
+    --amber: #d97706;
+    --amber-soft: #fef3c7;
+    --red: #dc2626;
+    --red-soft: #fee2e2;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.06);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────────────── */
+  header.hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 60%, #1e3a8a 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 40px 44px;
+    box-shadow: var(--shadow);
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::after {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header.hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: 600;
+    color: #93c5fd;
+    margin-bottom: 12px;
+  }
+  header.hero h1 {
+    margin: 0 0 12px;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header.hero p.subtitle {
+    margin: 0 0 24px;
+    color: #cbd5e1;
+    font-size: 17px;
+    max-width: 680px;
+  }
+  header.hero .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .badge.green { background: rgba(16, 185, 129, 0.18); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
+  .badge.amber { background: rgba(217, 119, 6, 0.2); color: #fcd34d; border-color: rgba(217, 119, 6, 0.35); }
+  .badge.dot::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+    display: inline-block;
+  }
+
+  /* ─── SECTIONS ───────────────────────────────────────────────── */
+  section {
+    margin-bottom: 44px;
+  }
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+  }
+  h2 .num {
+    display: inline-block;
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 32px;
+    font-size: 15px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--slate);
+    margin: 28px 0 10px;
+  }
+  p { margin: 0 0 12px; color: var(--slate); }
+  .lede {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 22px;
+    max-width: 800px;
+  }
+
+  /* ─── CARDS ──────────────────────────────────────────────────── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .tldr {
+    border-left: 4px solid var(--accent);
+  }
+  .tldr h2 { margin-bottom: 12px; }
+  .tldr p { color: var(--ink); font-size: 16px; }
+  .tldr ol {
+    color: var(--slate);
+    padding-left: 22px;
+    margin: 12px 0;
+  }
+  .tldr ol li { margin-bottom: 6px; }
+  .tldr strong { color: var(--ink); }
+
+  /* ─── BIG PICTURE ────────────────────────────────────────────── */
+  .bigpic {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: stretch;
+    gap: 16px;
+    margin: 20px 0 8px;
+  }
+  .bigpic .node {
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 110px;
+  }
+  .bigpic .node.us {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  }
+  .bigpic .node .name {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .bigpic .node .role {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .bigpic .arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 90px;
+  }
+  .bigpic .arrow .line {
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+    position: relative;
+    margin: 8px 0;
+  }
+  .bigpic .arrow .line::after {
+    content: "";
+    position: absolute;
+    right: -2px; top: -4px;
+    width: 0; height: 0;
+    border-left: 8px solid var(--accent);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+  }
+  .bigpic .arrow .label {
+    color: var(--accent);
+  }
+  .bigpic-caption {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* ─── SEQUENCE DIAGRAMS ──────────────────────────────────────── */
+  .diagram {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .diagram svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ─── TABLES ─────────────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  thead tr {
+    background: var(--navy);
+    color: white;
+  }
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #f8fafc; }
+  td code, p code, li code {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  /* ─── REUSABILITY CARDS ──────────────────────────────────────── */
+  .reuse-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .reuse-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .reuse-card.amber { border-top-color: var(--amber); }
+  .reuse-card.red { border-top-color: var(--red); }
+  .reuse-card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: var(--green-soft);
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+  .reuse-card.amber .tag { background: var(--amber-soft); color: var(--amber); }
+  .reuse-card.red .tag { background: var(--red-soft); color: var(--red); }
+  .reuse-card h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: var(--navy);
+  }
+  .reuse-card p {
+    font-size: 14px;
+    color: var(--slate);
+    margin: 0 0 6px;
+  }
+  .reuse-card ul {
+    padding-left: 18px;
+    margin: 8px 0 0;
+    font-size: 13.5px;
+    color: var(--slate);
+  }
+  .reuse-card ul li { margin-bottom: 4px; }
+
+  /* ─── CODE BLOCKS ────────────────────────────────────────────── */
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 12px 0;
+  }
+  pre .kw { color: #f472b6; }
+  pre .str { color: #86efac; }
+  pre .com { color: #64748b; font-style: italic; }
+  pre .num-c { color: #fbbf24; }
+  pre .var { color: #93c5fd; }
+
+  /* ─── STATUS LIST ────────────────────────────────────────────── */
+  .status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .status-list li {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .status-list li .icon {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .status-list li.done .icon { background: var(--green-soft); color: var(--green); }
+  .status-list li.pending .icon { background: var(--amber-soft); color: var(--amber); }
+  .status-list li.blocked .icon { background: var(--red-soft); color: var(--red); }
+  .status-list li .body { flex: 1; }
+  .status-list li .body strong { color: var(--ink); font-size: 14.5px; }
+  .status-list li .body span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  /* ─── FOOTER ─────────────────────────────────────────────────── */
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+  @media (max-width: 800px) {
+    .wrap { padding: 24px 16px 60px; }
+    header.hero { padding: 28px 24px; }
+    header.hero h1 { font-size: 26px; }
+    .bigpic {
+      grid-template-columns: 1fr;
+    }
+    .bigpic .arrow { transform: rotate(90deg); min-height: 60px; }
+    .reuse-grid { grid-template-columns: 1fr; }
+    .card { padding: 20px; }
+    th, td { padding: 9px 11px; font-size: 13px; }
+  }
+
+  @media print {
+    body { background: white; }
+    header.hero { background: var(--navy) !important; -webkit-print-color-adjust: exact; }
+    .card, table, .diagram { break-inside: avoid; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero">
+  <div class="eyebrow">fourth-salesforce-mcp · internal design doc</div>
+  <h1>Authentication architecture &amp; the reusable SaaS-connector pattern</h1>
+  <p class="subtitle">
+    How we bridge Microsoft Entra ID and Salesforce in a FastMCP governance
+    proxy — and what carries over to Zendesk, NetSuite, the Product MCP, and
+    other downstream SaaS connectors.
+  </p>
+  <div class="meta">
+    <span class="badge dot">Author: David Hayes</span>
+    <span class="badge dot">2026-05-14</span>
+    <span class="badge dot green">Edge auth: done</span>
+    <span class="badge dot amber">Downstream: 3/4 green — audience fix pending</span>
+  </div>
+</header>
+
+<!-- ═══════════════ TL;DR ═══════════════ -->
+<section>
+  <div class="card tldr">
+    <h2>TL;DR</h2>
+    <p>
+      The proxy bridges <strong>two identity worlds</strong> with two independent OAuth legs.
+    </p>
+    <ol>
+      <li>
+        <strong>Edge auth</strong> — incoming MCP requests are validated by ACA Easy
+        Auth (Entra-backed) <em>and</em> re-checked by an in-process middleware
+        (<code>EasyAuthGate</code>). Defense in depth.
+      </li>
+      <li>
+        <strong>Downstream auth</strong> — outgoing calls to Salesforce use
+        OAuth 2.0 Token Exchange (RFC 8693) so the calling user's identity flows
+        through. No shared service account.
+      </li>
+    </ol>
+    <p style="margin-top:14px;">
+      Both legs are designed to be <strong>reusable for other SaaS connectors</strong> —
+      Zendesk, NetSuite, the Product MCP, or any third-party we put behind
+      an Entra-rooted governance proxy. The edge middleware is SaaS-agnostic;
+      the downstream pattern adapts to whatever OAuth server the target
+      system runs.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════ BIG PICTURE ═══════════════ -->
+<section>
+  <h2><span class="num">1</span>The two-leg picture</h2>
+  <p class="lede">
+    Every request crosses two identity boundaries. We have to validate the
+    inbound Entra token, then trade it for a Salesforce token under the
+    same user. No single token satisfies both sides.
+  </p>
+
+  <div class="card">
+    <div class="bigpic">
+      <div class="node">
+        <div class="name">Claude.ai client</div>
+        <div class="role">Anthropic Custom Connector<br/>(OAuth 2.1 + DCR)</div>
+      </div>
+      <div class="arrow">
+        <div class="label">LEG 1</div>
+        <div class="line"></div>
+        <div>Entra JWT</div>
+      </div>
+      <div class="node us">
+        <div class="name">Our proxy</div>
+        <div class="role">FastMCP on<br/>Azure Container Apps</div>
+      </div>
+      <div class="arrow">
+        <div class="label">LEG 2</div>
+        <div class="line"></div>
+        <div>SF access token</div>
+      </div>
+      <div class="node">
+        <div class="name">Salesforce</div>
+        <div class="role">Hosted MCP servers<br/>(sObjects, SOQL, etc.)</div>
+      </div>
+    </div>
+    <div class="bigpic-caption">
+      The proxy adds Fourth-controlled identity, audit, rate limiting, tool
+      curation, and custom-object schema awareness — none of which Salesforce's
+      first-party Hosted MCP gives us.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ LEG 1 — EDGE AUTH ═══════════════ -->
+<section>
+  <h2><span class="num">2</span>Leg 1 — Edge auth (client → proxy)</h2>
+  <p class="lede">
+    Only Fourth-approved users carrying the <code>Mcp.User</code> App Role
+    can reach any tool on this proxy. Easy Auth at the platform edge does
+    the JWT validation; <code>EasyAuthGate</code> in our process does the
+    role check.
+  </p>
+
+  <div class="diagram">
+    <!-- Leg 1 sequence diagram, 880x540 -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" role="img" aria-label="Edge authentication sequence diagram">
+      <title>Leg 1 — Edge auth sequence</title>
+      <desc>Sequence diagram showing how an MCP request from Claude.ai is validated by Easy Auth at the Azure Container Apps edge and then by the EasyAuthGate middleware in our process before reaching a tool.</desc>
+
+      <defs>
+        <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow1-return" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+        </marker>
+      </defs>
+
+      <!-- Actor boxes -->
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="12" font-weight="600" text-anchor="middle">
+        <!-- Actor 1: Client -->
+        <rect x="20" y="20" width="160" height="46" rx="8" fill="#0b1c3d"/>
+        <text x="100" y="40" fill="#fff">Claude.ai Client</text>
+        <text x="100" y="56" fill="#93c5fd" font-size="10">(MCP caller)</text>
+
+        <!-- Actor 2: Entra -->
+        <rect x="200" y="20" width="160" height="46" rx="8" fill="#0b1c3d"/>
+        <text x="280" y="40" fill="#fff">Microsoft Entra ID</text>
+        <text x="280" y="56" fill="#93c5fd" font-size="10">Fourth's IdP</text>
+
+        <!-- Actor 3: Easy Auth -->
+        <rect x="380" y="20" width="160" height="46" rx="8" fill="#1e40af"/>
+        <text x="460" y="40" fill="#fff">Easy Auth</text>
+        <text x="460" y="56" fill="#bfdbfe" font-size="10">ACA platform edge</text>
+
+        <!-- Actor 4: EasyAuthGate -->
+        <rect x="560" y="20" width="160" height="46" rx="8" fill="#1e40af"/>
+        <text x="640" y="40" fill="#fff">EasyAuthGate</text>
+        <text x="640" y="56" fill="#bfdbfe" font-size="10">our middleware</text>
+
+        <!-- Actor 5: Tool -->
+        <rect x="740" y="20" width="120" height="46" rx="8" fill="#0b1c3d"/>
+        <text x="800" y="40" fill="#fff">Tool</text>
+        <text x="800" y="56" fill="#93c5fd" font-size="10">MCP method</text>
+      </g>
+
+      <!-- Lifelines -->
+      <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,4">
+        <line x1="100" y1="66" x2="100" y2="530"/>
+        <line x1="280" y1="66" x2="280" y2="530"/>
+        <line x1="460" y1="66" x2="460" y2="530"/>
+        <line x1="640" y1="66" x2="640" y2="530"/>
+        <line x1="800" y1="66" x2="800" y2="530"/>
+      </g>
+
+      <!-- Step number circles + arrows -->
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="11.5" fill="#334155">
+
+        <!-- Step 1: Client <-> Entra (OAuth 2.1 + DCR) -->
+        <g>
+          <circle cx="38" cy="100" r="11" fill="#2563eb"/>
+          <text x="38" y="104" fill="white" font-size="11" font-weight="700" text-anchor="middle">1</text>
+          <text x="190" y="92" font-weight="600">OAuth 2.1 + Dynamic Client Registration</text>
+          <line x1="105" y1="105" x2="275" y2="105" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow1)"/>
+          <text x="190" y="120" fill="#64748b" font-size="10">Anthropic registers connector against Fourth's Entra app</text>
+        </g>
+
+        <!-- Step 2: User sign-in -->
+        <g>
+          <circle cx="38" cy="150" r="11" fill="#2563eb"/>
+          <text x="38" y="154" fill="white" font-size="11" font-weight="700" text-anchor="middle">2</text>
+          <text x="190" y="142" font-weight="600">Microsoft sign-in flow</text>
+          <line x1="105" y1="155" x2="275" y2="155" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow1)"/>
+          <text x="190" y="170" fill="#64748b" font-size="10">user authenticates (SSO if Entra-federated)</text>
+        </g>
+
+        <!-- Step 3: JWT back -->
+        <g>
+          <circle cx="38" cy="200" r="11" fill="#2563eb"/>
+          <text x="38" y="204" fill="white" font-size="11" font-weight="700" text-anchor="middle">3</text>
+          <text x="190" y="192" font-weight="600">JWT issued (roles claim: Mcp.User)</text>
+          <line x1="275" y1="205" x2="105" y2="205" stroke="#64748b" stroke-width="2" marker-end="url(#arrow1-return)"/>
+        </g>
+
+        <!-- Step 4: MCP request -->
+        <g>
+          <circle cx="38" cy="250" r="11" fill="#2563eb"/>
+          <text x="38" y="254" fill="white" font-size="11" font-weight="700" text-anchor="middle">4</text>
+          <text x="280" y="242" font-weight="600">MCP request: Authorization: Bearer &lt;jwt&gt;</text>
+          <line x1="105" y1="255" x2="455" y2="255" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow1)"/>
+        </g>
+
+        <!-- Step 5: Easy Auth validates -->
+        <g>
+          <circle cx="38" cy="300" r="11" fill="#2563eb"/>
+          <text x="38" y="304" fill="white" font-size="11" font-weight="700" text-anchor="middle">5</text>
+          <rect x="395" y="285" width="130" height="36" rx="6" fill="#dbeafe" stroke="#2563eb"/>
+          <text x="460" y="300" font-weight="600" text-anchor="middle" fill="#1e40af">Validate JWT</text>
+          <text x="460" y="314" font-size="10" text-anchor="middle" fill="#475569">signature, issuer, audience</text>
+          <text x="540" y="300" font-size="10" fill="#64748b">→ 401 if invalid</text>
+        </g>
+
+        <!-- Step 6: Inject header -->
+        <g>
+          <circle cx="38" cy="360" r="11" fill="#2563eb"/>
+          <text x="38" y="364" fill="white" font-size="11" font-weight="700" text-anchor="middle">6</text>
+          <text x="550" y="352" font-weight="600">Inject X-MS-CLIENT-PRINCIPAL</text>
+          <line x1="465" y1="365" x2="635" y2="365" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow1)"/>
+          <text x="550" y="380" fill="#64748b" font-size="10">base64-encoded JSON claims blob</text>
+        </g>
+
+        <!-- Step 7: EasyAuthGate checks role -->
+        <g>
+          <circle cx="38" cy="420" r="11" fill="#2563eb"/>
+          <text x="38" y="424" fill="white" font-size="11" font-weight="700" text-anchor="middle">7</text>
+          <rect x="575" y="405" width="130" height="36" rx="6" fill="#dbeafe" stroke="#2563eb"/>
+          <text x="640" y="420" font-weight="600" text-anchor="middle" fill="#1e40af">has_role("Mcp.User")?</text>
+          <text x="640" y="434" font-size="10" text-anchor="middle" fill="#475569">decode + role match</text>
+        </g>
+
+        <!-- Step 8: Forward to tool -->
+        <g>
+          <circle cx="38" cy="475" r="11" fill="#059669"/>
+          <text x="38" y="479" fill="white" font-size="11" font-weight="700" text-anchor="middle">8</text>
+          <text x="720" y="467" font-weight="600" fill="#059669">Forward to tool</text>
+          <line x1="645" y1="480" x2="795" y2="480" stroke="#059669" stroke-width="2" marker-end="url(#arrow1)"/>
+          <text x="720" y="495" fill="#64748b" font-size="10">on miss → throws McpError -32001</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <h3>Key implementation detail</h3>
+  <p>
+    Easy Auth is configured with <code>Return401</code>, <strong>not</strong>
+    <code>RedirectToLoginPage</code>. MCP clients can't follow HTML redirects;
+    they need a clean <code>401</code> to initiate the OAuth dance properly.
+    This is one of the most common deployment mistakes for MCP-on-ACA.
+  </p>
+
+  <p>
+    The role-claim matcher in <code>EasyAuthGate</code> accepts both
+    <code>roles</code> and the schema-URI form
+    (<code>http://schemas.microsoft.com/ws/2008/06/identity/claims/role</code>)
+    so it works with both Entra v1 and v2 tokens.
+  </p>
+</section>
+
+<!-- ═══════════════ LEG 2 — DOWNSTREAM ═══════════════ -->
+<section>
+  <h2><span class="num">3</span>Leg 2 — Downstream auth (proxy → Salesforce)</h2>
+  <p class="lede">
+    Every upstream call carries the calling user's identity, not a shared
+    service account. The bridge is OAuth 2.0 Token Exchange (RFC 8693) —
+    the cleanest way to swap one IdP's token for another's without
+    redirecting the user through a second sign-in.
+  </p>
+
+  <div class="diagram">
+    <!-- Leg 2 sequence diagram, 880x600 -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 600" role="img" aria-label="Downstream token exchange sequence diagram">
+      <title>Leg 2 — Entra → Salesforce token exchange</title>
+      <desc>Sequence diagram showing how a tool in our proxy acquires a per-user Salesforce access token via RFC 8693 token exchange and then calls a Salesforce Hosted MCP server.</desc>
+
+      <defs>
+        <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow2-return" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+        </marker>
+        <marker id="arrow2-mag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#db2777"/>
+        </marker>
+      </defs>
+
+      <!-- Actor boxes -->
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="12" font-weight="600" text-anchor="middle">
+        <rect x="20" y="20" width="140" height="46" rx="8" fill="#0b1c3d"/>
+        <text x="90" y="40" fill="#fff">Tool</text>
+        <text x="90" y="56" fill="#93c5fd" font-size="10">our proxy</text>
+
+        <rect x="180" y="20" width="140" height="46" rx="8" fill="#1e40af"/>
+        <text x="250" y="40" fill="#fff">TokenStore</text>
+        <text x="250" y="56" fill="#bfdbfe" font-size="10">per-user cache</text>
+
+        <rect x="340" y="20" width="140" height="46" rx="8" fill="#1e40af"/>
+        <text x="410" y="40" fill="#fff">token_exchange</text>
+        <text x="410" y="56" fill="#bfdbfe" font-size="10">our module</text>
+
+        <rect x="500" y="20" width="140" height="46" rx="8" fill="#0b1c3d"/>
+        <text x="570" y="40" fill="#fff">Entra ID</text>
+        <text x="570" y="56" fill="#93c5fd" font-size="10">login.microsoftonline.com</text>
+
+        <rect x="660" y="20" width="200" height="46" rx="8" fill="#0b1c3d"/>
+        <text x="760" y="40" fill="#fff">Salesforce</text>
+        <text x="760" y="56" fill="#93c5fd" font-size="10">ECA + Hosted MCP</text>
+      </g>
+
+      <!-- Lifelines -->
+      <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,4">
+        <line x1="90" y1="66" x2="90" y2="590"/>
+        <line x1="250" y1="66" x2="250" y2="590"/>
+        <line x1="410" y1="66" x2="410" y2="590"/>
+        <line x1="570" y1="66" x2="570" y2="590"/>
+        <line x1="760" y1="66" x2="760" y2="590"/>
+      </g>
+
+      <!-- Steps -->
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="11.5" fill="#334155">
+
+        <!-- 1: Tool -> TokenStore: get(user) -->
+        <g>
+          <circle cx="38" cy="100" r="11" fill="#2563eb"/>
+          <text x="38" y="104" fill="white" font-size="11" font-weight="700" text-anchor="middle">1</text>
+          <text x="170" y="92" font-weight="600">get(user_oid)</text>
+          <line x1="95" y1="105" x2="245" y2="105" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow2)"/>
+          <text x="170" y="120" fill="#64748b" font-size="10">lookup cached SF token</text>
+        </g>
+
+        <!-- 2: cache miss/expired -->
+        <g>
+          <circle cx="38" cy="150" r="11" fill="#2563eb"/>
+          <text x="38" y="154" fill="white" font-size="11" font-weight="700" text-anchor="middle">2</text>
+          <text x="170" y="142" font-weight="600" fill="#d97706">None — cache miss</text>
+          <line x1="245" y1="155" x2="95" y2="155" stroke="#64748b" stroke-width="2" marker-end="url(#arrow2-return)"/>
+        </g>
+
+        <!-- 3: acquire_entra_app_token -->
+        <g>
+          <circle cx="38" cy="200" r="11" fill="#2563eb"/>
+          <text x="38" y="204" fill="white" font-size="11" font-weight="700" text-anchor="middle">3</text>
+          <text x="250" y="192" font-weight="600">acquire_entra_app_token()</text>
+          <line x1="95" y1="205" x2="405" y2="205" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow2)"/>
+        </g>
+
+        <!-- 4: client_credentials -->
+        <g>
+          <circle cx="38" cy="245" r="11" fill="#2563eb"/>
+          <text x="38" y="249" fill="white" font-size="11" font-weight="700" text-anchor="middle">4</text>
+          <text x="490" y="237" font-weight="600">POST /oauth2/v2.0/token</text>
+          <line x1="415" y1="250" x2="565" y2="250" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow2)"/>
+          <text x="490" y="265" fill="#64748b" font-size="10">grant_type=client_credentials (Phase 3: OBO)</text>
+        </g>
+
+        <!-- 5: Entra JWT back -->
+        <g>
+          <circle cx="38" cy="295" r="11" fill="#2563eb"/>
+          <text x="38" y="299" fill="white" font-size="11" font-weight="700" text-anchor="middle">5</text>
+          <text x="490" y="287" font-weight="600">Entra access_token (JWT)</text>
+          <line x1="565" y1="300" x2="415" y2="300" stroke="#64748b" stroke-width="2" marker-end="url(#arrow2-return)"/>
+        </g>
+
+        <!-- 6: SF token exchange -->
+        <g>
+          <circle cx="38" cy="345" r="11" fill="#db2777"/>
+          <text x="38" y="349" fill="white" font-size="11" font-weight="700" text-anchor="middle">6</text>
+          <text x="590" y="337" font-weight="600" fill="#db2777">POST /services/oauth2/token</text>
+          <line x1="415" y1="350" x2="755" y2="350" stroke="#db2777" stroke-width="2" marker-end="url(#arrow2-mag)"/>
+          <text x="590" y="365" fill="#64748b" font-size="10">grant_type=urn:ietf:params:oauth:grant-type:token-exchange</text>
+          <text x="590" y="378" fill="#64748b" font-size="10">subject_token=&lt;entra_jwt&gt;, subject_token_type=…:token-type:jwt</text>
+        </g>
+
+        <!-- 7: SF handler maps user -->
+        <g>
+          <circle cx="38" cy="412" r="11" fill="#db2777"/>
+          <text x="38" y="416" fill="white" font-size="11" font-weight="700" text-anchor="middle">7</text>
+          <rect x="675" y="397" width="170" height="40" rx="6" fill="#fce7f3" stroke="#db2777"/>
+          <text x="760" y="412" font-weight="600" text-anchor="middle" fill="#9d174d">Token Exchange Handler</text>
+          <text x="760" y="427" font-size="10" text-anchor="middle" fill="#831843">maps Entra claim → SF User</text>
+          <text x="500" y="424" fill="#d97706" font-size="10" font-weight="600">⚠ audience config fix pending</text>
+        </g>
+
+        <!-- 8: SF token back -->
+        <g>
+          <circle cx="38" cy="465" r="11" fill="#db2777"/>
+          <text x="38" y="469" fill="white" font-size="11" font-weight="700" text-anchor="middle">8</text>
+          <text x="590" y="457" font-weight="600">access_token + instance_url + refresh_token</text>
+          <line x1="755" y1="470" x2="415" y2="470" stroke="#64748b" stroke-width="2" marker-end="url(#arrow2-return)"/>
+        </g>
+
+        <!-- 9: store -->
+        <g>
+          <circle cx="38" cy="515" r="11" fill="#2563eb"/>
+          <text x="38" y="519" fill="white" font-size="11" font-weight="700" text-anchor="middle">9</text>
+          <text x="330" y="507" font-weight="600">put(user, CachedToken)</text>
+          <line x1="405" y1="520" x2="255" y2="520" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow2)"/>
+        </g>
+
+        <!-- 10: JSON-RPC to Hosted MCP -->
+        <g>
+          <circle cx="38" cy="565" r="11" fill="#059669"/>
+          <text x="38" y="569" fill="white" font-size="11" font-weight="700" text-anchor="middle">10</text>
+          <text x="430" y="557" font-weight="600" fill="#059669">POST JSON-RPC to Hosted MCP + Bearer &lt;sf_token&gt;</text>
+          <line x1="95" y1="570" x2="755" y2="570" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <h3>Why Token Exchange and not PKCE-only?</h3>
+  <p>
+    PKCE works, but it requires a user-side redirect through Salesforce on
+    first auth (and on token expiry if there's no refresh token). Token
+    Exchange keeps the user inside the Microsoft sign-in flow — they
+    never see Salesforce's login page. PKCE remains the documented
+    fallback if the Salesforce-side handler proves operationally painful.
+  </p>
+
+  <h3>Status as of 2026-05-14</h3>
+  <p>The spike journey through Salesforce-side validation — each error a step closer to green:</p>
+  <ul class="status-list">
+    <li class="done">
+      <div class="icon">✓</div>
+      <div class="body">
+        <strong>2026-05-06 · <code>token handler not found</code> — resolved</strong>
+        <span>Handler was not registered. SF admin registered an Apex <code>Auth.TokenExchangeHandler</code> on the External Client App after the 2026-05-07 admin meeting.</span>
+      </div>
+    </li>
+    <li class="done">
+      <div class="icon">✓</div>
+      <div class="body">
+        <strong>2026-05-13 · <code>Invalid issuer (sts.windows.net/…)</code> — resolved</strong>
+        <span>We were requesting a v1-format Entra token. Switched the Entra leg to request a v2 token; token size dropped 1386 → 1258 chars, confirming the format change.</span>
+      </div>
+    </li>
+    <li class="blocked">
+      <div class="icon">!</div>
+      <div class="body">
+        <strong>2026-05-14 · <code>Invalid audience (got [GUID], expected api://GUID)</code> — current blocker</strong>
+        <span>v2 Entra tokens default the <code>aud</code> claim to the bare appId GUID, <strong>not</strong> the App ID URI. Handler was configured for the URI form (likely copied from v1 docs). <strong>One-line SF-side config change needed:</strong> update the handler's expected audience from <code>api://56012700-c226-4122-bda6-e32a68939c33</code> to the bare GUID <code>56012700-c226-4122-bda6-e32a68939c33</code>. No code redeploy.</span>
+      </div>
+    </li>
+    <li class="pending">
+      <div class="icon">…</div>
+      <div class="body">
+        <strong>Phase 3 — OBO for true user impersonation</strong>
+        <span>Today we use <code>client_credentials</code> for the Entra leg. Phase 3 replaces it with On-Behalf-Of so the proxy presents the user's own Entra token, not a service-principal token.</span>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- ═══════════════ TOKEN STORAGE ═══════════════ -->
+<section>
+  <h2><span class="num">4</span>Token storage</h2>
+  <p class="lede">
+    Short-lived access tokens stay in memory. Long-lived refresh tokens
+    eventually move to Azure Key Vault — one secret per user, referenced
+    via managed identity to keep them out of the control plane.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Token</th><th>Lifetime</th><th>Phase 1 (today)</th><th>Phase 7 (GA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Entra access token (app context)</td><td>~1h</td><td>In-memory, re-acquired per burst</td><td>Same</td></tr>
+      <tr><td>Entra access token (per-user OBO)</td><td>~1h</td><td>Not yet — Phase 3</td><td>In-memory</td></tr>
+      <tr><td>Salesforce access token</td><td>~2h (varies)</td><td>In-memory <code>CachedToken</code> with TTL skew</td><td>Same</td></tr>
+      <tr><td>Salesforce refresh token</td><td>long-lived</td><td>In-memory</td><td><strong>Key Vault</strong> — <code>salesforce-rt-&lt;user-oid&gt;</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════ REUSABILITY ═══════════════ -->
+<section>
+  <h2><span class="num">5</span>Reusability for other SaaS connectors</h2>
+  <div class="card" style="background:#fef3c7; border-color:#fde68a; border-left:4px solid #d97706; margin-bottom:18px;">
+    <p style="margin:0; color:#78350f; font-size:14.5px;">
+      <strong>Scope note.</strong> This section is about <em>other MCP
+      servers fronting downstream SaaS systems</em> — Zendesk, NetSuite,
+      the Product MCP Server, any third-party we want to broker behind an
+      Entra-rooted governance proxy. It is <em>not</em> about exposing
+      Fourth's own product line via MCP; the two have nothing to do with
+      each other.
+    </p>
+  </div>
+  <p class="lede">
+    Short answer: <strong>yes, most of the auth design transfers directly.</strong>
+    The edge leg is fully SaaS-agnostic — every Fourth MCP connector behind
+    Easy Auth gets <code>EasyAuthGate</code> for free. The downstream leg is
+    a <em>pattern</em> (Entra-rooted identity → exchange or OBO →
+    short-lived downstream token), not a Salesforce-specific implementation.
+  </p>
+
+  <div class="reuse-grid">
+    <div class="reuse-card">
+      <span class="tag">Copy as-is</span>
+      <h4>Edge middleware</h4>
+      <p>
+        <code>salesforce_mcp/auth.py</code> (<code>EasyAuthGate</code>)
+        only depends on <code>X-MS-CLIENT-PRINCIPAL</code>. Pass your own
+        role name (e.g. <code>Mcp.Product.User</code>) and you're done.
+      </p>
+    </div>
+    <div class="reuse-card">
+      <span class="tag">Copy as-is</span>
+      <h4>Token store</h4>
+      <p>
+        <code>token_store.py</code> — <code>TokenStore</code> Protocol,
+        <code>CachedToken</code>, <code>get_or_acquire</code>. Pure
+        caching, not Salesforce-aware. Phase-7 Key Vault swap is a
+        one-line factory change.
+      </p>
+    </div>
+    <div class="reuse-card">
+      <span class="tag">Copy as-is</span>
+      <h4>Config shape</h4>
+      <p>
+        <code>config.py</code> — the dataclass shape (Entra block +
+        downstream block + auth-mode switch + transport block)
+        generalizes. Rename the SF fields to whatever the Product system
+        needs.
+      </p>
+    </div>
+    <div class="reuse-card amber">
+      <span class="tag">Adapt</span>
+      <h4>Token exchange</h4>
+      <p>
+        <code>exchange_entra_for_salesforce_token()</code> is named for
+        Salesforce and posts to <code>/services/oauth2/token</code>.
+        The RFC 8693 flow is reusable — just retarget the URL and body
+        fields. If the Product system doesn't speak RFC 8693, fall back
+        to OBO (if it's Entra-native) or PKCE.
+      </p>
+    </div>
+    <div class="reuse-card amber">
+      <span class="tag">Adapt</span>
+      <h4>Hosted MCP client</h4>
+      <p>
+        <code>client.py</code> assumes Salesforce's
+        <code>/services/mcp/&lt;server-name&gt;</code> path. Swap the URL
+        builder but keep the per-request token-acquire + JSON-RPC
+        envelope pattern. The whole shape is ~100 lines.
+      </p>
+    </div>
+    <div class="reuse-card amber">
+      <span class="tag">Adapt</span>
+      <h4>App registration</h4>
+      <p>
+        Register a <strong>separate</strong> Entra app per connector.
+        Distinct App ID, distinct App Role (<code>Mcp.Zendesk.User</code>,
+        <code>Mcp.Netsuite.User</code>, etc.), distinct Custom Connector
+        on Anthropic. Independent role assignments, independent secrets,
+        clean audit trail.
+      </p>
+    </div>
+    <div class="reuse-card red">
+      <span class="tag">Do not copy</span>
+      <h4>Salesforce ECA specifics</h4>
+      <p>
+        PKCE S256, Token Exchange Flow, Apex
+        <code>Auth.TokenExchangeHandler</code> — Salesforce-flavored.
+        Only relevant for Salesforce itself. Each SaaS has its own
+        OAuth implementation and handler equivalent.
+      </p>
+    </div>
+    <div class="reuse-card red">
+      <span class="tag">Do not copy</span>
+      <h4>Schema discovery</h4>
+      <p>
+        Salesforce-specific. Each SaaS has its own schema model. For
+        Salesforce we're now planning to <strong>consume Ivan's Apex
+        package</strong> — it maintains a <code>Schema_Snapshot__c</code>
+        custom object refreshed hourly via Queueable chain inside the
+        org, so we just SOQL the latest <code>Run_ID__c</code> through
+        the proxy instead of walking <code>/services/data/v62.0/sobjects</code>
+        ourselves. Governor limits solved in-org.
+      </p>
+    </div>
+    <div class="reuse-card red">
+      <span class="tag">Do not copy</span>
+      <h4>Tool profiles</h4>
+      <p>
+        <code>marketing-readonly</code> and friends curate against
+        Salesforce's 60+ Hosted MCP ops. Each connector curates against
+        its own surface area; reuse the <em>pattern</em> (allowlist
+        middleware), not the specific profiles.
+      </p>
+    </div>
+  </div>
+
+  <h3>Recommended starting point for any new SaaS connector</h3>
+  <ol>
+    <li>Read the <code>~/continuous-claude/docs/fastmcp-connector-playbook.md</code> end-to-end. Canonical recipe at Fourth; supersedes ad-hoc tribal knowledge.</li>
+    <li>Copy <code>salesforce_mcp/auth.py</code> and <code>salesforce_mcp/config.py</code> into your new package (e.g. <code>zendesk_mcp/</code>, <code>netsuite_mcp/</code>, <code>product_mcp/</code>) as the scaffold.</li>
+    <li>Register a separate Entra app + App Role + Anthropic Custom Connector per connector.</li>
+    <li>Decide the downstream auth mechanism based on what the target SaaS's OAuth server supports (RFC 8693 / OBO / PKCE).</li>
+    <li>Reuse the Cosmos audit/rate-limit middleware classes — none are coupled to Salesforce.</li>
+  </ol>
+  <p>
+    Should be a half-day exercise given how much of the chassis is already
+    built. Happy to pair on the first one.
+  </p>
+</section>
+
+<!-- ═══════════════ FILE MAP ═══════════════ -->
+<section>
+  <h2><span class="num">6</span>Key files (full inventory)</h2>
+  <table>
+    <thead>
+      <tr><th>Concern</th><th>File</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Edge auth middleware</td><td><code>salesforce_mcp/auth.py</code></td></tr>
+      <tr><td>Entra → SF token exchange</td><td><code>salesforce_mcp/hosted_mcp/token_exchange.py</code></td></tr>
+      <tr><td>Per-user token cache</td><td><code>salesforce_mcp/hosted_mcp/token_store.py</code></td></tr>
+      <tr><td>Hosted MCP JSON-RPC client</td><td><code>salesforce_mcp/hosted_mcp/client.py</code></td></tr>
+      <tr><td>Env-driven config</td><td><code>salesforce_mcp/config.py</code></td></tr>
+      <tr><td>End-to-end spike</td><td><code>scripts/spike_token_exchange.py</code></td></tr>
+      <tr><td>Connector playbook (master)</td><td><code>~/continuous-claude/docs/fastmcp-connector-playbook.md</code></td></tr>
+      <tr><td>Build plan (this repo)</td><td><code>fourth-salesforce-mcp — Build &amp; Deployment Plan.md</code></td></tr>
+      <tr><td>Risk register</td><td><code>docs/risk-register.md</code></td></tr>
+      <tr><td>Original auth flow doc</td><td><code>docs/auth-flow.md</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════ OPEN QUESTIONS ═══════════════ -->
+<section>
+  <h2><span class="num">7</span>Open questions worth flagging</h2>
+  <ol>
+    <li><strong>Token Exchange Handler audience config</strong> — handler is registered (✅), but configured for the App ID URI form (<code>api://&lt;guid&gt;</code>). v2 Entra tokens carry the bare GUID as <code>aud</code>, so a one-line config update is needed on the SF side. No code redeploy.</li>
+    <li><strong>OBO confirmation against the SF ECA</strong> — Phase 0 spike uses <code>client_credentials</code> for the Entra leg, not OBO. Need to validate OBO works before Phase 3 ships true per-user impersonation.</li>
+    <li><strong>Per-user refresh-token storage in Key Vault</strong> — needs IT/security signoff. Not blocking Phase 1/2 since we're cache-only for now.</li>
+    <li><strong>Anthropic Custom Connector + DCR</strong> — confirm Fourth's Entra app is configured to allow Dynamic Client Registration (should be by default — App Role-gated, not DCR-blocked).</li>
+  </ol>
+</section>
+
+<footer>
+  Companion to <a href="./auth-design-for-product-mcp.md">auth-design-for-product-mcp.md</a>
+  · See also <a href="./auth-flow.md">auth-flow.md</a>, <a href="./architecture.md">architecture.md</a>, <a href="./risk-register.md">risk-register.md</a><br/>
+  Ping David Hayes on any of this — happy to walk through the code in person.
+</footer>
+
+</div>
+</body>
+</html>

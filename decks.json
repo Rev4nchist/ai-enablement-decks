@@ -152,6 +152,17 @@
       "featured": true
     },
     {
+      "id": "salesforce-mcp-auth-design",
+      "section": "mcp-capabilities",
+      "tag": "Auth Design",
+      "title": "Fourth Salesforce MCP — Auth Design & Reusable Pattern",
+      "description": "Two-leg auth design for the Salesforce MCP proxy — Entra Easy Auth at the edge, OAuth 2.0 Token Exchange (RFC 8693) downstream. The reusable pattern for Zendesk, NetSuite, and other SaaS connectors.",
+      "href": "./salesforce-mcp-auth-design/",
+      "meta": "Auth Design · May 2026",
+      "date": "2026-05-14",
+      "status": "briefing"
+    },
+    {
       "id": "foundry-hosted-agents",
       "section": "msft-ai",
       "tag": "Briefing",
