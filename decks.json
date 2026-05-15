@@ -63,6 +63,17 @@
       "status": "shipped"
     },
     {
+      "id": "brinker-ebr-april-2026",
+      "section": "project-presentations",
+      "tag": "Customer EBR",
+      "title": "Brinker International — Monthly Product Usage Review",
+      "description": "Six-pillar Brinker EBR for April 2026 — availability, scheduling methods, shift transactions, direct-release recommendation, AI compute-vs-adoption gap, and reporting engagement. Data from iQ360 ADX via the ebr-presentations pipeline (schema 0.2.1, 1,145 locations).",
+      "href": "./brinker-ebr-april-2026/",
+      "meta": "April 2026",
+      "date": "2026-04",
+      "status": "shipped"
+    },
+    {
       "id": "cowork-mastery-guide",
       "section": "claude-cowork",
       "tag": "Mastery Guide",
