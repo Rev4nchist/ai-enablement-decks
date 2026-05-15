@@ -409,8 +409,7 @@
       <li><a href="#s13"><span class="num">13</span>Status Snapshot</a></li>
       <li><a href="#s14"><span class="num">14</span>v1 / v2 Plan</a></li>
       <li><a href="#s15"><span class="num">15</span>Parallel Tracks</a></li>
-      <li><a href="#s16"><span class="num">16</span>Schema Discovery</a></li>
-      <li><a href="#s17"><span class="num">17</span>Updated Q&A</a></li>
+      <li><a href="#s16"><span class="num">16</span>Status · 2026-05-15</a></li>
     </ol>
   </nav>
 </aside>
@@ -1093,8 +1092,98 @@ deny:
   </table>
 </section>
 
+<!-- 16 Status Snapshot · 2026-05-15 -->
+<section id="s16">
+  <h2><span class="sec-num">§16</span> Status snapshot · 2026-05-15 (Phase 5 + Phase 7 in flight)</h2>
+
+  <div class="callout success">
+    <strong>End-of-day reality check (2026-05-15):</strong> Phase 5 governance middleware shipped (5 atomic Ralph tasks, 5 Middleware classes wired on FastMCP <code>on_call_tool</code>). Phase 7 Python complete (4 Azure SDK integrations, principal-reviewer cleared all 8 marketing-brain anti-patterns). Phase 7 infra partial — Cosmos DB <strong>live</strong>, image <strong>built</strong>, CA <strong>scaffolded</strong> in dry-run mode. Phase 7.7 (Easy Auth enable + pilot user assignment) blocked on a 5-item IT ticket; deploy scripts pre-staged to run automatically the moment IT confirms. 233 tests +2 xfailed; 17 commits on <code>origin/main</code> at <code>Rev4nchist/fourth-salesforce-mcp</code> (private).
+  </div>
+
+  <h3>Phase 5 — Governance middleware (DONE)</h3>
+  <table>
+    <thead><tr><th>Task</th><th>Status</th><th>Commit</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>5.1 RequestIdMiddleware</td><td><span class="status done">✅ Done</span></td><td><code>d66dca9</code></td><td>UUID4 + <code>X-Request-ID</code> echo; ContextVar-backed (asyncio-safe). +7 tests.</td></tr>
+      <tr><td>5.2 AuditMiddleware</td><td><span class="status done">✅ Done</span></td><td><code>4f9ba8a</code></td><td>Wraps <code>AuditRow</code> + <code>emit_audit_row</code>; latency_ms via <code>time.monotonic()</code>; outcome (<code>success</code>/<code>denied</code>/<code>error</code>) finalized in <code>finally</code>. +12 tests.</td></tr>
+      <tr><td>5.3 AllowlistMiddleware</td><td><span class="status done">✅ Done</span></td><td><code>7d9c71f</code></td><td>Profile-gated tool authorization at <code>on_call_tool</code>; in-tool <code>_check_allowed</code> retained as defense-in-depth (premortem decision). +24 tests.</td></tr>
+      <tr><td>5.4 SafetyMiddleware</td><td><span class="status done">✅ Done</span></td><td><code>6ab732a</code></td><td>Mutating tool name + SOQL bounds (DML keyword / missing <code>LIMIT</code> / <code>LIMIT &gt; max</code>); constructor-configurable <code>max_query_limit</code>. +23 tests.</td></tr>
+      <tr><td>5.5 Chain wiring + Telemetry + DepartmentRouting</td><td><span class="status done">✅ Done</span></td><td><code>db9ab5c</code></td><td>Final order: <code>RequestId → Department → Audit → Telemetry → Allowlist → Safety</code> (Telemetry moved earlier so denied attempts are still counted — observability priority). +8 integration tests.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Phase 7 — Python Azure SDK integrations (DONE)</h3>
+  <table>
+    <thead><tr><th>Task</th><th>Status</th><th>Commit</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>7.1 CosmosClient factory</td><td><span class="status done">✅ Done</span></td><td><code>cc0c94d</code></td><td><code>azure.cosmos.aio.CosmosClient</code> + <code>DefaultAzureCredential</code>; <code>SF_MCP_USE_COSMOS=1</code> env switch; per-container helpers (5 containers). <strong>Meta-test locks anti-pattern #6</strong> (module source contains no <code>account_key</code> / <code>COSMOS_KEY</code>). +13 tests.</td></tr>
+      <tr><td>7.2 CosmosSchemaCache</td><td><span class="status done">✅ Done</span></td><td><code>6611f77</code></td><td>SchemaCache Protocol impl over <code>schema_cache</code> container (PK <code>/object_api_name</code>); factory switches in-memory ↔ Cosmos. +13 tests.</td></tr>
+      <tr><td>7.3 KeyVaultStore</td><td><span class="status done">✅ Done</span></td><td><code>5cdecea</code></td><td>Per-user refresh token in KV (secret <code>salesforce-rt-&lt;user-oid&gt;</code>); access tokens stay in-memory. <code>SF_MCP_USE_KEYVAULT=1</code> switch. <strong>Meta-test locks anti-pattern #6</strong> (no <code>KEYVAULT_KEY</code>). +22 tests.</td></tr>
+      <tr><td>7.4 Cosmos audit emit + CosmosRateLimiter</td><td><span class="status done">✅ Done</span></td><td><code>18173f1</code></td><td><code>emit_audit_row</code> stays SYNC (Phase 5.2 mock contract preserved); fire-and-forget Cosmos upsert via <code>asyncio.create_task</code>. <code>CosmosRateLimiter.acquire(user_id)</code> with 3-retry optimistic concurrency. AsyncRateLimiter UNCHANGED. +28 tests.</td></tr>
+      <tr><td>Reviewer gate</td><td><span class="status done">✅ PASS</span></td><td>—</td><td><code>principal-reviewer</code> verified all 8 marketing-brain divergences rejected. Phase 1-5 tests stay green (no behavioral regression). Lazy imports preserve non-Cosmos path. Cleared to proceed.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Phase 7 — Azure infrastructure (PARTIAL)</h3>
+  <table>
+    <thead><tr><th>Task</th><th>Status</th><th>Commit</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>7.5 Cosmos DB <code>mcp-salesforce</code> + 5 containers</td><td><span class="status done">✅ Live</span></td><td><code>e0c9d7d</code></td><td>5 containers at 400 RU each (audit_log /user_id, rate_limit_buckets /user_id, schema_cache /object_api_name, user_preferences /user_id, elicitation_sessions /session_id); 2000 RU/mo total (~$60). Scripts <code>01-prereq.ps1</code>, <code>02-cosmos.ps1</code>, <code>03-keyvault.ps1</code>. Idempotent.</td></tr>
+      <tr><td>7.6 Image + CA scaffold</td><td><span class="status amber">⚠ Partial</span></td><td><code>8bb0f86</code></td><td>Image <code>salesforce@sha256:f5f941cf...</code> built via <code>az acr build</code>, dual-tagged. CA <code>ca-mcp-salesforce.happyhill-92303561.swedencentral.azurecontainerapps.io</code> created (Multiple revisions, system MI <code>a4ba48f4-...</code>, target-port 8001, ingress external, AUTH_MODE=none dry-run). Cosmos DB Built-in Data Contributor role bound. <strong>AcrPull + Key Vault Secrets User BLOCKED on ABAC</strong> — running placeholder image until IT delivers.</td></tr>
+      <tr><td>7.7-prep deploy scripts</td><td><span class="status done">✅ Staged</span></td><td><code>1c83f45</code></td><td><code>07-easy-auth.ps1</code>: 7-check prereq gate, env var flip out of dry-run, 7 <code>keyvaultref:</code> bindings, Easy Auth <code>Return401</code> enable, gated verify. <code>08-pilot-assign.ps1</code>: Graph API role assignment, idempotent, live <code>tools/list</code> smoke. Both ready to run.</td></tr>
+      <tr><td>7.7 Easy Auth + pilot assignment</td><td><span class="status open">🚧 BLOCKED on IT</span></td><td>—</td><td>5 admin actions outstanding (see callout below). Auto-runs once confirmed.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Architectural decisions locked this phase</h3>
+  <table>
+    <thead><tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td>Skip Phase 6 Railway DEV</td><td>YES (go prod-direct)</td><td>User decision 2026-05-15. Phase 5 governance + principal-reviewer gate provide enough confidence to skip the shake-out tier.</td></tr>
+      <tr><td>Strict playbook mode vs mirror marketing-brain</td><td>Strict</td><td>User decision 2026-05-15. Marketing-brain has 8 documented divergences from <code>fastmcp-connector-playbook.md</code> Addendum A (AllowAnonymous Easy Auth, key-based Cosmos, plaintext secrets, single revisions, SHA-tag deploys, SP-JSON CI, sticky sessions, no named role). All 8 rejected at code level — every MI uses <code>DefaultAzureCredential</code>; every secret reads via <code>keyvaultref:</code>; CA ships Multiple revisions + digest-pinned + stateless. Reviewer confirmed.</td></tr>
+      <tr><td>Cosmos RU model</td><td>Provisioned 400 RU/container</td><td>User decision 2026-05-15. Matches marketing-brain's pattern; account is provisioned mode (capabilities=[] confirmed). 2000 RU/mo ~$60 predictable.</td></tr>
+      <tr><td>Repo location</td><td><code>Rev4nchist/fourth-salesforce-mcp</code> private</td><td>User decision 2026-05-15. Fork to Fourth org GH when Phase 9 pilot is greenlit.</td></tr>
+      <tr><td>Telemetry order in middleware chain</td><td>Before allowlist/safety</td><td>Kraken deviation from plan B1. Rationale: denied attempts must still increment counter for observability. Audit row still captures <code>outcome=denied</code> in <code>finally</code>.</td></tr>
+      <tr><td>In-tool <code>_check_allowed</code> calls</td><td>Retained as defense-in-depth</td><td>Premortem decision (Phase 5.3). If middleware wiring ever breaks, in-tool checks are the seatbelt. AllowlistMiddleware enforces broadly; in-tool checks belt-and-suspender at the call site.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>IT actions required to unblock Phase 7.7</h3>
+  <div class="callout amber">
+    <strong>5 one-shot admin actions sent to IT (full message in continuity ledger):</strong>
+    <ol>
+      <li><strong>AcrPull</strong> on <code>agentarchacr</code> for MI <code>a4ba48f4-2e27-40f9-a118-eca65420ee1f</code> (currently failing with ABAC condition error from operator account; CA pulled placeholder image instead of <code>salesforce@sha256:...</code>)</li>
+      <li><strong>Key Vault Secrets User</strong> on <code>agent-arch-kv-prod</code> for the same MI</li>
+      <li>Create App Role <strong><code>Mcp.User</code></strong> on Entra app <code>56012700-c226-4122-bda6-e32a68939c33</code> (display name "HS Salesforce MCP Server"; SP <code>d2b94cd1-bdfd-4c1f-9208-17047ceaf1dc</code>)</li>
+      <li>Set <strong><code>appRoleAssignmentRequired=true</code></strong> on the SP (otherwise any tenant user can sign in)</li>
+      <li>Populate <strong>7 KV secrets</strong> with the <code>mcp-salesforce-*</code> prefix in <code>agent-arch-kv-prod</code> (entra-tenant-id / entra-client-id / entra-client-secret / sf-client-id / sf-client-secret / sf-instance-url / hosted-mcp-base-url)</li>
+    </ol>
+    <strong>Total IT effort: ~5 minutes.</strong> Once confirmed, <code>scripts/deploy/05a-aca-update.ps1</code> redeploys the real image, <code>07-easy-auth.ps1</code> enables auth, <code>08-pilot-assign.ps1</code> assigns first pilot (David's OID <code>8f85e601-64a8-40f1-8fb0-ba5262e1a5db</code>) and runs end-to-end smoke against Salesforce Hosted MCP.
+  </div>
+
+  <h3>Live state in Azure (2026-05-15 dry-run snapshot)</h3>
+  <table>
+    <thead><tr><th>Resource</th><th>Identifier</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td>Resource group</td><td><code>rg-agent-architecture</code></td><td>northeurope</td></tr>
+      <tr><td>Container Apps Environment</td><td><code>locmap-env</code></td><td>Sweden Central (sibling to <code>ca-mcp-marketing-brain</code>)</td></tr>
+      <tr><td>Container App</td><td><code>ca-mcp-salesforce</code></td><td>External ingress, Multiple revisions, target-port 8001, system MI, AUTH_MODE=none</td></tr>
+      <tr><td>FQDN</td><td><code>ca-mcp-salesforce.happyhill-92303561.swedencentral.azurecontainerapps.io</code></td><td>Reachable; placeholder image (port mismatch → HTTP 504) until AcrPull</td></tr>
+      <tr><td>System-assigned MI</td><td><code>a4ba48f4-2e27-40f9-a118-eca65420ee1f</code></td><td>1/3 roles bound (Cosmos DB Built-in Data Contributor)</td></tr>
+      <tr><td>ACR image</td><td><code>agentarchacr.azurecr.io/salesforce@sha256:f5f941cf...</code></td><td>Built + pushed; deploy gated on AcrPull</td></tr>
+      <tr><td>Cosmos database</td><td><code>agent-architecture-cosmos / mcp-salesforce</code></td><td>5 containers at 400 RU each; data-plane RBAC bound</td></tr>
+      <tr><td>Key Vault secrets</td><td><code>agent-arch-kv-prod / mcp-salesforce-*</code></td><td>0/7 populated (IT action 5)</td></tr>
+      <tr><td>Entra App Role</td><td><code>Mcp.User</code></td><td>Missing (IT action 3)</td></tr>
+      <tr><td>Easy Auth</td><td>—</td><td>Disabled (dry-run); enables on <code>07-easy-auth.ps1</code> after IT confirms</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Suite status</h3>
+  <p><strong>233 passed + 2 xfailed.</strong> Test growth across phases: 84 (Phase 4 end) → 91 (5.1) → 102 (5.2) → 126 (5.3) → 149 (5.4) → 157 (5.5) → 170 (7.1) → 183 (7.2) → 192 (7.3) → 233 (7.4). All Phase 5 + Phase 7 work landed via Ralph TDD discipline (RED → GREEN → VERIFY per task).</p>
+</section>
+
 <footer>
-  Addendum reflects state as of 2026-05-07 18:30 ET; updated 2026-05-14 end-of-day with Phase 2 + 3 + 4 shipping (commits <code>932eca9</code> / <code>bd8e9f1</code> / <code>2a04433</code>), full Entra↔SF JWT validation chain green, no-OBO confirmed via spike walk, schema discovery reshaped onto Ivan's Apex package. Original proposal above remains unmodified. Source: <code>we-are-ready-to-jaunty-shamir.md</code> + 2026-05-14 spike notes + 2026-05-14 Ralph session.
+  Addendum reflects state as of 2026-05-07 18:30 ET; 2026-05-14 end-of-day adds Phase 2 + 3 + 4 (commits <code>932eca9</code> / <code>bd8e9f1</code> / <code>2a04433</code>); §16 added 2026-05-15 with Phase 5 governance + Phase 7 Python + Phase 7 infra partial (commits <code>d66dca9</code> through <code>1c83f45</code>). Original proposal above remains unmodified. Source: <code>we-have-made-some-sleepy-ladybug.md</code> approved plan + 2026-05-15 Ralph session (12 tasks: 5 Phase 5 + 4 Phase 7 Python + 2 Phase 7 infra + 1 Phase 7.7-prep).
 </footer>
 
 </main>
