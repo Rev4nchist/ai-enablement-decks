@@ -52,6 +52,17 @@
       "status": "shipped"
     },
     {
+      "id": "gtm-risk-report-may18",
+      "section": "project-presentations",
+      "tag": "Status Report",
+      "title": "GTM Risk Intelligence — May 18, 2026",
+      "description": "Cross-channel GTM risk read for the week of May 18, 2026 — pipeline conversion, P2V health, and the customer-segment hotspots that need attention.",
+      "href": "./gtm-status-presentations/gtm-risk-report-may18.html",
+      "meta": "May 18, 2026",
+      "date": "2026-05-18",
+      "status": "shipped"
+    },
+    {
       "id": "gtm-risk-report-apr16",
       "section": "project-presentations",
       "tag": "Status Report",
