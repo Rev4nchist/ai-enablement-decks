@@ -8,7 +8,8 @@ A single repo that hosts multiple AI Enablement presentations, each with its own
 
 ```
 ai-enablement-decks/
-├── index.html                    ← landing page listing all decks
+├── index.html                    ← landing page (data-driven; renders cards from decks.json)
+├── decks.json                    ← the deck manifest — add an entry per deck
 ├── <deck-slug>/
 │   └── index.html                ← the deck itself
 ├── <another-deck>/
@@ -37,23 +38,31 @@ No extra config, no new workflow, no Pages re-enable. Push and it ships.
    ```
    If the deck has assets (images, CSS, JS), put them in the same folder.
 
-3. **Add a card to the landing page.** Open `index.html` at the repo root, find the `<div class="grid">` section, and add a block like this:
-   ```html
-   <a class="card" href="./orientation-april-2026/">
-     <span class="tag">Orientation</span>
-     <h3>Portfolio Orientation — April 2026</h3>
-     <p>Team portfolio walkthrough and Q2 priorities.</p>
-     <div class="meta">
-       <span>April 2026</span>
-       <span class="arrow">→</span>
-     </div>
-   </a>
+3. **Register the deck in `decks.json`.** The landing page builds its cards from this manifest at runtime — editing `index.html` directly does nothing. Add an object to the `decks` array:
+   ```json
+   {
+     "id": "orientation-april-2026",
+     "section": "portfolio",
+     "tag": "Orientation",
+     "title": "Portfolio Orientation — April 2026",
+     "description": "Team portfolio walkthrough and Q2 priorities.",
+     "href": "./orientation-april-2026/",
+     "meta": "April 2026",
+     "date": "2026-04",
+     "status": "shipped"
+   }
    ```
-   Remove the `<div class="empty">...</div>` placeholder once you have at least one real deck.
+   - `section` must match a `sections[].id` — currently `portfolio`, `project-presentations`, `claude-cowork`, `claude-code-ccv3`, `mcp-capabilities`, `msft-ai` (or add a new one to the `sections` array).
+   - `status` is optional: `shipped` | `in-build` | `briefing` | `draft`. Add `"featured": true` to give a card a highlighted treatment.
+   - `href` must be `./<deck-slug>/` with the trailing slash; `title` should match the deck's own `<title>`.
+   - **Validate before committing** — a broken `decks.json` blanks the whole hub:
+     ```bash
+     node -e "JSON.parse(require('fs').readFileSync('decks.json','utf8')); console.log('ok')"
+     ```
 
-4. **Commit and push:**
+4. **Commit and push** the folder and the manifest together:
    ```bash
-   git add .
+   git add orientation-april-2026/ decks.json
    git commit -m "Add orientation-april-2026 deck"
    git push
    ```
