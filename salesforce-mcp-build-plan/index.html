@@ -409,7 +409,7 @@
       <li><a href="#s13"><span class="num">13</span>Status Snapshot</a></li>
       <li><a href="#s14"><span class="num">14</span>v1 / v2 Plan</a></li>
       <li><a href="#s15"><span class="num">15</span>Parallel Tracks</a></li>
-      <li><a href="#s16"><span class="num">16</span>Status · 2026-05-15</a></li>
+      <li><a href="#s18"><span class="num">18</span>Status · 2026-05-29</a></li>
     </ol>
   </nav>
 </aside>
@@ -1093,8 +1093,8 @@ deny:
 </section>
 
 <!-- 16 Status Snapshot · 2026-05-15 -->
-<section id="s16">
-  <h2><span class="sec-num">§16</span> Status snapshot · 2026-05-15 (Phase 5 + Phase 7 in flight)</h2>
+<section id="s18">
+  <h2><span class="sec-num">§18</span> Status snapshot · 2026-05-29 (Phase 7.7 ✅ complete — Easy Auth live; Phase 9 next)</h2>
 
   <div class="callout success">
     <strong>End-of-day reality check (2026-05-15):</strong> Phase 5 governance middleware shipped (5 atomic Ralph tasks, 5 Middleware classes wired on FastMCP <code>on_call_tool</code>). Phase 7 Python complete (4 Azure SDK integrations, principal-reviewer cleared all 8 marketing-brain anti-patterns). Phase 7 infra partial — Cosmos DB <strong>live</strong>, image <strong>built</strong>, CA <strong>scaffolded</strong> in dry-run mode. Phase 7.7 (Easy Auth enable + pilot user assignment) blocked on a 5-item IT ticket; deploy scripts pre-staged to run automatically the moment IT confirms. 233 tests +2 xfailed; 17 commits on <code>origin/main</code> at <code>Rev4nchist/fourth-salesforce-mcp</code> (private).
@@ -1150,7 +1150,7 @@ deny:
 
   <h3>IT actions required to unblock Phase 7.7</h3>
   <div class="callout amber">
-    <strong>5 one-shot admin actions sent to IT (full message in continuity ledger):</strong>
+    <strong>Update 2026-05-29 — Phase 7.7 ✅ complete.</strong> All 5 original gates plus the dedicated-vault pivot landed. Easy Auth live (Return401), browser smoke verified end-to-end. IT additionally enabled ID tokens on the Entra app and added the Easy Auth callback URI <code>…/.auth/login/aad/callback</code>. <strong>Phase 9 (Anthropic Custom Connector registration) is the active phase</strong> — needs one more IT round-trip to add Anthropic's redirect URI once the connector flow tells us what it is. <em>Original 5-action list (historical):</em>
     <ol>
       <li><strong>AcrPull</strong> on <code>agentarchacr</code> for MI <code>a4ba48f4-2e27-40f9-a118-eca65420ee1f</code> (currently failing with ABAC condition error from operator account; CA pulled placeholder image instead of <code>salesforce@sha256:...</code>)</li>
       <li><strong>Key Vault Secrets User</strong> on <code>agent-arch-kv-prod</code> for the same MI</li>
@@ -1161,7 +1161,7 @@ deny:
     <strong>Total IT effort: ~5 minutes.</strong> Once confirmed, <code>scripts/deploy/05a-aca-update.ps1</code> redeploys the real image, <code>07-easy-auth.ps1</code> enables auth, <code>08-pilot-assign.ps1</code> assigns first pilot (David's OID <code>8f85e601-64a8-40f1-8fb0-ba5262e1a5db</code>) and runs end-to-end smoke against Salesforce Hosted MCP.
   </div>
 
-  <h3>Live state in Azure (2026-05-15 dry-run snapshot)</h3>
+  <h3>Live state in Azure (2026-05-29 — verified via az + browser smoke)</h3>
   <table>
     <thead><tr><th>Resource</th><th>Identifier</th><th>State</th></tr></thead>
     <tbody>
@@ -1169,12 +1169,12 @@ deny:
       <tr><td>Container Apps Environment</td><td><code>locmap-env</code></td><td>Sweden Central (sibling to <code>ca-mcp-marketing-brain</code>)</td></tr>
       <tr><td>Container App</td><td><code>ca-mcp-salesforce</code></td><td>External ingress, Multiple revisions, target-port 8001, system MI, AUTH_MODE=none</td></tr>
       <tr><td>FQDN</td><td><code>ca-mcp-salesforce.happyhill-92303561.swedencentral.azurecontainerapps.io</code></td><td>Reachable; placeholder image (port mismatch → HTTP 504) until AcrPull</td></tr>
-      <tr><td>System-assigned MI</td><td><code>a4ba48f4-2e27-40f9-a118-eca65420ee1f</code></td><td>1/3 roles bound (Cosmos DB Built-in Data Contributor)</td></tr>
+      <tr><td>System-assigned MI</td><td><code>a4ba48f4-2e27-40f9-a118-eca65420ee1f</code></td><td>✅ Cosmos data-plane + AcrPull on <code>agentarchacr</code> + Key Vault Secrets User on <code>kv-mcp-salesforce-prod</code></td></tr>
       <tr><td>ACR image</td><td><code>agentarchacr.azurecr.io/salesforce@sha256:f5f941cf...</code></td><td>Built + pushed; deploy gated on AcrPull</td></tr>
       <tr><td>Cosmos database</td><td><code>agent-architecture-cosmos / mcp-salesforce</code></td><td>5 containers at 400 RU each; data-plane RBAC bound</td></tr>
-      <tr><td>Key Vault secrets</td><td><code>agent-arch-kv-prod / mcp-salesforce-*</code></td><td>0/7 populated (IT action 5)</td></tr>
-      <tr><td>Entra App Role</td><td><code>Mcp.User</code></td><td>Missing (IT action 3)</td></tr>
-      <tr><td>Easy Auth</td><td>—</td><td>Disabled (dry-run); enables on <code>07-easy-auth.ps1</code> after IT confirms</td></tr>
+      <tr><td>Key Vault secrets</td><td><code>kv-mcp-salesforce-prod / mcp-salesforce-*</code></td><td>✅ 7/7 in dedicated RBAC vault; CA reads via MI keyvaultref. Shared <code>agent-arch-kv-prod</code> duplicates cleaned up.</td></tr>
+      <tr><td>Entra App Role</td><td><code>Mcp.User</code></td><td>✅ created (value=Mcp.User, enabled); appRoleAssignmentRequired=true; Dave OID assigned</td></tr>
+      <tr><td>Easy Auth</td><td><code>Return401</code></td><td>✅ Enabled; ID tokens enabled on Entra app; redirect URI registered; browser smoke verified end-to-end 2026-05-28 (authenticated <code>/health</code> returns <code>auth_mode: easyauth</code> JSON).</td></tr>
     </tbody>
   </table>
 
