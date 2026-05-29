@@ -185,6 +185,18 @@
       "status": "briefing"
     },
     {
+      "id": "governed-ai-access",
+      "section": "mcp-capabilities",
+      "tag": "VP Briefing",
+      "title": "Governed AI Access to Our Business Systems",
+      "description": "Executive briefing on the governed-connector pattern — how Claude reaches Salesforce under each user's own identity (read-only, audited), the reusable foundation for Zendesk, NetSuite, and Jira, and the interactive apps and dashboards it unlocks.",
+      "href": "./governed-ai-access/",
+      "meta": "VP Briefing · May 2026",
+      "date": "2026-05-29",
+      "status": "briefing",
+      "featured": true
+    },
+    {
       "id": "foundry-hosted-agents",
       "section": "msft-ai",
       "tag": "Briefing",
