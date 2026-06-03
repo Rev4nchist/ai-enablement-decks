@@ -185,6 +185,18 @@
       "status": "briefing"
     },
     {
+      "id": "salesforce-connector-update",
+      "section": "mcp-capabilities",
+      "tag": "Team Update",
+      "title": "Salesforce Connector — Team Update (3 June 2026)",
+      "description": "Plain-English status update for the wider team — the connector is live: the Friday session with Ivan, the switch off Easy Auth, standing up the Hosted MCP connection, the governance middleware, the security reviews, and the alpha→beta release ladder.",
+      "href": "./salesforce-connector-update/",
+      "meta": "Team Update · June 2026",
+      "date": "2026-06-03",
+      "status": "shipped",
+      "featured": true
+    },
+    {
       "id": "governed-ai-access",
       "section": "mcp-capabilities",
       "tag": "VP Briefing",

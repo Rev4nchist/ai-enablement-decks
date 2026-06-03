@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salesforce Connector — Team Update (3 June 2026)</title>
+<style>
+  :root {
+    --midnight: #1a1632;
+    --midnight-2: #241d44;
+    --ink: #2a2540;
+    --paper: #f7f6fb;
+    --card: #ffffff;
+    --accent: #00c2a8;
+    --accent-2: #6c5ce7;
+    --amber: #f6a609;
+    --green: #1faa59;
+    --muted: #6b6680;
+    --line: #e6e3f0;
+    --text: #2c2740;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 22px 80px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, var(--midnight) 0%, var(--midnight-2) 55%, #2f2557 100%);
+    color: #fff;
+    padding: 54px 0 46px;
+    border-bottom: 4px solid var(--accent);
+  }
+  header .wrap { padding-bottom: 0; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 2.5px; font-size: 12px;
+    color: var(--accent); font-weight: 700; margin: 0 0 12px;
+  }
+  header h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.15; font-weight: 800; }
+  header .date { color: #b9b3d6; font-size: 15px; margin: 0 0 22px; }
+  .status-banner {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(31,170,89,0.16); border: 1px solid rgba(31,170,89,0.5);
+    color: #8bf0bd; padding: 9px 16px; border-radius: 999px; font-weight: 700; font-size: 14px;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #2fe38a; box-shadow: 0 0 0 4px rgba(47,227,138,0.22); }
+  .lede {
+    margin: 22px 0 0; font-size: 17px; color: #ddd9ef; max-width: 760px;
+    border-left: 3px solid var(--accent); padding-left: 18px;
+  }
+
+  h2 {
+    font-size: 23px; margin: 48px 0 14px; color: var(--midnight);
+    font-weight: 800; letter-spacing: -0.2px;
+  }
+  h2 .num {
+    display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px;
+    background: var(--accent-2); color: #fff; font-size: 15px; margin-right: 10px; vertical-align: middle;
+  }
+  h3 { font-size: 17px; margin: 26px 0 6px; color: var(--ink); font-weight: 700; }
+  p { margin: 10px 0; }
+  a { color: var(--accent-2); }
+
+  /* TL;DR card */
+  .tldr {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px 26px; margin-top: 30px; box-shadow: 0 6px 24px rgba(26,22,50,0.06);
+  }
+  .tldr h2 { margin-top: 0; }
+  .tldr ul { list-style: none; padding: 0; margin: 8px 0 0; }
+  .tldr li { padding: 9px 0 9px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+  .tldr li:last-child { border-bottom: none; }
+  .tldr li::before {
+    content: "✓"; position: absolute; left: 0; top: 9px; color: var(--green);
+    font-weight: 800; background: rgba(31,170,89,0.12); width: 20px; height: 20px;
+    border-radius: 50%; display: grid; place-items: center; font-size: 12px;
+  }
+  .tldr strong { color: var(--midnight); }
+
+  .callout {
+    background: #fff8e9; border: 1px solid #f3dca0; border-left: 4px solid var(--amber);
+    border-radius: 10px; padding: 14px 18px; margin: 18px 0; font-size: 15px; color: #6b5410;
+  }
+
+  /* Enhancement cards */
+  .enhance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .enhance-card {
+    display: flex; gap: 12px; align-items: flex-start; background: var(--card);
+    border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; padding: 14px 16px;
+  }
+  .enhance-card .eh-icon { font-size: 20px; flex: none; line-height: 1.3; }
+  .enhance-card b { display: block; color: var(--midnight); font-size: 14.5px; margin-bottom: 2px; }
+  .enhance-card div { font-size: 13.5px; color: var(--text); }
+  @media (max-width: 680px) { .enhance-grid { grid-template-columns: 1fr; } }
+
+  /* Timeline */
+  .timeline { margin: 26px 0 8px; position: relative; padding-left: 6px; }
+  .tl-item { position: relative; padding: 0 0 26px 38px; border-left: 2px solid var(--line); }
+  .tl-item:last-child { border-left-color: transparent; padding-bottom: 4px; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -9px; top: 2px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--accent-2); border: 3px solid var(--paper);
+    box-shadow: 0 0 0 2px var(--accent-2);
+  }
+  .tl-item.live::before { background: var(--green); box-shadow: 0 0 0 2px var(--green); }
+  .tl-day { font-weight: 800; color: var(--midnight); font-size: 15px; }
+  .tl-tag {
+    display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; padding: 2px 9px; border-radius: 6px; margin-left: 8px; vertical-align: middle;
+    background: rgba(108,92,231,0.12); color: var(--accent-2);
+  }
+  .tl-tag.golive { background: rgba(31,170,89,0.15); color: var(--green); }
+  .tl-body { margin: 5px 0 0; color: var(--text); font-size: 15px; }
+
+  /* Step rows inside narrative */
+  .story-block {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 24px; margin: 16px 0;
+  }
+  .story-block h3 { margin-top: 0; }
+
+  /* Why-it-matters cards */
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .why-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 22px; box-shadow: 0 4px 16px rgba(26,22,50,0.05);
+  }
+  .why-card h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
+  .why-icon {
+    width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-size: 15px; flex: none;
+  }
+  .why-card p { font-size: 14.5px; }
+  .pill-row { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .pill {
+    font-size: 13px; padding: 8px 12px; border-radius: 8px; line-height: 1.45;
+  }
+  .pill.user { background: rgba(0,194,168,0.10); border: 1px solid rgba(0,194,168,0.3); }
+  .pill.sec { background: rgba(108,92,231,0.09); border: 1px solid rgba(108,92,231,0.25); }
+  .pill b { text-transform: uppercase; font-size: 11px; letter-spacing: 0.8px; display: block; margin-bottom: 2px; }
+  .pill.user b { color: #008e7a; }
+  .pill.sec b { color: var(--accent-2); }
+
+  /* Flow diagram */
+  .flow {
+    background: var(--midnight); border-radius: 14px; padding: 30px 24px; margin: 20px 0;
+    color: #fff;
+  }
+  .flow-row { display: flex; align-items: stretch; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .flow-step {
+    flex: 1 1 150px; min-width: 130px; background: var(--midnight-2);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 14px 12px; text-align: center;
+  }
+  .flow-step .fs-icon { font-size: 22px; margin-bottom: 6px; }
+  .flow-step .fs-title { font-weight: 700; font-size: 13.5px; color: #fff; }
+  .flow-step .fs-sub { font-size: 12px; color: #b9b3d6; margin-top: 3px; }
+  .flow-arrow { align-self: center; color: var(--accent); font-size: 22px; font-weight: 800; }
+  .flow-foot {
+    margin-top: 18px; text-align: center; font-size: 13.5px; color: #cfcbe6;
+    border-top: 1px solid rgba(255,255,255,0.12); padding-top: 14px;
+  }
+  .protect-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+  .protect {
+    font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+    background: rgba(0,194,168,0.15); color: #79f0db; border: 1px solid rgba(0,194,168,0.4);
+  }
+
+  /* Release ladder */
+  .ladder { display: flex; gap: 14px; margin: 12px 0 4px; flex-wrap: wrap; }
+  .rung {
+    flex: 1 1 240px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .rung.now { border-color: rgba(31,170,89,0.5); box-shadow: 0 4px 16px rgba(31,170,89,0.10); }
+  .rung-badge {
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+    padding: 4px 11px; border-radius: 999px;
+  }
+  .rung-badge.bnow { background: rgba(31,170,89,0.15); color: var(--green); }
+  .rung-badge.bnext { background: rgba(108,92,231,0.12); color: var(--accent-2); }
+  .rung-body { margin-top: 10px; font-size: 14.5px; }
+
+  /* Enhancement list */
+  .enh-list { margin: 8px 0 4px; padding-left: 0; list-style: none; }
+  .enh-list li { position: relative; padding: 7px 0 7px 26px; font-size: 15px; border-bottom: 1px dashed var(--line); }
+  .enh-list li:last-child { border-bottom: none; }
+  .enh-list li::before {
+    content: "→"; position: absolute; left: 0; top: 7px; color: var(--accent); font-weight: 800;
+  }
+
+  /* Open items */
+  .open-item {
+    display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: flex-start;
+  }
+  .open-item:last-child { border-bottom: none; }
+  .oi-badge {
+    flex: none; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; margin-top: 2px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .oi-progress { background: rgba(246,166,9,0.15); color: #a06c00; }
+  .oi-waiting { background: rgba(108,92,231,0.12); color: var(--accent-2); }
+
+  footer {
+    margin-top: 50px; padding-top: 22px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13px; text-align: center;
+  }
+  @media (max-width: 680px) {
+    .why-grid { grid-template-columns: 1fr; }
+    header h1 { font-size: 27px; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+  <!-- ae-hub:og -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI Enablement · Fourth">
+  <meta property="og:title" content="Salesforce Connector — Team Update (3 June 2026)">
+  <meta property="og:description" content="Plain-English status update for the wider team — the connector is live: the Friday session with Ivan, the switch off Easy Auth, standing up the Hosted MCP connection, the governance middleware, the security reviews, and the alpha→beta release ladder.">
+  <meta property="og:url" content="https://rev4nchist.github.io/ai-enablement-decks/salesforce-connector-update/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Salesforce Connector — Team Update (3 June 2026)">
+  <meta name="twitter:description" content="Plain-English status update for the wider team — the connector is live: the Friday session with Ivan, the switch off Easy Auth, standing up the Hosted MCP connection, the governance middleware, the security reviews, and the alpha→beta release ladder.">
+</head>
+<body>
+<!-- ae-hub:nav -->
+<style id="ae-hub-style">#ae-back-to-hub{position:fixed;bottom:16px;right:16px;z-index:9999;padding:.55rem 1rem;background:rgba(7,9,30,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#EEF2FF;font:500 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.05em;border:1px solid rgba(255,255,255,.15);border-radius:999px;text-decoration:none;opacity:.75;transition:opacity .2s,transform .2s}#ae-back-to-hub:hover{opacity:1;transform:translateY(-1px)}</style>
+<a href="../" id="ae-back-to-hub">← All Decks</a>
+
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Project Update · Fourth × Salesforce</p>
+    <h1>Secure Salesforce Connector</h1>
+    <p class="date">Team Update — 3 June 2026</p>
+    <span class="status-banner"><span class="dot"></span> LIVE in production · usable today for account &amp; contact questions</span>
+    <p class="lede">People sign in once with their normal Microsoft work account, can only <em>read</em> data (never change it), and every action is logged. Over the last five days we proved the hardest piece — automatically handing a Microsoft login to Salesforce — completed an independent security review, and deployed the fixes.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- TL;DR -->
+  <section class="tldr">
+    <h2>The 30-second version</h2>
+    <ul>
+      <li><strong>It's live.</strong> Deployed and working in production (Azure revision 0000009), with 542 automated tests passing.</li>
+      <li><strong>One login.</strong> Users sign in with their existing Microsoft work account — no separate Salesforce password to create or manage.</li>
+      <li><strong>Read-only and watched.</strong> Users can look up Salesforce data but cannot change or delete anything, and every request is recorded for audit.</li>
+      <li><strong>The hard part is done.</strong> On Friday, live with Ivan (Salesforce side), we proved the full Microsoft→Salesforce identity hand-off end-to-end — the one thing never tested for real.</li>
+      <li><strong>Security-reviewed.</strong> Two independent reviewers went over the whole change set; their findings — including real customer data that had slipped into test files — were fixed and deployed.</li>
+    </ul>
+  </section>
+
+  <!-- What it is -->
+  <h2>What this connector actually is</h2>
+  <p>Salesforce now offers its own AI-ready data servers. We could let Claude talk to them directly — but then the company would have little control over <em>who</em> connects, <em>what</em> they can do, or <em>what</em> they accessed.</p>
+  <p>Our connector sits in the middle as a <strong>governed doorway</strong>. Claude talks to our connector; our connector talks to Salesforce. That middle position is where the company gets its control: it decides who is allowed in (using the corporate Microsoft directory), restricts everyone to read-only access, only shows the handful of tools each role actually needs, and keeps a durable record of every action. The end user just asks a question and gets an answer — all the governance happens invisibly behind the scenes.</p>
+  <p><strong>The second reason is just as important: that same middle position lets us <em>enhance and customise</em> the experience for Fourth.</strong> Because every request flows through our connector (built on the FastMCP framework), we're not limited to passing raw Salesforce data straight through — we can shape and improve the connection in ways the off-the-shelf Salesforce connector cannot:</p>
+  <div class="enhance-grid">
+    <div class="enhance-card"><span class="eh-icon">📊</span><div><b>Interactive results, not walls of text</b>Answers can render as sortable, searchable tables, charts and dashboards <em>inside</em> the Claude conversation.</div></div>
+    <div class="enhance-card"><span class="eh-icon">✨</span><div><b>Visualizations built on the fly</b>The AI can construct a custom dashboard or chart tailored to the exact question, not a fixed template.</div></div>
+    <div class="enhance-card"><span class="eh-icon">⚙️</span><div><b>Fourth-specific behaviour, added once</b>Custom rules — caching, formatting, department-aware routing — layered in centrally so every tool inherits them.</div></div>
+    <div class="enhance-card"><span class="eh-icon">💬</span><div><b>The connector can ask clarifying questions</b>If a request is ambiguous (which region? which period?), it can pause and ask rather than guess.</div></div>
+  </div>
+  <p>In short, the proxy gives us a place to make the Salesforce experience smarter and more Fourth-specific over time — not just safer.</p>
+
+  <!-- Timeline -->
+  <h2>The story, in order</h2>
+  <div class="timeline">
+
+    <div class="tl-item">
+      <span class="tl-day">Friday 29 May</span><span class="tl-tag">Breakthrough</span>
+      <p class="tl-body"><strong>The session with Ivan.</strong> Two things were built but never proven for real: (1) can a Microsoft login be handed to Salesforce automatically, and (2) can Salesforce's new AI data servers serve data back through our connector? We worked through it one obstacle at a time:</p>
+    </div>
+  </div>
+
+  <div class="story-block">
+    <p><strong>First obstacle — "user hasn't approved this consumer."</strong> The identity hand-off reached Salesforce and it correctly recognised the employee, but then refused because its approval policy was blocking automated sign-in. Ivan adjusted the policy and granted the right permission set → success.</p>
+    <p><strong>Second obstacle — the data gateway said "invalid token."</strong> Salesforce accepted the identity but wouldn't serve data. We researched it and found two specific Salesforce settings were required (a dedicated access scope, and an option to issue the right <em>type</em> of token for named users). Ivan switched both on → the gateway returned real data.</p>
+    <p style="margin-bottom:0;"><strong>Outcome:</strong> every external dependency closed in that one session. The project moved from "we don't know if this is even possible" to "it works — now it's just our code to finish."</p>
+  </div>
+
+  <div class="callout">A useful side note: Anthropic's own built-in Salesforce connector was broken at the time by a bug on their side. Our governed proxy steps around that bug — so for now ours is the working path from Claude to Salesforce, <em>and</em> it's the governed one.</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <span class="tl-day">Sunday–Monday 1 June</span><span class="tl-tag">Build</span>
+      <p class="tl-body"><strong>Wiring the live data connection.</strong> Connected our code to Salesforce's data gateway (which needs a short multi-step "handshake" before it will answer — handled automatically), added the read tools, added a check that blocks unsafe or malicious data requests before they reach Salesforce, and proved real account data flowing through the production path.</p>
+    </div>
+
+    <div class="tl-item live">
+      <span class="tl-day">Tuesday 2 June</span><span class="tl-tag golive">Go-live</span>
+      <p class="tl-body"><strong>The sign-in switch, and go-live.</strong> Our first login method ("Easy Auth") worked in a browser but could not drive Claude's connector — Microsoft instantly rejected the request because of an extra parameter Claude includes. We switched to a different component ("AzureProvider") that removes that parameter and completes the sign-in normally. A "what could go wrong" review <em>before</em> coding caught a token-storage risk (we added encryption before it shipped). The connector then <strong>went LIVE</strong> and returned real Salesforce data. We also fixed the data map so the AI only sees the fields a given user can actually read.</p>
+    </div>
+
+    <div class="tl-item live">
+      <span class="tl-day">Wednesday 3 June</span><span class="tl-tag golive">Security review + Alpha</span>
+      <p class="tl-body"><strong>Independent review, redeploy, and Alpha release.</strong> The pull request triggered an automated code review (CodeRabbit). It flagged real customer data (company names, revenue numbers) that had been captured into test files during live testing — credential scanners don't catch customer data, so it had slipped through. We replaced it all with fictional placeholders, removed a hardcoded personal ID, deleted seven throwaway diagnostic scripts, and added a fail-fast check so the server refuses to start if misconfigured. Re-reviewed by a second, independent AI from a different vendor, then redeployed as revision 0000009 — verified live.</p>
+    </div>
+  </div>
+
+  <div class="story-block">
+    <p><strong>Alpha release to a limited team.</strong> With the reviewed version deployed, the connector was opened to a small alpha group for hands-on use: <strong>Jeff, Jen, Carly, CB, Borja, Mark, Danny, and Ivan.</strong> A deliberately small first audience — the goal is real-world feedback before access is widened.</p>
+    <p style="margin-bottom:0;"><strong>One open Salesforce-side item (Ivan).</strong> During alpha use, two objects — <strong>Opportunity and Case</strong> — come back empty. The connector reads its picture of Salesforce's structure from a Salesforce-side feed (Ivan's "Schema Change Detector"). That feed captures Account and Contact fields correctly but isn't yet capturing Opportunity and Case — so the connector can't query them or follow links from an Account to its Opportunities/Cases. We've sent Ivan the specifics; <strong>Opportunity is the priority</strong> (the core revenue/pipeline object). No connector change needed — it's a one-time Salesforce-side setup.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <span class="tl-day">Thursday–Friday 4–5 June</span><span class="tl-tag">Planned · Enhancements</span>
+      <p class="tl-body"><strong>Enhancements for Fourth.</strong> With the connector live and in alpha, the next focus is the <em>enhancement</em> work the proxy makes possible: interactive tables and dashboards rendered directly inside Claude, on-the-fly visualizations tailored to each question, Fourth-specific behaviours layered in centrally, and clarifying questions when a request is ambiguous — building on the FastMCP framework's app, generative-UI, middleware, and elicitation capabilities.</p>
+    </div>
+  </div>
+
+  <!-- Why it matters -->
+  <h2>The four things worth understanding</h2>
+  <div class="why-grid">
+
+    <div class="why-card">
+      <h3><span class="why-icon">🔗</span> The identity bridge</h3>
+      <p>One Microsoft sign-in is automatically translated into Salesforce access. No separate Salesforce login, no API keys. The connector asks Microsoft for permission to act on that user's behalf, hands the proof to Salesforce, and Salesforce maps it to the matching employee.</p>
+      <div class="pill-row">
+        <div class="pill user"><b>End user</b>Sign in once with the account you already have. Everything else is invisible.</div>
+        <div class="pill sec"><b>Security &amp; oversight</b>Every action ties to a named person. The sensitive credential lives per-user in the corporate secrets vault — never in code.</div>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <h3><span class="why-icon">🔐</span> The sign-in switch</h3>
+      <p>We changed the login component so Claude's connector can actually sign in. The new approach is <em>fail-closed</em>: a caller gets in only with the right corporate role <strong>and</strong> through the approved application. Anything else is refused.</p>
+      <div class="pill-row">
+        <div class="pill user"><b>End user</b>If you have the right role, it just works; if not, you simply can't connect.</div>
+        <div class="pill sec"><b>Security &amp; oversight</b>No role, no token, or wrong app = immediate denial. No partial or accidental access.</div>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <h3><span class="why-icon">🛡️</span> Governance middleware</h3>
+      <p>Every request passes a series of checkpoints: <strong>Audit</strong> (records who/what/when, never the raw query), <strong>Allowlist</strong> (only role-appropriate tools), <strong>Safety</strong> (independently blocks any change to data and oversized queries), and <strong>Rate limiting</strong> (protects the public login endpoints).</p>
+      <div class="pill-row">
+        <div class="pill user"><b>End user</b>Invisible in normal use; negligible delay.</div>
+        <div class="pill sec"><b>Security &amp; oversight</b>No usage without an audit trail. Read-only is enforced in three independent places.</div>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <h3><span class="why-icon">🔍</span> The security reviews</h3>
+      <p>Three independent layers, not one: an <strong>internal premortem</strong> before coding (caught the token-encryption risk early), a <strong>cross-model adversarial review</strong> (a second AI from a different vendor), and the <strong>automated PR review</strong> (caught the real customer data in test files).</p>
+      <div class="pill-row">
+        <div class="pill user"><b>End user</b>A more reliable, better-tested product.</div>
+        <div class="pill sec"><b>Security &amp; oversight</b>Issues caught at three stages — cheapest and safest when caught early.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Flow diagram -->
+  <h2>How a request flows</h2>
+  <div class="flow">
+    <div class="flow-row">
+      <div class="flow-step">
+        <div class="fs-icon">👤</div>
+        <div class="fs-title">User signs in</div>
+        <div class="fs-sub">Microsoft work account</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon">🔁</div>
+        <div class="fs-title">Identity exchanged</div>
+        <div class="fs-sub">for a Salesforce token</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon">✅</div>
+        <div class="fs-title">Salesforce recognises</div>
+        <div class="fs-sub">the named employee &amp; their permissions</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon">📊</div>
+        <div class="fs-title">Data returned</div>
+        <div class="fs-sub">&amp; the action is logged</div>
+      </div>
+    </div>
+    <div class="flow-foot">
+      What's protected at every step:
+      <div class="protect-row">
+        <span class="protect">Read-only</span>
+        <span class="protect">Fully audited</span>
+        <span class="protect">Tied to a named person</span>
+        <span class="protect">Fail-closed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Where we are -->
+  <h2>Where we are, and what's next</h2>
+  <p><strong>Current state:</strong> the connector is LIVE, in <strong>alpha</strong> with a limited team, and production-usable for account and contact questions. 542 automated tests pass.</p>
+
+  <h3>The release ladder</h3>
+  <div class="ladder">
+    <div class="rung now">
+      <div class="rung-head"><span class="rung-badge bnow">Alpha · now</span></div>
+      <div class="rung-body">A limited team using it hands-on for feedback: <strong>Jeff, Jen, Carly, CB, Borja, Mark, Danny, Ivan.</strong></div>
+    </div>
+    <div class="rung">
+      <div class="rung-head"><span class="rung-badge bnext">Beta · next</span></div>
+      <div class="rung-body">A wider <strong>beta team release spanning more departments</strong>, once alpha feedback is in. <em>(waiting)</em></div>
+    </div>
+  </div>
+
+  <h3>Enhancements in progress (Thursday–Friday onward)</h3>
+  <ul class="enh-list">
+    <li>Interactive, sortable tables and dashboards rendered directly inside the Claude conversation.</li>
+    <li>On-the-fly visualizations the AI builds to match each specific question.</li>
+    <li>Fourth-specific behaviours (caching, formatting, department routing) layered in centrally.</li>
+    <li>Clarifying questions when a request is ambiguous, instead of guessing.</li>
+  </ul>
+
+  <h3>Open items</h3>
+  <div class="open-item">
+    <span class="oi-badge oi-progress">In progress</span>
+    <span><strong>Relationship lookups</strong> (e.g. "show me the contacts linked to this account") need a small fix.</span>
+  </div>
+  <div class="open-item">
+    <span class="oi-badge oi-waiting">Waiting</span>
+    <span><strong>Opportunity &amp; Case data</strong> isn't available yet — waiting on a one-time Salesforce-side setup step (an Ivan action) so the connector's schema feed captures their fields. Opportunity is the priority (core revenue/pipeline object).</span>
+  </div>
+  <div class="open-item">
+    <span class="oi-badge oi-waiting">Parked</span>
+    <span><strong>Automated deployment pipeline</strong> is built but parked until the project moves to the corporate GitHub organisation.</span>
+  </div>
+
+  <footer>
+    Prepared 3 June 2026 · Source of record: project repository (fourth-salesforce-mcp) and session handoff notes.
+  </footer>
+
+</div>
+</body>
+</html>
