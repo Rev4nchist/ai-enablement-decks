@@ -216,28 +216,15 @@
     .flow-arrow { transform: rotate(90deg); }
   }
 </style>
-  <!-- ae-hub:og -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="AI Enablement · Fourth">
-  <meta property="og:title" content="Salesforce Connector — Team Update (3 June 2026)">
-  <meta property="og:description" content="Plain-English status update for the wider team — the connector is live: the Friday session with Ivan, the switch off Easy Auth, standing up the Hosted MCP connection, the governance middleware, the security reviews, and the alpha→beta release ladder.">
-  <meta property="og:url" content="https://rev4nchist.github.io/ai-enablement-decks/salesforce-connector-update/">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Salesforce Connector — Team Update (3 June 2026)">
-  <meta name="twitter:description" content="Plain-English status update for the wider team — the connector is live: the Friday session with Ivan, the switch off Easy Auth, standing up the Hosted MCP connection, the governance middleware, the security reviews, and the alpha→beta release ladder.">
 </head>
 <body>
-<!-- ae-hub:nav -->
-<style id="ae-hub-style">#ae-back-to-hub{position:fixed;bottom:16px;right:16px;z-index:9999;padding:.55rem 1rem;background:rgba(7,9,30,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#EEF2FF;font:500 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.05em;border:1px solid rgba(255,255,255,.15);border-radius:999px;text-decoration:none;opacity:.75;transition:opacity .2s,transform .2s}#ae-back-to-hub:hover{opacity:1;transform:translateY(-1px)}</style>
-<a href="../" id="ae-back-to-hub">← All Decks</a>
-
 
 <header>
   <div class="wrap">
     <p class="eyebrow">Project Update · Fourth × Salesforce</p>
     <h1>Secure Salesforce Connector</h1>
     <p class="date">Team Update — 3 June 2026</p>
-    <span class="status-banner"><span class="dot"></span> LIVE in production · usable today for account &amp; contact questions</span>
+    <span class="status-banner"><span class="dot"></span> LIVE in production · usable today for account, contact, opportunity &amp; case questions</span>
     <p class="lede">People sign in once with their normal Microsoft work account, can only <em>read</em> data (never change it), and every action is logged. Over the last five days we proved the hardest piece — automatically handing a Microsoft login to Salesforce — completed an independent security review, and deployed the fixes.</p>
   </div>
 </header>
@@ -306,13 +293,17 @@
 
   <div class="story-block">
     <p><strong>Alpha release to a limited team.</strong> With the reviewed version deployed, the connector was opened to a small alpha group for hands-on use: <strong>Jeff, Jen, Carly, CB, Borja, Mark, Danny, and Ivan.</strong> A deliberately small first audience — the goal is real-world feedback before access is widened.</p>
-    <p style="margin-bottom:0;"><strong>One open Salesforce-side item (Ivan).</strong> During alpha use, two objects — <strong>Opportunity and Case</strong> — come back empty. The connector reads its picture of Salesforce's structure from a Salesforce-side feed (Ivan's "Schema Change Detector"). That feed captures Account and Contact fields correctly but isn't yet capturing Opportunity and Case — so the connector can't query them or follow links from an Account to its Opportunities/Cases. We've sent Ivan the specifics; <strong>Opportunity is the priority</strong> (the core revenue/pipeline object). No connector change needed — it's a one-time Salesforce-side setup.</p>
+    <p style="margin-bottom:0;"><strong>Live re-evaluation (later on 3 June) — good news.</strong> A fresh end-to-end test confirmed the alpha is in better shape than the morning's notes suggested: <strong>Opportunity and Case are queryable now</strong> (pipeline, amounts, cases all return real data — earlier we'd flagged these as "waiting on a Salesforce-side feed", now resolved for querying), and <strong>relationship traversal works</strong> (a real account returned 302 linked opportunities and 339 linked contacts). One narrower gap remains, and it's <strong>ours to fix, not Ivan's</strong>: the <em>relationship-discovery</em> helper (which <em>lists</em> related record types) doesn't yet surface Opportunity/Case, and the object catalog shows stale field counts for them. The next phase switches schema discovery to Salesforce's <strong>native "describe" service</strong>, which fixes the gap <strong>and removes the earlier dependency on Ivan's separate feed.</strong></p>
   </div>
 
   <div class="timeline">
     <div class="tl-item">
-      <span class="tl-day">Thursday–Friday 4–5 June</span><span class="tl-tag">Planned · Enhancements</span>
-      <p class="tl-body"><strong>Enhancements for Fourth.</strong> With the connector live and in alpha, the next focus is the <em>enhancement</em> work the proxy makes possible: interactive tables and dashboards rendered directly inside Claude, on-the-fly visualizations tailored to each question, Fourth-specific behaviours layered in centrally, and clarifying questions when a request is ambiguous — building on the FastMCP framework's app, generative-UI, middleware, and elicitation capabilities.</p>
+      <span class="tl-day">Next phase</span><span class="tl-tag">In progress</span>
+      <p class="tl-body"><strong>Finish the relationship tooling, prove identity, refresh docs.</strong> No external dependency; starts with a quick read-only live check. (1) <strong>Relationship-tool completeness</strong> — switch schema discovery to Salesforce's native "describe" so the relationship-discovery helper lists all related objects (incl. Opportunity/Case) with exact link names, and the object catalog shows accurate field counts (removes the Ivan dependency). (2) <strong>Identity assurance</strong> — a self-service "who am I in Salesforce" check, plus a code tightening so a request can never silently fall back to a shared identity. (3) <strong>Documentation refresh</strong> for the team.</p>
+    </div>
+    <div class="tl-item">
+      <span class="tl-day">Then</span><span class="tl-tag">Planned · Enhancements</span>
+      <p class="tl-body"><strong>Enhancements for Fourth.</strong> The <em>enhancement</em> work the proxy makes possible: interactive tables and dashboards rendered directly inside Claude, on-the-fly visualizations tailored to each question, Fourth-specific behaviours layered in centrally, and clarifying questions when a request is ambiguous — building on the FastMCP framework's app, generative-UI, middleware, and elicitation capabilities. Then <strong>beta</strong> to more departments.</p>
     </div>
   </div>
 
@@ -399,7 +390,7 @@
 
   <!-- Where we are -->
   <h2>Where we are, and what's next</h2>
-  <p><strong>Current state:</strong> the connector is LIVE, in <strong>alpha</strong> with a limited team, and production-usable for account and contact questions. 542 automated tests pass.</p>
+  <p><strong>Current state:</strong> the connector is LIVE, in <strong>alpha</strong> with a limited team. Account, Contact, <strong>Opportunity, and Case</strong> are all queryable today; search, single-record lookup, and <strong>relationship traversal</strong> (an account's contacts and opportunities) all work. Per-user, read-only, audited. 542 automated tests pass.</p>
 
   <h3>The release ladder</h3>
   <div class="ladder">
@@ -408,12 +399,19 @@
       <div class="rung-body">A limited team using it hands-on for feedback: <strong>Jeff, Jen, Carly, CB, Borja, Mark, Danny, Ivan.</strong></div>
     </div>
     <div class="rung">
-      <div class="rung-head"><span class="rung-badge bnext">Beta · next</span></div>
-      <div class="rung-body">A wider <strong>beta team release spanning more departments</strong>, once alpha feedback is in. <em>(waiting)</em></div>
+      <div class="rung-head"><span class="rung-badge bnext">Beta · later</span></div>
+      <div class="rung-body">A wider <strong>beta team release spanning more departments</strong>, once alpha feedback is in <em>and</em> the next-phase polish lands. <em>(waiting)</em></div>
     </div>
   </div>
 
-  <h3>Enhancements in progress (Thursday–Friday onward)</h3>
+  <h3>Next phase (in progress) — no external dependency</h3>
+  <ul class="enh-list">
+    <li><strong>Relationship-tool completeness</strong> — switch schema discovery to Salesforce's native "describe" so the relationship-discovery helper lists all related objects (incl. Opportunity/Case) and the object catalog shows accurate field counts. Removes the earlier dependency on Ivan's feed.</li>
+    <li><strong>Identity assurance</strong> — a self-service "who am I in Salesforce" check, plus a code tightening so a request can never silently fall back to a shared identity (you only ever see what your own Salesforce account can see).</li>
+    <li><strong>Documentation refresh</strong> — one accurate picture for the team.</li>
+  </ul>
+
+  <h3>Then — enhancements for Fourth</h3>
   <ul class="enh-list">
     <li>Interactive, sortable tables and dashboards rendered directly inside the Claude conversation.</li>
     <li>On-the-fly visualizations the AI builds to match each specific question.</li>
@@ -424,11 +422,11 @@
   <h3>Open items</h3>
   <div class="open-item">
     <span class="oi-badge oi-progress">In progress</span>
-    <span><strong>Relationship lookups</strong> (e.g. "show me the contacts linked to this account") need a small fix.</span>
+    <span><strong>Relationship discovery</strong> — record <em>traversal</em> works today (an account's contacts and opportunities return correctly). The helper that <em>lists</em> which record types relate to an object doesn't yet surface Opportunity/Case; that's the relationship-tool completeness fix in the next phase (our code, no external wait).</span>
   </div>
   <div class="open-item">
-    <span class="oi-badge oi-waiting">Waiting</span>
-    <span><strong>Opportunity &amp; Case data</strong> isn't available yet — waiting on a one-time Salesforce-side setup step (an Ivan action) so the connector's schema feed captures their fields. Opportunity is the priority (core revenue/pipeline object).</span>
+    <span class="oi-badge oi-progress">In progress</span>
+    <span><strong>Object catalog counts</strong> — Opportunity/Case are queryable but still show stale field counts in the object list; fixed by the same native-"describe" switch.</span>
   </div>
   <div class="open-item">
     <span class="oi-badge oi-waiting">Parked</span>
