@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Salesforce Data Dictionary — Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --deep:#0C4A7D; --teal:#00B69F; --sky:#6fb4e3; --navy:#002747;
+    --ink:#373e42; --soft:#F5F5F5; --line:#e4eaf0; --mut:#6b7681;
+    --amber:#b7791f; --amber-bg:#fef6e7; --teal-bg:#e6f7f4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--ink);
+    background:#fff;line-height:1.5;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px 64px}
+  .hero{background:linear-gradient(135deg,var(--navy),var(--deep));color:#fff;
+    border-radius:0 0 18px 18px;padding:34px 30px 28px;border-bottom:5px solid var(--teal)}
+  .hero .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--sky);font-weight:600;margin-bottom:8px}
+  .hero h1{font-size:34px;font-weight:700;line-height:1.12}
+  .hero .sub{color:#cfe2f3;font-size:15.5px;margin-top:8px;max-width:60ch}
+  .hero .meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+    padding:5px 12px;border-radius:14px;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.22);color:#fff}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--teal)}
+  h2{color:var(--deep);font-size:21px;font-weight:700;margin:34px 0 6px}
+  h2 .bar{display:inline-block;width:26px;height:3px;background:var(--teal);
+    vertical-align:middle;margin-right:10px;border-radius:2px}
+  h3{color:var(--navy);font-size:16px;font-weight:600;margin:20px 0 8px}
+  p{margin:8px 0;max-width:74ch}
+  .lede{font-size:16px;color:var(--navy)}
+  .lede strong{color:var(--deep)}
+  .why{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 4px}
+  .why .c{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--soft)}
+  .why .c .t{font-weight:700;color:var(--deep);font-size:14px}
+  .why .c .d{font-size:13px;color:var(--mut);margin-top:4px}
+  .why .c.hi{background:var(--teal-bg);border-color:#bfeae3}
+  .why .c.hi .t{color:#067a6b}
+  table{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}
+  thead th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--mut);font-weight:700;padding:8px 10px;border-bottom:2px solid var(--line)}
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:nth-child(even){background:#fbfcfe}
+  .concept{font-weight:600;color:var(--navy);white-space:nowrap}
+  code{font-family:'Cascadia Code',Consolas,monospace;font-size:12.5px;
+    background:#f0f4f8;border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--deep)}
+  .badge{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    padding:3px 8px;border-radius:9px;white-space:nowrap}
+  .b-std{background:var(--teal-bg);color:#067a6b;border:1px solid #bfeae3}
+  .b-conf{background:var(--amber-bg);color:var(--amber);border:1px solid #f3e2bd}
+  .steps{counter-reset:s;margin:10px 0}
+  .steps li{list-style:none;position:relative;padding:8px 0 8px 40px;border-bottom:1px solid var(--line)}
+  .steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:7px;
+    width:26px;height:26px;border-radius:50%;background:var(--deep);color:#fff;
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .ask{background:linear-gradient(135deg,var(--teal-bg),#fff);border:1px solid #bfeae3;
+    border-left:5px solid var(--teal);border-radius:12px;padding:16px 20px;margin:18px 0}
+  .ask .t{font-weight:700;color:#067a6b;font-size:15px}
+  .pathtbl td{font-size:13.5px}
+  footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--mut);text-align:center}
+  .note{font-size:12.5px;color:var(--mut);background:var(--soft);border:1px solid var(--line);
+    border-radius:10px;padding:11px 14px;margin-top:12px}
+  @media (max-width:680px){.why{grid-template-columns:1fr}.hero h1{font-size:27px}}
+  @media print{.hero{border-radius:0}body{font-size:12.5px}.wrap{padding-bottom:0}
+    a[href]:after{content:""}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap" style="padding:0">
+    <p class="eyebrow">Fourth · Salesforce Connector · AI Enablement</p>
+    <h1>Salesforce Data Dictionary</h1>
+    <p class="sub">One agreed source of truth for the fields we all query — so everyone's numbers tie out. A proposal for your review.</p>
+    <div class="meta">
+      <span class="pill"><span class="dot"></span>Powered by iQ</span>
+      <span class="pill">Draft v0.1 — for RevOps blessing</span>
+      <span class="pill">Prepared for: Nipul Chokshi, CMO</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <h2><span class="bar"></span>The opportunity</h2>
+  <p class="lede">You flagged it exactly: <strong>we need a data dictionary so we're all querying the same fields.</strong> Today, two people asking "enterprise pipeline by segment" can each pick a different — but equally valid — field, so the numbers don't match. A data dictionary is the agreed list of <strong>which field means what, and which one to use</strong>, for every business concept. The powerful part: once you bless it, we bake it into the Salesforce connector so the AI steers everyone to the same fields automatically — <strong>consistency by construction, not by memory.</strong></p>
+
+  <h2><span class="bar"></span>Why this isn't already solved</h2>
+  <div class="why">
+    <div class="c"><div class="t">Ivan's Schema Detector</div><div class="d">Alerts when a field is added or removed. A smoke alarm — it doesn't say which field to use.</div></div>
+    <div class="c"><div class="t">Connector schema awareness</div><div class="d">Stops the AI inventing fields. But lists <em>all</em> real fields — not the one blessed field per concept.</div></div>
+    <div class="c hi"><div class="t">Data dictionary (this)</div><div class="d">The standardization layer on top: for each concept, the single canonical field + its meaning.</div></div>
+  </div>
+
+  <h2><span class="bar"></span>The proposed dictionary</h2>
+  <p>Read each row as: <em>"when someone asks about this concept, query this field."</em> <span class="badge b-std">Standard</span> = a real standard Salesforce field, proposed with confidence. <span class="badge b-conf">Confirm</span> = org-specific or business-defined — needs a quick RevOps check against our live org.</p>
+
+  <h3>Accounts (companies)</h3>
+  <table><thead><tr><th>Business concept</th><th>Canonical field</th><th>Definition</th><th>Status</th></tr></thead><tbody>
+    <tr><td class="concept">Company name</td><td><code>Name</code></td><td>The account's name.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Segment / type</td><td><code>Type</code></td><td>Customer category (e.g. Enterprise / Mid-Market / SMB).</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Industry</td><td><code>Industry</code></td><td>Standard industry classification.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Company revenue</td><td><code>AnnualRevenue</code></td><td>Reported annual revenue.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Region</td><td><code>BillingCountry</code></td><td>Billing location (state in <code>BillingState</code>).</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Owner (AE)</td><td><code>OwnerId</code></td><td>Salesforce user who owns the account.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Customer health</td><td><code>Customer_Health_Score__c</code></td><td>Customer health score.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Churn / revenue risk</td><td><code>Revenue_Risk__c</code></td><td>At-risk revenue indicator.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Created date</td><td><code>CreatedDate</code></td><td>When the account was created.</td><td><span class="badge b-std">Standard</span></td></tr>
+  </tbody></table>
+
+  <h3>Opportunities (deals / pipeline)</h3>
+  <table><thead><tr><th>Business concept</th><th>Canonical field</th><th>Definition</th><th>Status</th></tr></thead><tbody>
+    <tr><td class="concept">Deal stage</td><td><code>StageName</code></td><td>Where the deal sits in the sales process.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Deal value</td><td><code>Amount</code></td><td>Opportunity amount.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Expected close</td><td><code>CloseDate</code></td><td>Forecasted close date.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Open / closed</td><td><code>IsClosed</code></td><td>Whether the deal is closed.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Won?</td><td><code>IsWon</code></td><td>Whether a closed deal was won.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Deal type</td><td><code>Type</code></td><td>New business / renewal / upsell, etc.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Source</td><td><code>LeadSource</code></td><td>Where the opportunity originated.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Forecast category</td><td><code>ForecastCategoryName</code></td><td>Roll-up forecast bucket.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Owner</td><td><code>OwnerId</code></td><td>Deal owner.</td><td><span class="badge b-std">Standard</span></td></tr>
+  </tbody></table>
+
+  <h3>Leads</h3>
+  <table><thead><tr><th>Business concept</th><th>Canonical field</th><th>Definition</th><th>Status</th></tr></thead><tbody>
+    <tr><td class="concept">Lead status</td><td><code>Status</code></td><td>Stage in the lead lifecycle.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Source</td><td><code>LeadSource</code></td><td>Where the lead came from.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Company</td><td><code>Company</code></td><td>Lead's company name.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Industry</td><td><code>Industry</code></td><td>Lead's industry.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Quality / rating</td><td><code>Rating</code></td><td>Hot / Warm / Cold.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Converted?</td><td><code>IsConverted</code></td><td>Whether the lead became an account/opp.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Owner</td><td><code>OwnerId</code></td><td>Lead owner.</td><td><span class="badge b-std">Standard</span></td></tr>
+  </tbody></table>
+
+  <h3>Cases (support / service)</h3>
+  <table><thead><tr><th>Business concept</th><th>Canonical field</th><th>Definition</th><th>Status</th></tr></thead><tbody>
+    <tr><td class="concept">Case status</td><td><code>Status</code></td><td>Open / working / closed, etc.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Priority</td><td><code>Priority</code></td><td>Urgency of the case.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Case type</td><td><code>Type</code></td><td>Category of issue.</td><td><span class="badge b-conf">Confirm</span></td></tr>
+    <tr><td class="concept">Channel / origin</td><td><code>Origin</code></td><td>How the case came in (email / web / phone).</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Closed?</td><td><code>IsClosed</code></td><td>Whether the case is resolved.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Related account</td><td><code>AccountId</code></td><td>The account the case belongs to.</td><td><span class="badge b-std">Standard</span></td></tr>
+    <tr><td class="concept">Created date</td><td><code>CreatedDate</code></td><td>When the case was opened.</td><td><span class="badge b-std">Standard</span></td></tr>
+  </tbody></table>
+  <p class="note">For each concept we'll also record allowed values (picklists), the owner, and any deprecated "do-not-use" fields — so old habits get flagged automatically.</p>
+
+  <h2><span class="bar"></span>How it becomes self-enforcing</h2>
+  <ol class="steps">
+    <li>We store the blessed dictionary as one small, version-controlled file — one row per concept.</li>
+    <li>The connector already briefs the AI on the real schema before every query. We merge the dictionary into that brief.</li>
+    <li>Every question then resolves to the <strong>same field</strong> — in a meeting on your phone or building a report. No one memorizes field names.</li>
+    <li>When Ivan's detector flags a schema change, that triggers a quick review of one row — so the dictionary stays current.</li>
+  </ol>
+
+  <h2><span class="bar"></span>The path forward</h2>
+  <table class="pathtbl"><thead><tr><th>Phase</th><th>What</th><th>Who</th><th>Effort</th></tr></thead><tbody>
+    <tr><td><strong>1. Confirm</strong></td><td>Review the <span class="badge b-conf">Confirm</span> rows; lock the canonical field + definition</td><td>RevOps + you</td><td>~30 min</td></tr>
+    <tr><td><strong>2. Lock v1</strong></td><td>We finalize the dictionary file from your confirmations</td><td>AI Enablement</td><td>1–2 days</td></tr>
+    <tr><td><strong>3. Integrate</strong></td><td>Wire it into the connector so the AI uses the blessed fields</td><td>AI Enablement</td><td>~days</td></tr>
+    <tr><td><strong>4. Keep current</strong></td><td>Detector change-alerts trigger a quick dictionary review</td><td>RevOps (light)</td><td>min / change</td></tr>
+  </tbody></table>
+
+  <div class="ask">
+    <p class="t">The one ask of you</p>
+    <p style="margin:4px 0 0">Point us to the right RevOps owner and a 30-minute slot to confirm the <span class="badge b-conf">Confirm</span> rows. We drive everything else.</p>
+  </div>
+
+  <footer>
+    Draft v0.1 — standard Salesforce fields proposed with confidence; <span class="badge b-conf">Confirm</span> rows are candidates to verify against the live org schema (read from the <code>Schema_Snapshot__c</code> source Ivan's detector maintains). A starting point to react to, not a finished standard. · Fourth · Powered by iQ
+  </footer>
+</div>
+</body>
+</html>
