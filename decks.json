@@ -8,14 +8,50 @@
     "ogDescription": "AI Enablement presentations, orientations, and capability briefings — Fourth."
   },
   "sections": [
-    { "id": "portfolio",             "title": "Portfolio Reviews" },
-    { "id": "project-presentations", "title": "Project Presentations" },
-    { "id": "claude-cowork",         "title": "Claude Cowork" },
-    { "id": "claude-code-ccv3",      "title": "Claude Code · CCv3" },
-    { "id": "mcp-capabilities",      "title": "MCP Capabilities" },
-    { "id": "msft-ai",               "title": "Microsoft AI" }
+    {
+      "id": "sponsor-updates",
+      "title": "Sponsor Updates",
+      "chronological": true,
+      "collapsible": true
+    },
+    {
+      "id": "portfolio",
+      "title": "Portfolio Reviews"
+    },
+    {
+      "id": "project-presentations",
+      "title": "Project Presentations"
+    },
+    {
+      "id": "claude-cowork",
+      "title": "Claude Cowork"
+    },
+    {
+      "id": "claude-code-ccv3",
+      "title": "Claude Code · CCv3"
+    },
+    {
+      "id": "mcp-capabilities",
+      "title": "MCP Capabilities"
+    },
+    {
+      "id": "msft-ai",
+      "title": "Microsoft AI"
+    }
   ],
   "decks": [
+    {
+      "id": "fourthos-2026-06-24",
+      "section": "sponsor-updates",
+      "tag": "Sponsor Update",
+      "title": "FourthOS — 24 Jun 2026",
+      "description": "First weekly sponsor briefing. Overall Yellow; flagship Connector Ecosystem (Salesforce live, reporting Slice 1 in-repo). Two sponsor decisions: reporting hosting topology + green-light Zendesk #2.",
+      "href": "./fourthos/2026-06-24/",
+      "meta": "24 Jun 2026",
+      "date": "2026-06-24",
+      "status": "shipped",
+      "featured": true
+    },
     {
       "id": "vp-briefing-april-2026",
       "section": "portfolio",
