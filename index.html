@@ -214,6 +214,27 @@
     .card:hover { transform: translateY(-3px); border-color: var(--border-bright); background: var(--bg-surface); }
     .card.featured { background: linear-gradient(135deg, rgba(0,212,200,0.08) 0%, var(--bg-card) 55%); border-color: rgba(0,212,200,0.25); }
     .card.hidden { display: none; }
+    .card.collapsed { display: none; }
+
+    /* ─── Chronological collapsible section (Sponsor Updates) ──────── */
+    .section-toggle {
+      margin-top: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.5rem 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .section-toggle:hover { color: var(--text-primary); border-color: var(--border-bright); }
 
     .card-row {
       display: flex;
@@ -394,12 +415,17 @@
       // ─── Sections + cards ──────────────────────────────────────
       const sectionsEl = document.getElementById('sections');
       data.sections.forEach(s => {
-        const decks = bySection[s.id];
+        let decks = bySection[s.id];
         if (!decks.length) return;
+        // Chronological sections (e.g. Sponsor Updates) render newest-first.
+        if (s.chronological) {
+          decks = decks.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+        }
         const section = document.createElement('section');
         section.className = 'decks';
         section.id = s.id;
         section.dataset.section = s.id;
+        section.dataset.collapsible = s.collapsible ? '1' : '';
 
         section.innerHTML = `
           <div class="section-head">
@@ -426,6 +452,51 @@
         sectionsEl.appendChild(section);
       });
 
+      // ─── Collapsible chronological sections (one row visible) ──
+      // Keeps only the cards that fit on the first visual row; the rest
+      // collapse behind a "Show N earlier updates" toggle. Re-measures on
+      // resize so "one row" stays true at any width.
+      function setupCollapsibles() {
+        document.querySelectorAll('section.decks[data-collapsible="1"]').forEach(sec => {
+          if (sec.classList.contains('hidden')) return; // can't measure a hidden section
+          const grid = sec.querySelector('.grid');
+          if (!grid) return;
+          const cards = Array.from(grid.children).filter(c => c.classList.contains('card'));
+          if (!cards.length) return;
+          const expanded = sec.dataset.expanded === '1';
+          // Reset so measurement sees true layout.
+          cards.forEach(c => c.classList.remove('collapsed'));
+          const firstTop = cards[0].offsetTop;
+          const firstRow = cards.filter(c => Math.abs(c.offsetTop - firstTop) < 4);
+          const extra = cards.length - firstRow.length;
+
+          let toggle = sec.querySelector('.section-toggle');
+          if (extra <= 0) { if (toggle) toggle.remove(); return; }
+
+          if (!expanded) {
+            cards.forEach(c => { if (Math.abs(c.offsetTop - firstTop) >= 4) c.classList.add('collapsed'); });
+          }
+          if (!toggle) {
+            toggle = document.createElement('button');
+            toggle.className = 'section-toggle';
+            toggle.type = 'button';
+            toggle.addEventListener('click', () => {
+              sec.dataset.expanded = sec.dataset.expanded === '1' ? '' : '1';
+              setupCollapsibles();
+            });
+            sec.appendChild(toggle);
+          }
+          toggle.textContent = expanded
+            ? 'Show fewer ▴'
+            : `Show ${extra} earlier update${extra > 1 ? 's' : ''} ▾`;
+        });
+      }
+      const runCollapsibles = () => requestAnimationFrame(setupCollapsibles);
+      runCollapsibles();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(runCollapsibles);
+      let _rsz;
+      window.addEventListener('resize', () => { clearTimeout(_rsz); _rsz = setTimeout(runCollapsibles, 150); });
+
       // ─── Filter chip wiring ────────────────────────────────────
       filters.addEventListener('click', e => {
         const chip = e.target.closest('.chip');
@@ -440,6 +511,7 @@
           const target = document.getElementById(f);
           if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        runCollapsibles(); // a section just became (in)visible — re-measure rows
       });
 
       // ─── ToC scroll-spy ────────────────────────────────────────
