@@ -29,16 +29,66 @@
     a { color:inherit; text-decoration:none; }
     .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
     .wrap-wide { max-width:1160px; }
+    :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
 
-    /* ---------- top nav ---------- */
-    .topnav { position:sticky; top:0; z-index:50; background:rgba(5,21,38,0.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); }
-    .topnav .inner { max-width:1160px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); display:flex; align-items:center; gap:1.5rem; height:64px; }
-    .topnav .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; }
-    .topnav .brand .dot { width:10px; height:10px; border-radius:3px; background:var(--vignette); }
-    .topnav nav { display:flex; gap:1.25rem; margin-left:auto; align-items:center; }
-    .topnav nav a { font-size:0.82rem; color:var(--text-muted); font-weight:500; padding:0.35rem 0; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
-    .topnav nav a:hover, .topnav nav a:focus-visible { color:var(--text-primary); border-color:var(--teal); outline:none; }
-    .topnav nav a.home { color:var(--accent); }
+    /* ===================== TOP BAR (shared shell) ===================== */
+    .topbar {
+      position:sticky; top:0; z-index:50;
+      background:rgba(5,21,38,0.82); backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner {
+      display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap;
+      padding:0.7rem 0;
+    }
+    /* brand mark */
+    .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; letter-spacing:0.01em; }
+    .brand svg { width:26px; height:26px; flex-shrink:0; display:block; }
+    .brand .wordmark { font-size:1.02rem; }
+    .brand .wordmark b { font-weight:700; }
+    .brand .wordmark .os { color:var(--teal); font-weight:700; }
+    /* breadcrumb */
+    .crumbs { display:flex; align-items:center; gap:0.45rem; font-size:0.82rem; color:var(--text-muted); flex-wrap:wrap; }
+    .crumbs a { color:var(--text-secondary); transition:color .2s; }
+    .crumbs a:hover { color:var(--accent); }
+    .crumbs .sep { color:var(--text-muted); opacity:0.6; }
+    .crumbs .current { color:var(--text-primary); font-weight:500; }
+    /* right cluster */
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem 1.25rem; flex-wrap:wrap; }
+    /* tier tabs */
+    .tabs { display:flex; align-items:center; gap:0.25rem; }
+    .tabs a {
+      font-size:0.82rem; font-weight:500; color:var(--text-secondary);
+      padding:0.35rem 0.7rem; border-radius:8px; transition:color .2s, background .2s;
+    }
+    .tabs a:hover { color:var(--text-primary); background:rgba(111,180,227,0.08); }
+    body[data-tier="hub"]        .tab-hub,
+    body[data-tier="briefing"]   .tab-briefing,
+    body[data-tier="deep-dive"]  .tab-deepdive {
+      color:var(--teal); background:rgba(0,182,159,0.12);
+    }
+    /* week switcher */
+    .wkswitch { position:relative; display:inline-flex; align-items:center; }
+    .wkswitch select {
+      appearance:none; -webkit-appearance:none;
+      font-family:var(--font-body); font-size:0.8rem; font-weight:500; color:var(--text-secondary);
+      background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:999px;
+      padding:0.4rem 2rem 0.4rem 0.95rem; cursor:pointer; transition:border-color .2s, color .2s;
+    }
+    .wkswitch select:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); }
+    .wkswitch::after {
+      content:'▾'; position:absolute; right:0.85rem; top:50%; transform:translateY(-50%);
+      pointer-events:none; color:var(--accent); font-size:0.7rem;
+    }
+
+    /* ===================== TIER PAGER ===================== */
+    .pager { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
+    .pager a {
+      display:inline-flex; align-items:center; gap:0.5rem; font-size:0.9rem; font-weight:500;
+      color:var(--text-secondary); border:1px solid var(--border-accent); border-radius:10px;
+      padding:0.7rem 1.1rem; transition:color .2s, border-color .2s, background .2s;
+    }
+    .pager a:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); background:rgba(0,182,159,0.06); }
 
     /* ---------- progress ---------- */
     .progress { position:fixed; top:0; left:0; height:3px; width:0%; z-index:60; background:linear-gradient(90deg,var(--accent),var(--teal)); transition:width .15s ease-out; }
@@ -126,11 +176,14 @@
     .link-card.feature { border-color:rgba(0,182,159,0.35); background:linear-gradient(135deg,rgba(0,182,159,0.10) 0%,transparent 60%); }
 
     /* ---------- footer ---------- */
-    footer { padding:2.25rem 0 2.75rem; background:var(--bg-midnight); }
+    footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
     .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
     .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
     .foot-grid .pwr .iq { color:var(--teal); }
     .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
+
+    /* ---------- deep-link anchor offset (sticky top bar) ---------- */
+    #outputs, #concept, #architecture { scroll-margin-top:80px; }
 
     /* ---------- reveal ---------- */
     .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
@@ -138,11 +191,13 @@
 
     @media (max-width:880px) {
       .two, .ws-grid, .focus-grid, .links-grid { grid-template-columns:1fr; }
-      .topnav nav { gap:0.9rem; }
+    }
+    @media (max-width:720px) {
+      .crumbs { width:100%; order:3; }
+      .topbar-right { width:100%; justify-content:space-between; }
     }
     @media (max-width:560px) {
       html { font-size:16px; }
-      .topnav nav a:not(.home) { display:none; }
       .foot-grid { flex-direction:column; align-items:flex-start; }
     }
     @media (prefers-reduced-motion:reduce) {
@@ -151,17 +206,42 @@
     }
   </style>
 </head>
-<body>
+<body data-tier="deep-dive">
   <div class="progress" id="progress" aria-hidden="true"></div>
-  <div class="topnav">
-    <div class="inner">
-      <a class="brand" href="index.html"><span class="dot" aria-hidden="true"></span> FourthOS</a>
-      <nav aria-label="Page navigation">
-        <a class="home" href="index.html">&larr; Hub</a>
-        <a href="briefing.html">The Briefing</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#workstreams">Workstreams</a>
+  <!-- ===================== SHARED TOP BAR ===================== -->
+  <div class="topbar">
+    <div class="wrap wrap-wide topbar-inner">
+      <a class="brand" href="/ai-enablement-decks/fourthos/2026-06-24/" aria-label="FourthOS Sponsor Update home">
+        <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse"><stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/></linearGradient></defs>
+          <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
+          <circle cx="16" cy="16" r="3.4" fill="url(#fos-g)"/>
+          <circle cx="26.5" cy="9.5" r="2.1" fill="#00B69F"/>
+          <circle cx="5.5" cy="22.5" r="2.1" fill="#6FB4E3"/>
+          <circle cx="7" cy="8" r="1.6" fill="#FAA51A"/>
+        </svg>
+        <span class="wordmark"><b>Fourth</b><span class="os">OS</span></span>
+      </a>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/ai-enablement-decks/#sponsor-updates">Sponsor Updates</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <a href="/ai-enablement-decks/fourthos/2026-06-24/">24 June 2026</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <span class="current">Deep Dive</span>
       </nav>
+      <div class="topbar-right">
+        <nav class="tabs" aria-label="Sections">
+          <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-06-24/">Hub</a>
+          <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-06-24/briefing.html">The Briefing</a>
+          <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html">Deep Dive</a>
+        </nav>
+        <label class="wkswitch">
+          <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
+          <select id="weekSwitch" aria-label="Switch to another week's update">
+            <option value="2026-06-24" selected>24 June 2026</option>
+          </select>
+        </label>
+      </div>
     </div>
   </div>
 
@@ -198,7 +278,7 @@
     </section>
 
     <!-- CONCEPT SPOTLIGHT -->
-    <section class="s">
+    <section class="s" id="concept">
       <div class="wrap">
         <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Concept spotlight</p>
         <div class="spotlight reveal">
@@ -325,8 +405,8 @@
       </div>
     </section>
 
-    <!-- WORKSTREAMS -->
-    <section class="s" id="workstreams">
+    <!-- WORKSTREAMS / OUTPUTS -->
+    <section class="s" id="outputs">
       <div class="wrap wrap-wide">
         <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Workstreams</p>
         <h2 class="reveal">The six moving parts</h2>
@@ -420,6 +500,16 @@
         </div>
       </div>
     </section>
+
+    <!-- TIER PAGER -->
+    <section class="s" style="border-bottom:none; padding-top:0;">
+      <div class="wrap">
+        <nav class="pager" aria-label="Tier navigation">
+          <a href="/ai-enablement-decks/fourthos/2026-06-24/briefing.html">&larr; The Briefing</a>
+          <a href="/ai-enablement-decks/fourthos/2026-06-24/">Back to Hub &rarr;</a>
+        </nav>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -456,6 +546,30 @@
         });
       }, { threshold: 0.12 });
       items.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+
+  <script>
+    /* Data-driven week switcher (shared shell) */
+    (function () {
+      var sel = document.getElementById('weekSwitch');
+      if (!sel) return;
+      var root = location.pathname.split('/fourthos/')[0];
+      var current = "2026-06-24";
+      fetch(root + '/decks.json', { cache: 'no-cache' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var weeks = (data.decks || []).filter(function (d) { return d.section === 'sponsor-updates' && d.date; })
+            .sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+          if (!weeks.length) return;
+          sel.innerHTML = '';
+          weeks.forEach(function (w) {
+            var o = document.createElement('option'); o.value = w.date;
+            o.textContent = (w.meta || w.date) + (w.date === current ? ' (current)' : '');
+            if (w.date === current) o.selected = true; sel.appendChild(o);
+          });
+        }).catch(function () {});
+      sel.addEventListener('change', function () { if (sel.value && sel.value !== current) location.href = root + '/fourthos/' + sel.value + '/'; });
     })();
   </script>
 </body>
