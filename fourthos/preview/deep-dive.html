@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FourthOS — Flagship Deep Dive | Connector Ecosystem</title>
+  <meta name="description" content="A teaching deep dive on the FourthOS Connector Ecosystem: the governance-proxy pattern, architecture, workstreams, and roadmap from Salesforce to Zendesk, NetSuite, and Jira.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:#0A1929; --bg-secondary:#0F2A3F; --bg-tertiary:#153650;
+      --bg-midnight:#051526; --bg-card:rgba(15,42,63,0.55);
+      --text-primary:#FFFFFF; --text-secondary:#CFD1D1; --text-muted:#8DA8C4;
+      --accent:#6FB4E3; --teal:#00B69F; --sunrise:#FAA51A; --danger:#D81632; --purple:#9678B6;
+      --fourth-deep-blue:#0C4A7D;
+      --vignette:linear-gradient(25deg,#00B69F 0%,#6FB4E3 40%,#0C4A7D 100%);
+      --border:rgba(111,180,227,0.10); --border-accent:rgba(111,180,227,0.22);
+      --font-display:'Poppins',sans-serif; --font-body:'Poppins',sans-serif; --font-mono:'JetBrains Mono',monospace;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+    }
+    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-size:18px; scroll-padding-top:80px; }
+    body {
+      font-family:var(--font-body); background:var(--bg-primary); color:var(--text-primary);
+      line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    }
+    a { color:inherit; text-decoration:none; }
+    .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
+    .wrap-wide { max-width:1160px; }
+
+    /* ---------- top nav ---------- */
+    .topnav { position:sticky; top:0; z-index:50; background:rgba(5,21,38,0.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); }
+    .topnav .inner { max-width:1160px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); display:flex; align-items:center; gap:1.5rem; height:64px; }
+    .topnav .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; }
+    .topnav .brand .dot { width:10px; height:10px; border-radius:3px; background:var(--vignette); }
+    .topnav nav { display:flex; gap:1.25rem; margin-left:auto; align-items:center; }
+    .topnav nav a { font-size:0.82rem; color:var(--text-muted); font-weight:500; padding:0.35rem 0; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
+    .topnav nav a:hover, .topnav nav a:focus-visible { color:var(--text-primary); border-color:var(--teal); outline:none; }
+    .topnav nav a.home { color:var(--accent); }
+
+    /* ---------- progress ---------- */
+    .progress { position:fixed; top:0; left:0; height:3px; width:0%; z-index:60; background:linear-gradient(90deg,var(--accent),var(--teal)); transition:width .15s ease-out; }
+
+    /* ---------- RAG ---------- */
+    .rag { display:inline-flex; align-items:center; gap:0.55rem; padding:0.4rem 0.9rem; border-radius:999px; font-size:0.82rem; font-weight:600; border:1px solid; }
+    .rag .pip { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .rag-yellow { color:var(--sunrise); border-color:rgba(250,165,26,0.45); background:rgba(250,165,26,0.10); }
+    .rag-yellow .pip { background:var(--sunrise); box-shadow:0 0 8px rgba(250,165,26,0.55); }
+
+    /* ---------- hero ---------- */
+    .hero { position:relative; overflow:hidden; background:linear-gradient(160deg,#051526 0%,#0A1929 60%,#0F2A3F 100%); padding:clamp(4rem,9vw,6.5rem) 0 clamp(3rem,6vw,5rem); border-bottom:1px solid var(--border); }
+    .hero::before { content:''; position:absolute; inset:0; background:var(--vignette); opacity:0.13; pointer-events:none; }
+    .hero::after { content:''; position:absolute; width:560px; height:560px; border-radius:50%; filter:blur(120px); background:rgba(0,182,159,0.13); top:-200px; left:-120px; pointer-events:none; }
+    .hero .wrap { position:relative; z-index:1; }
+    .eyebrow { font-size:0.72rem; font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+    .hero h1 { font-family:var(--font-display); font-weight:600; line-height:1.1; font-size:clamp(2.3rem,5.5vw,3.8rem); margin-bottom:1rem; letter-spacing:-0.01em; }
+    .hero h1 .grad { background:var(--vignette); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+    .hero .state { font-size:1.05rem; color:var(--text-secondary); max-width:640px; margin-top:0.5rem; }
+    .hero-meta { display:flex; flex-wrap:wrap; gap:1rem; margin-top:2rem; align-items:center; }
+    .hero-meta .updated { font-size:0.85rem; color:var(--text-muted); }
+
+    /* ---------- sections ---------- */
+    section.s { padding:clamp(3rem,6vw,4.75rem) 0; border-bottom:1px solid var(--border); }
+    .sec-label { font-size:0.72rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .sec-label .b { width:6px; height:6px; border-radius:50%; background:var(--teal); }
+    h2 { font-family:var(--font-display); font-weight:600; font-size:clamp(1.6rem,3.2vw,2.3rem); line-height:1.2; margin-bottom:1.25rem; }
+    h3 { font-family:var(--font-display); font-weight:600; font-size:1.2rem; margin-bottom:0.5rem; }
+    p { color:var(--text-secondary); margin-bottom:1rem; max-width:680px; }
+    .lead { font-size:1.12rem; color:var(--text-primary); }
+
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:stretch; margin-top:0.5rem; }
+    .panel { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:1.75rem; backdrop-filter:blur(8px); }
+    .panel.teal { border-left:3px solid var(--teal); }
+    .panel.sky { border-left:3px solid var(--accent); }
+    .panel h3 { color:var(--text-primary); }
+    .panel p { margin-bottom:0; font-size:0.98rem; }
+
+    /* ---------- concept spotlight ---------- */
+    .spotlight { position:relative; overflow:hidden; border-radius:20px; border:1px solid rgba(0,182,159,0.3); background:linear-gradient(135deg,rgba(0,182,159,0.12) 0%,rgba(111,180,227,0.06) 45%,transparent 80%); padding:clamp(2rem,4vw,3rem); }
+    .spotlight::after { content:''; position:absolute; width:360px; height:360px; border-radius:50%; filter:blur(90px); background:rgba(0,182,159,0.16); bottom:-160px; right:-120px; pointer-events:none; }
+    .spotlight .sl-tag { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.7rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:1.25rem; }
+    .spotlight .sl-tag svg { width:18px; height:18px; }
+    .spotlight .term { font-family:var(--font-display); font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:600; margin-bottom:1.25rem; position:relative; z-index:1; }
+    .spotlight .term .mono { font-family:var(--font-mono); font-size:0.6em; color:var(--accent); font-weight:500; }
+    .spotlight .plain { color:var(--text-secondary); font-size:1.05rem; max-width:760px; position:relative; z-index:1; margin-bottom:0; }
+    .spotlight .plain strong { color:var(--text-primary); font-weight:600; }
+
+    /* ---------- architecture ---------- */
+    .arch-frame { background:var(--bg-secondary); border:1px solid var(--border); border-radius:16px; padding:clamp(1rem,3vw,2rem); margin-top:0.5rem; }
+    .arch-svg { width:100%; height:auto; display:block; }
+    .arch-caption { font-size:0.85rem; color:var(--text-muted); margin-top:1rem; text-align:center; max-width:none; }
+    .arch-legend { display:flex; flex-wrap:wrap; gap:1.25rem; justify-content:center; margin-top:1.25rem; font-size:0.78rem; color:var(--text-secondary); }
+    .arch-legend span { display:inline-flex; align-items:center; gap:0.45rem; }
+    .arch-legend .sw { width:24px; height:0; border-top:2px solid; }
+    .legend-live .sw { border-color:var(--teal); }
+    .legend-future .sw { border-top-style:dashed; border-color:var(--text-muted); }
+
+    /* ---------- workstreams ---------- */
+    .ws-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; counter-reset:ws; }
+    .ws-card { position:relative; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1.5rem 1.5rem 1.5rem 3.75rem; backdrop-filter:blur(8px); }
+    .ws-card::before { counter-increment:ws; content:counter(ws,decimal-leading-zero); position:absolute; left:1.4rem; top:1.5rem; font-family:var(--font-mono); font-size:0.95rem; font-weight:600; color:var(--teal); }
+    .ws-card h3 { font-size:1.05rem; color:var(--text-primary); margin-bottom:0.5rem; }
+    .ws-card p { font-size:0.92rem; margin-bottom:0; }
+
+    /* ---------- focus row ---------- */
+    .focus-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+    .focus-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1.5rem; border-top:3px solid var(--accent); }
+    .focus-card.decision { border-top-color:var(--sunrise); }
+    .focus-card .fc-label { font-size:0.68rem; font-weight:600; letter-spacing:0.13em; text-transform:uppercase; color:var(--accent); margin-bottom:0.6rem; }
+    .focus-card.decision .fc-label { color:var(--sunrise); }
+    .focus-card p { font-size:0.95rem; margin-bottom:0; }
+
+    /* ---------- risk chips ---------- */
+    .chips { display:flex; flex-wrap:wrap; gap:0.6rem; }
+    .chip-risk { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.88rem; font-weight:500; padding:0.5rem 0.95rem; border-radius:999px; background:rgba(250,165,26,0.08); border:1px solid rgba(250,165,26,0.28); color:var(--text-secondary); }
+    .chip-risk .pip { width:8px; height:8px; border-radius:50%; background:var(--sunrise); flex-shrink:0; }
+
+    /* ---------- learn more ---------- */
+    .links-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+    .link-card { display:flex; align-items:center; justify-content:space-between; gap:1rem; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:12px; padding:1.1rem 1.4rem; transition:transform .3s var(--ease), border-color .3s var(--ease); }
+    .link-card:hover, .link-card:focus-visible { transform:translateY(-3px); border-color:rgba(0,182,159,0.4); outline:none; }
+    .link-card .lc-text { font-weight:500; color:var(--text-primary); }
+    .link-card .arrow { color:var(--teal); flex-shrink:0; }
+    .link-card.feature { border-color:rgba(0,182,159,0.35); background:linear-gradient(135deg,rgba(0,182,159,0.10) 0%,transparent 60%); }
+
+    /* ---------- footer ---------- */
+    footer { padding:2.25rem 0 2.75rem; background:var(--bg-midnight); }
+    .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
+    .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
+    .foot-grid .pwr .iq { color:var(--teal); }
+    .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
+
+    /* ---------- reveal ---------- */
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.visible { opacity:1; transform:none; }
+
+    @media (max-width:880px) {
+      .two, .ws-grid, .focus-grid, .links-grid { grid-template-columns:1fr; }
+      .topnav nav { gap:0.9rem; }
+    }
+    @media (max-width:560px) {
+      html { font-size:16px; }
+      .topnav nav a:not(.home) { display:none; }
+      .foot-grid { flex-direction:column; align-items:flex-start; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .reveal { opacity:1; transform:none; transition:none; }
+      html { scroll-behavior:auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="topnav">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="dot" aria-hidden="true"></span> FourthOS</a>
+      <nav aria-label="Page navigation">
+        <a class="home" href="index.html">&larr; Hub</a>
+        <a href="briefing.html">The Briefing</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#workstreams">Workstreams</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Flagship Deep Dive &middot; Tier 2</p>
+      <h1>Flagship Deep Dive — <span class="grad">Connector Ecosystem</span></h1>
+      <p class="state">Active / Yellow — the live foundation is strong; gated reporting and the IT-grant path are the near-term bottleneck.</p>
+      <div class="hero-meta">
+        <span class="rag rag-yellow" role="status" aria-label="Flagship health: Yellow"><span class="pip" aria-hidden="true"></span> Health: Yellow</span>
+        <span class="updated">Updated 24 June 2026 &middot; for Carly &amp; Christian</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- WHY / OUTCOME -->
+    <section class="s">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The thesis</p>
+        <h2 class="reveal">Why this matters</h2>
+        <p class="lead reveal">Governed, composable connectors are the data-and-action substrate for FourthOS performance intelligence — not just another integration pile.</p>
+        <div class="two">
+          <div class="panel teal reveal">
+            <h3>Why this matters</h3>
+            <p>Governed, composable connectors are the data-and-action substrate for FourthOS performance intelligence — not just another integration pile.</p>
+          </div>
+          <div class="panel sky reveal">
+            <h3>Expected outcome</h3>
+            <p>A reusable connector pattern that starts with Salesforce, proves itself with Zendesk, then scales to NetSuite and Jira.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONCEPT SPOTLIGHT -->
+    <section class="s">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Concept spotlight</p>
+        <div class="spotlight reveal">
+          <span class="sl-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00B69F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+            Here's the idea
+          </span>
+          <div class="term">Governance proxy <span class="mono">(FastMCP v3)</span></div>
+          <p class="plain">A connector that sits between an AI agent and a business system like Salesforce. It enforces <strong>who you are</strong> (your own identity, via Entra then on-behalf-of token exchange), <strong>what you can see</strong> (read-only, default-deny), and records <strong>what happened</strong> (full audit) — so AI can act across systems safely under each person's own permissions, instead of through one shared god-key. Build it once and every future connector (Zendesk, NetSuite, Jira) inherits the same identity, audit, and reporting standard.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section class="s" id="architecture">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Architecture</p>
+        <h2 class="reveal">The governance-proxy pattern</h2>
+        <p class="reveal">Every request flows through one governed checkpoint. The proxy resolves per-user identity, enforces read-only / default-deny access, and writes a unified audit trail — then brokers the call to the live system. Future connectors branch off the same proxy.</p>
+        <div class="arch-frame reveal">
+          <svg class="arch-svg" viewBox="0 0 1000 470" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
+            <title id="archTitle">FourthOS connector governance-proxy architecture</title>
+            <desc id="archDesc">An AI agent (Claude) connects to a FastMCP v3 governance proxy hosted on Azure, which enforces identity via Entra and on-behalf-of token exchange, audit, and read-only default-deny access. The proxy brokers a live connection to Salesforce. Greyed, dashed future nodes — Zendesk as connector number two, NetSuite, and Jira — branch off the same proxy. A side note reads: per-user identity and unified audit.</desc>
+            <defs>
+              <linearGradient id="proxyGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00B69F"/>
+                <stop offset="45%" stop-color="#6FB4E3"/>
+                <stop offset="100%" stop-color="#0C4A7D"/>
+              </linearGradient>
+              <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#00B69F"/>
+              </marker>
+              <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#8DA8C4"/>
+              </marker>
+            </defs>
+
+            <!-- AI Agent node -->
+            <g>
+              <rect x="30" y="180" width="180" height="110" rx="14" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="120" y="225" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="20" font-weight="600">AI Agent</text>
+              <text x="120" y="252" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="14">Claude</text>
+            </g>
+
+            <!-- arrow agent -> proxy -->
+            <line x1="212" y1="235" x2="362" y2="235" stroke="#00B69F" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+            <!-- Governance proxy node (centerpiece) -->
+            <g>
+              <rect x="365" y="120" width="290" height="230" rx="16" fill="#0A1929" stroke="url(#proxyGrad)" stroke-width="2.5"/>
+              <rect x="365" y="120" width="290" height="46" rx="16" fill="url(#proxyGrad)" opacity="0.18"/>
+              <text x="510" y="143" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="17" font-weight="600">FastMCP v3 Governance Proxy</text>
+              <text x="510" y="160" text-anchor="middle" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="11">on Azure (ACA)</text>
+
+              <!-- pillar 1 -->
+              <g>
+                <rect x="388" y="184" width="244" height="44" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="408" cy="206" r="5" fill="#6FB4E3"/>
+                <text x="424" y="202" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Identity</text>
+                <text x="424" y="218" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Entra &#8594; on-behalf-of (OBO)</text>
+              </g>
+              <!-- pillar 2 -->
+              <g>
+                <rect x="388" y="234" width="244" height="44" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="408" cy="256" r="5" fill="#00B69F"/>
+                <text x="424" y="252" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Audit</text>
+                <text x="424" y="268" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Full, unified trail</text>
+              </g>
+              <!-- pillar 3 -->
+              <g>
+                <rect x="388" y="284" width="244" height="44" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="408" cy="306" r="5" fill="#FAA51A"/>
+                <text x="424" y="302" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Access</text>
+                <text x="424" y="318" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Read-only / default-deny</text>
+              </g>
+            </g>
+
+            <!-- arrow proxy -> salesforce (live) -->
+            <line x1="657" y1="206" x2="787" y2="206" stroke="#00B69F" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+            <text x="722" y="196" text-anchor="middle" fill="#00B69F" font-family="JetBrains Mono,monospace" font-size="10">live</text>
+
+            <!-- Salesforce node (live) -->
+            <g>
+              <rect x="790" y="170" width="180" height="74" rx="14" fill="#0F2A3F" stroke="#00B69F" stroke-width="2"/>
+              <text x="880" y="202" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="17" font-weight="600">Salesforce</text>
+              <text x="880" y="224" text-anchor="middle" fill="#00B69F" font-family="Poppins,sans-serif" font-size="12" font-weight="500">live in production</text>
+            </g>
+
+            <!-- future branches (dashed, greyed) -->
+            <!-- branch lines from proxy right edge -->
+            <path d="M657 290 C 720 290, 740 320, 790 320" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.6"/>
+            <path d="M657 320 C 710 360, 730 380, 790 388" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.55"/>
+            <path d="M657 330 C 700 410, 720 440, 790 448" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.5"/>
+
+            <!-- Zendesk #2 -->
+            <g opacity="0.7">
+              <rect x="790" y="300" width="180" height="40" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="880" y="325" text-anchor="middle" fill="#CFD1D1" font-family="Poppins,sans-serif" font-size="14" font-weight="500">Zendesk #2 &middot; next</text>
+            </g>
+            <!-- NetSuite -->
+            <g opacity="0.55">
+              <rect x="790" y="370" width="180" height="38" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="880" y="394" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="14" font-weight="500">NetSuite &middot; future</text>
+            </g>
+            <!-- Jira -->
+            <g opacity="0.5">
+              <rect x="790" y="430" width="180" height="38" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="880" y="454" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="14" font-weight="500">Jira &middot; future</text>
+            </g>
+
+            <!-- side note -->
+            <g>
+              <rect x="365" y="372" width="290" height="62" rx="10" fill="rgba(0,182,159,0.08)" stroke="rgba(0,182,159,0.3)" stroke-width="1"/>
+              <text x="510" y="398" text-anchor="middle" fill="#00B69F" font-family="Poppins,sans-serif" font-size="12" font-weight="600" letter-spacing="1">SIDE NOTE</text>
+              <text x="510" y="418" text-anchor="middle" fill="#CFD1D1" font-family="Poppins,sans-serif" font-size="13">per-user identity &middot; unified audit</text>
+            </g>
+          </svg>
+          <div class="arch-legend">
+            <span class="legend-live"><span class="sw" aria-hidden="true"></span> Live in production</span>
+            <span class="legend-future"><span class="sw" aria-hidden="true"></span> Future connectors (planned)</span>
+          </div>
+          <p class="arch-caption">One governed checkpoint, many systems: the proxy enforces identity, audit, and read-only access before any call reaches a live system — and every future connector inherits the same standard.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKSTREAMS -->
+    <section class="s" id="workstreams">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Workstreams</p>
+        <h2 class="reveal">The six moving parts</h2>
+        <div class="ws-grid">
+          <div class="ws-card reveal">
+            <h3>Salesforce connector (#1)</h3>
+            <p>Live FastMCP v3 governance proxy on ACA; Entra &rarr; OBO &rarr; Salesforce; Cosmos state, audit, middleware.</p>
+          </div>
+          <div class="ws-card reveal">
+            <h3>Reporting + gated hosting</h3>
+            <p>In-repo pipeline for 3 audience tiers (Leadership/IT/Governance); default-deny serializer, HMAC pseudonyms; next: scheduled ACA Job + gated SWA + Entra groups.</p>
+          </div>
+          <div class="ws-card reveal">
+            <h3>Zendesk connector (#2)</h3>
+            <p>Next connector; the goal is harvesting the framework from the #1-vs-#2 diff, not "another integration."</p>
+          </div>
+          <div class="ws-card reveal">
+            <h3>Shared template + reporting package</h3>
+            <p>fourth-connector-template + fourth-mcp-reporting; deliberately deferred until connector #2 validates the abstraction.</p>
+          </div>
+          <div class="ws-card reveal">
+            <h3>Composability + orchestration</h3>
+            <p>Future: one user ask spans Salesforce + Zendesk + NetSuite + Jira under per-user identity and unified audit.</p>
+          </div>
+          <div class="ws-card reveal">
+            <h3>Developer experience surface</h3>
+            <p>Connectors should become visible, useful platform leverage: examples, tutorials, playbooks — not internal plumbing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOCUS / PROOF / DECISION -->
+    <section class="s">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Where it stands</p>
+        <h2 class="reveal">Focus, proof, and the ask</h2>
+        <div class="focus-grid">
+          <div class="focus-card reveal">
+            <div class="fc-label">Current focus</div>
+            <p>Salesforce reporting &rarr; gated hosting + scheduled ACA job.</p>
+          </div>
+          <div class="focus-card reveal">
+            <div class="fc-label">Next proof point</div>
+            <p>Gated SWA + per-audience Entra groups + scheduled report ACA Job.</p>
+          </div>
+          <div class="focus-card decision reveal">
+            <div class="fc-label">Sponsor decision</div>
+            <p>Confirm reporting hosting topology; green-light Zendesk as connector #2.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RISKS -->
+    <section class="s">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Risks</p>
+        <h2 class="reveal">What we're watching</h2>
+        <div class="chips reveal">
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> IT-grant bottleneck</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Premature abstraction</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Upstream MCP / tool-list churn</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Portal disconnect</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEARN MORE -->
+    <section class="s" style="border-bottom:none;">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Learn more</p>
+        <h2 class="reveal">Go deeper</h2>
+        <div class="links-grid">
+          <a class="link-card feature reveal" href="https://rev4nchist.github.io/ai-enablement-decks/governed-ai-access/" target="_blank" rel="noopener">
+            <span class="lc-text">Governed AI Access deck</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/38776fd7ac8281c7a286ce6ae478b6be" target="_blank" rel="noopener">
+            <span class="lc-text">Connector Ecosystem Master Plan</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/34076fd7ac82805dac89dd26476e2c47" target="_blank" rel="noopener">
+            <span class="lc-text">FourthOS Cockpit</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/e29dd1c4e6a64e39a45473525a765e5e" target="_blank" rel="noopener">
+            <span class="lc-text">Leadership Portfolio Dashboard</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot-grid">
+      <span class="pwr">Powered by <span class="iq">iQ</span></span>
+      <span class="mid">FourthOS &middot; Principal AI Mandate</span>
+      <span class="gen">Generated 2026-06-24</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // scroll progress
+      var bar = document.getElementById('progress');
+      function onScroll() {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+        bar.style.width = p + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // reveal on scroll
+      var items = document.querySelectorAll('.reveal');
+      if (reduce || !('IntersectionObserver' in window)) {
+        items.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      items.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
