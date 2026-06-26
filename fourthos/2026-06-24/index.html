@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FourthOS — Sponsor Update · 24 June 2026</title>
-  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 24 June 2026. Salesforce connector live; two sponsor decisions open.">
+  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 24 June 2026. Salesforce connector live in alpha; reporting engine and feedback loop built in-repo; two sponsor decisions open.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -70,10 +70,26 @@
     .shipped { margin-top:1.75rem; }
     .shipped .lbl { font-size:0.66rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.7rem; }
     .ship-row { display:flex; flex-wrap:wrap; gap:0.6rem; }
-    .ship-chip { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.86rem; font-weight:500; color:var(--text-primary); background:rgba(0,182,159,0.10); border:1px solid rgba(0,182,159,0.32); border-radius:999px; padding:0.45rem 0.95rem; transition:transform .2s var(--ease), background .2s, border-color .2s; }
-    .ship-chip:hover { transform:translateY(-2px); background:rgba(0,182,159,0.16); border-color:rgba(0,182,159,0.55); }
-    .ship-chip .tick { color:var(--teal); font-weight:700; }
+    .ship-chip { display:inline-flex; align-items:center; gap:0.55rem; font-size:0.86rem; font-weight:500; color:var(--text-primary); background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:999px; padding:0.4rem 0.7rem 0.4rem 0.95rem; transition:transform .2s var(--ease), background .2s, border-color .2s; }
+    .ship-chip:hover { transform:translateY(-2px); background:rgba(111,180,227,0.08); border-color:rgba(0,182,159,0.5); }
     .ship-chip .go { color:var(--text-muted); font-size:0.78rem; }
+
+    /* ===== shared badge component (LIVE · ALPHA / BUILT IN-REPO / NEXT) ===== */
+    .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; }
+    .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
+    .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
+    .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
+    .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
+
+    /* ===== what this seeds (inheritance strip) ===== */
+    .seeds { margin-top:clamp(2.5rem,5vw,3.5rem); }
+    .seeds-flow { display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem; }
+    .seed-node { flex:1 1 180px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
+    .seed-node .sn-name { display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:0.95rem; color:var(--text-primary); margin-bottom:0.45rem; flex-wrap:wrap; }
+    .seed-node .sn-inh { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-muted); letter-spacing:0.01em; }
+    .seed-arrow { flex:0 0 auto; color:var(--text-muted); font-size:1.2rem; line-height:1; }
+    .seeds-cap { font-size:0.82rem; color:var(--text-muted); margin-top:1rem; }
+    @media (max-width:860px) { .seed-arrow { transform:rotate(90deg); width:100%; text-align:center; } }
 
     section.body { padding:clamp(2.5rem,5vw,4rem) 0; }
     .section-label { font-size:0.72rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1.25rem; }
@@ -165,18 +181,21 @@
     <header class="hero">
       <div class="wrap">
         <p class="eyebrow">Weekly Sponsor Update &middot; 24 June 2026</p>
-        <h1>Salesforce connector is <span class="grad">live in production.</span></h1>
-        <p class="subhead">Reporting Slice 1 is complete in-repo. Two decisions are open for you: confirm the reporting hosting topology, and green-light Zendesk as connector&nbsp;#2.</p>
+        <h1>Salesforce connector is <span class="grad">live in alpha.</span></h1>
+        <p class="subhead">Real testers are using it now — 10 active this week, 525 minutes saved. The governance proxy is <strong style="color:var(--text-primary);font-weight:600;">live</strong>; its 3-tier reporting engine and in-chat feedback loop are <strong style="color:var(--text-primary);font-weight:600;">built in-repo</strong> — and inherited by every future connector. Zendesk is next.</p>
         <a class="hero-cta" href="/ai-enablement-decks/fourthos/2026-06-24/briefing.html#sponsor-actions">See what needs you <span class="arrow" aria-hidden="true">&rarr;</span></a>
 
         <div class="shipped">
           <p class="lbl">Recently shipped</p>
           <div class="ship-row">
-            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#outputs">
-              <span class="tick" aria-hidden="true">&checkmark;</span> Salesforce MCP connector — live <span class="go" aria-hidden="true">&rarr;</span>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#architecture">
+              Salesforce connector <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span> <span class="go" aria-hidden="true">&rarr;</span>
             </a>
-            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#outputs">
-              <span class="tick" aria-hidden="true">&checkmark;</span> Reporting Slice 1 — complete in-repo <span class="go" aria-hidden="true">&rarr;</span>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#reporting">
+              3-tier reporting engine <span class="badge built">Built In-Repo</span> <span class="go" aria-hidden="true">&rarr;</span>
+            </a>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#feedback">
+              Feedback loop <span class="badge built">Built In-Repo</span> <span class="go" aria-hidden="true">&rarr;</span>
             </a>
           </div>
         </div>
@@ -216,8 +235,9 @@
             <div class="lens moved">
               <div class="lens-head"><span class="ic" aria-hidden="true"></span> What moved</div>
               <ul>
-                <li><a href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#outputs"><span class="tick" aria-hidden="true">&checkmark;</span> Salesforce connector — live <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#outputs"><span class="tick" aria-hidden="true">&checkmark;</span> Reporting Slice 1 — in-repo <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#architecture"><span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span> Salesforce connector <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#reporting"><span class="badge built">Built</span> Reporting engine — in-repo <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-06-24/deep-dive.html#feedback"><span class="badge built">Built</span> Feedback loop — in-repo <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
             <div class="lens watch">
@@ -227,6 +247,28 @@
               </ul>
             </div>
           </div>
+        </div>
+
+        <!-- ===== What this seeds: inheritance strip ===== -->
+        <div class="seeds">
+          <p class="section-label">What this seeds</p>
+          <div class="seeds-flow">
+            <div class="seed-node">
+              <div class="sn-name">Salesforce <span class="badge built">Built</span></div>
+              <div class="sn-inh">the mold — identity &middot; audit &middot; reporting &middot; feedback</div>
+            </div>
+            <span class="seed-arrow" aria-hidden="true">&rarr;</span>
+            <div class="seed-node">
+              <div class="sn-name">Zendesk <span class="badge next">Next</span></div>
+              <div class="sn-inh">inherits: identity &middot; audit &middot; reporting &middot; feedback</div>
+            </div>
+            <span class="seed-arrow" aria-hidden="true">&rarr;</span>
+            <div class="seed-node">
+              <div class="sn-name">NetSuite &middot; Jira <span class="badge next">Future</span></div>
+              <div class="sn-inh">inherits: identity &middot; audit &middot; reporting &middot; feedback</div>
+            </div>
+          </div>
+          <p class="seeds-cap">Build the mold once. Every future connector inherits the governance — not just the data.</p>
         </div>
       </div>
     </section>

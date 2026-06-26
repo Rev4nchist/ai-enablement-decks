@@ -215,6 +215,22 @@
     .empty-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem; }
     .empty-tags .chip { background:var(--bg-tertiary); }
 
+    /* ===== shared badge component (LIVE · ALPHA / BUILT IN-REPO / NEXT) ===== */
+    .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; }
+    .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
+    .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
+    .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
+    .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
+
+    /* ===== outcomes (populated) ===== */
+    .outcome-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+    .outcome-card { position:relative; overflow:hidden; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:14px; padding:1.6rem; backdrop-filter:blur(8px); }
+    .outcome-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--vignette); }
+    .outcome-card .oc-head { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.85rem; }
+    .outcome-card h3 { font-size:1.12rem; font-weight:600; color:var(--text-primary); }
+    .outcome-card p { font-size:0.92rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.55; }
+    .outcome-card .oc-type { display:inline-block; font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted); letter-spacing:0.04em; border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.6rem; }
+
     /* ---------- footer ---------- */
     footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
     .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
@@ -231,7 +247,7 @@
 
     @media (max-width:900px) {
       .stat-tiles { grid-template-columns:repeat(2,1fr); }
-      .action-grid, .proj-body, .risk-grid { grid-template-columns:1fr; }
+      .action-grid, .proj-body, .risk-grid, .outcome-grid { grid-template-columns:1fr; }
     }
     @media (max-width:720px) {
       .crumbs { width:100%; order:3; }
@@ -315,7 +331,7 @@
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> What changed</div>
-          <div class="t-val">First weekly package. Salesforce connector is live in production; reporting Slice 1 complete in-repo; framework extraction deliberately deferred until Zendesk proves the pattern.</div>
+          <div class="t-val">First weekly package. Salesforce connector is live in alpha (10 active testers, 525 min saved); the reporting engine and feedback loop are built in-repo; framework extraction deliberately deferred until Zendesk proves the pattern.</div>
         </div>
       </div>
     </div>
@@ -334,9 +350,10 @@
           </div>
           <div class="action-grid">
             <div class="action-card">
-              <div class="num">ACTION 01</div>
-              <h3>Confirm reporting hosting topology — recommended: one shared Static Web App with a per-connector path namespace</h3>
-              <div class="row"><span class="k">Why it matters</span><span class="v">URL secrecy is not authorization; per-audience Entra groups are required before real-data reports ship.</span></div>
+              <div class="num">ACTION 01 &middot; Sponsor unlock</div>
+              <h3>Ship the built reporting mechanism to real Leadership / IT / Governance audiences — the first stakeholder-visible output beyond the build team</h3>
+              <div class="row"><span class="k">What it unlocks</span><span class="v">The 3-tier reporting engine is already built in-repo; confirming the hosting topology is the single decision that lets it reach real audiences.</span></div>
+              <div class="row"><span class="k">Topology (detail)</span><span class="v">Recommended: one shared Static Web App with a per-connector path namespace, gated by per-audience Entra groups — URL secrecy is not authorization.</span></div>
               <div class="row"><span class="k">Next milestone</span><span class="v">Gated SWA + scheduled ACA job validated</span></div>
               <div class="row"><span class="k">Owner</span>
                 <span class="owners"><span class="chip chip-owner">Carly</span><span class="chip chip-owner">Christian</span><span class="chip chip-owner">IT</span></span>
@@ -394,11 +411,15 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Salesforce connector live in production; reporting slice complete in-repo; gated hosting and scheduled job are the next operational milestone.</div>
+              <div class="f-val">Salesforce connector live in alpha (10 active testers, 525 min saved); the 3-tier reporting engine and in-chat feedback loop are built in-repo; gated hosting and the scheduled report job are the next operational milestone.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
               <div class="f-val">29 June 2026</div>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+              <div class="f-label"><span class="b" aria-hidden="true"></span> What connector #2 inherits automatically</div>
+              <div class="f-val">identity model (Entra &rarr; OBO, per-user) &middot; audit trail &middot; governance proxy &middot; 3-tier reporting &middot; feedback loop — connector #2 (Zendesk) writes connector logic, not governance.</div>
             </div>
           </div>
           <span class="decision-flag">
@@ -446,19 +467,22 @@
           <span class="sec-label">Outcomes &amp; Evidence</span>
           <h2>Proof of work shipped</h2>
         </div>
-        <div class="empty reveal">
-          <div class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#6FB4E3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
+        <div class="outcome-grid">
+          <div class="outcome-card reveal">
+            <div class="oc-head">
+              <h3>Salesforce connector</h3>
+              <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span>
+            </div>
+            <p>Released for alpha testing on production Azure infrastructure (10 active testers this week). Governed AI access under each user's own Microsoft identity (Entra &rarr; OBO), read-only + default-deny, FLS-scoped, with every call audited.</p>
+            <span class="oc-type">Type: Prototype / Tool</span>
           </div>
-          <h3>Outcomes will appear here as work ships</h3>
-          <p>The evidence ledger is intentionally empty for this first package. As the portfolio delivers, this tier fills with the proof layer — each item logged when it lands.</p>
-          <div class="empty-tags">
-            <span class="chip">Decisions</span>
-            <span class="chip">Prototypes</span>
-            <span class="chip">Executive briefs</span>
-            <span class="chip">Reusable assets</span>
-            <span class="chip">Portal milestones</span>
-            <span class="chip">Research insights</span>
+          <div class="outcome-card reveal">
+            <div class="oc-head">
+              <h3>Reporting Slice 1</h3>
+              <span class="badge built">Built In-Repo</span>
+            </div>
+            <p>Three audience-scoped reports (Leadership / IT / Governance) through one default-deny serializer with HMAC pseudonyms; validated against 576 live audit rows — the output contract every future connector's reports inherit.</p>
+            <span class="oc-type">Type: Reusable asset</span>
           </div>
         </div>
       </div>
