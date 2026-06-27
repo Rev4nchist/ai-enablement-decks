@@ -277,6 +277,28 @@
       "meta": "Briefing · May 2026",
       "date": "2026-05",
       "status": "briefing"
+    },
+    {
+      "id": "portfolio-orientation-april-2026",
+      "section": "portfolio",
+      "tag": "Orientation",
+      "title": "AI Enablement Team — Portfolio Orientation · April 2026",
+      "description": "Team portfolio orientation — the project map and how the pieces fit together, for onboarding and alignment.",
+      "href": "./portfolio-orientation-april-2026/",
+      "meta": "April 2026",
+      "date": "2026-04",
+      "status": "shipped"
+    },
+    {
+      "id": "salesforce-data-dictionary",
+      "section": "mcp-capabilities",
+      "tag": "Proposal",
+      "title": "Salesforce Data Dictionary — Proposal",
+      "description": "Proposal for a Salesforce data dictionary — the object/field catalog underpinning the connector and downstream reporting.",
+      "href": "./salesforce-data-dictionary/",
+      "meta": "Proposal · 2026",
+      "date": "2026-06",
+      "status": "draft"
     }
   ]
 }
