@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FourthOS Reporting System</title>
+  <meta name="description" content="How work in Claude Code / Cowork / Claude.ai becomes Notion records and flows to the team dashboard and the sponsor site — the full map, the Weekly Work Tracker spine, the current gaps, and the 'one spine, two cuts' improvement plan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:#0A1929; --bg-secondary:#0F2A3F; --bg-tertiary:#153650;
+      --bg-midnight:#051526; --bg-card:rgba(15,42,63,0.55);
+      --text-primary:#FFFFFF; --text-secondary:#CFD1D1; --text-muted:#8DA8C4;
+      --accent:#6FB4E3; --teal:#00B69F; --sunrise:#FAA51A; --danger:#D81632; --purple:#9678B6;
+      --fourth-deep-blue:#0C4A7D;
+      --vignette:linear-gradient(25deg,#00B69F 0%,#6FB4E3 40%,#0C4A7D 100%);
+      --border:rgba(111,180,227,0.10); --border-accent:rgba(111,180,227,0.22);
+      --teal-glow:rgba(0,182,159,0.15); --accent-glow:rgba(111,180,227,0.15); --sunrise-glow:rgba(250,165,26,0.12);
+      --font-display:'Poppins',sans-serif; --font-body:'Poppins',sans-serif; --font-mono:'JetBrains Mono',monospace;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+    }
+    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-size:18px; }
+    body {
+      font-family:var(--font-body); background:var(--bg-primary); color:var(--text-primary);
+      line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    }
+    a { color:inherit; text-decoration:none; }
+    .wrap { max-width:1140px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
+    :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
+
+    /* ===================== TOP BAR ===================== */
+    .topbar {
+      position:sticky; top:0; z-index:50;
+      background:rgba(5,21,38,0.82); backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner { display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap; padding:0.7rem 0; }
+    .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; letter-spacing:0.01em; }
+    .brand svg { width:26px; height:26px; flex-shrink:0; display:block; }
+    .brand .wordmark { font-size:1.02rem; }
+    .brand .wordmark b { font-weight:700; }
+    .brand .wordmark .os { color:var(--teal); font-weight:700; }
+    .crumbs { display:flex; align-items:center; gap:0.45rem; font-size:0.82rem; color:var(--text-muted); flex-wrap:wrap; }
+    .crumbs a { color:var(--text-secondary); transition:color .2s; }
+    .crumbs a:hover { color:var(--accent); }
+    .crumbs .sep { color:var(--text-muted); opacity:0.6; }
+    .crumbs .current { color:var(--text-primary); font-weight:500; }
+
+    /* ===================== HERO ===================== */
+    .hero { padding:clamp(3rem,8vw,5.5rem) 0 clamp(2rem,5vw,3rem); position:relative; }
+    .hero::before {
+      content:''; position:absolute; inset:0; z-index:-1;
+      background:
+        radial-gradient(900px 400px at 18% -10%, rgba(0,182,159,0.10), transparent 60%),
+        radial-gradient(800px 420px at 92% 0%, rgba(111,180,227,0.10), transparent 55%);
+      pointer-events:none;
+    }
+    .eyebrow {
+      font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+      color:var(--teal); font-weight:600; margin-bottom:1rem;
+    }
+    .hero h1 { font-size:clamp(2.1rem,6vw,3.4rem); font-weight:700; line-height:1.08; letter-spacing:-0.01em; }
+    .hero .sub { font-size:clamp(1.05rem,2.4vw,1.35rem); color:var(--text-secondary); margin-top:0.9rem; max-width:46ch; font-weight:400; }
+    .hero .thesis {
+      margin-top:1.5rem; display:inline-block; font-family:var(--font-mono); font-size:0.92rem;
+      color:var(--text-primary); background:rgba(0,182,159,0.08); border:1px solid rgba(0,182,159,0.28);
+      border-left:3px solid var(--teal); border-radius:8px; padding:0.7rem 1.05rem;
+    }
+    .hero .thesis b { color:var(--teal); font-weight:700; }
+    .hero-actions { margin-top:2rem; display:flex; flex-wrap:wrap; gap:0.85rem; }
+    .btn {
+      display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; font-size:0.95rem;
+      padding:0.8rem 1.3rem; border-radius:10px; transition:transform .2s var(--ease), box-shadow .2s, background .2s;
+    }
+    .btn-primary { background:var(--vignette); color:#051526; box-shadow:0 8px 24px rgba(0,182,159,0.18); }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,182,159,0.28); }
+    .btn-ghost { border:1px solid var(--border-accent); color:var(--text-secondary); }
+    .btn-ghost:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.5); }
+
+    /* ===================== SECTIONS ===================== */
+    section.block { padding:clamp(2.25rem,5vw,3.5rem) 0; border-top:1px solid var(--border); }
+    .sec-head { margin-bottom:1.6rem; }
+    .sec-num { font-family:var(--font-mono); font-size:0.74rem; letter-spacing:0.14em; color:var(--accent); text-transform:uppercase; font-weight:600; }
+    h2 { font-size:clamp(1.5rem,3.4vw,2.1rem); font-weight:700; line-height:1.15; margin-top:0.3rem; letter-spacing:-0.01em; }
+    h3 { font-size:1.15rem; font-weight:600; margin:1.6rem 0 0.7rem; color:var(--text-primary); }
+    p.lead { color:var(--text-secondary); max-width:70ch; margin-top:0.5rem; }
+    p.note { color:var(--text-muted); font-size:0.92rem; max-width:72ch; margin-top:0.8rem; }
+
+    /* TOC */
+    .toc { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.6rem; }
+    .toc a {
+      font-family:var(--font-mono); font-size:0.78rem; color:var(--text-secondary);
+      border:1px solid var(--border-accent); border-radius:999px; padding:0.4rem 0.9rem; transition:color .2s, border-color .2s, background .2s;
+    }
+    .toc a:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.45); background:rgba(0,182,159,0.06); }
+
+    /* ===================== DIAGRAM ===================== */
+    .diagram-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:14px; background:var(--bg-midnight); }
+    figure.diagram { margin:0; }
+    figure.diagram svg { display:block; width:100%; height:auto; min-width:760px; }
+    figure.diagram.compact svg { min-width:680px; }
+    figcaption { font-size:0.88rem; color:var(--text-muted); margin-top:0.85rem; padding:0 0.2rem; max-width:84ch; }
+    figcaption b { color:var(--text-secondary); font-weight:600; }
+    .scroll-hint { display:none; font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); margin:0.5rem 0 0; }
+    svg .nt { fill:#fff; font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; }
+    svg .nt-spine { fill:#fff; font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; }
+    svg .ns { fill:#8DA8C4; font-family:'JetBrains Mono',monospace; font-size:10px; }
+    svg .el { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500; }
+    svg .hdr { fill:#8DA8C4; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.08em; }
+    svg .badge-t { fill:#051526; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:9.5px; letter-spacing:0.06em; }
+    .e-auto { stroke:#00B69F; stroke-width:2; fill:none; }
+    .e-sched { stroke:#6FB4E3; stroke-width:2; fill:none; }
+    .e-man { stroke:#FAA51A; stroke-width:1.8; stroke-dasharray:6 5; fill:none; }
+    .e-gap { stroke:#D81632; stroke-width:1.9; stroke-dasharray:5 4; fill:none; }
+    .e-serve { stroke:#8DA8C4; stroke-width:1.5; fill:none; }
+
+    /* ===================== TABLES ===================== */
+    .tbl-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:1rem; border:1px solid var(--border); border-radius:12px; }
+    table { width:100%; border-collapse:collapse; font-size:0.92rem; min-width:520px; }
+    th, td { text-align:left; padding:0.7rem 0.9rem; border-bottom:1px solid var(--border); vertical-align:top; }
+    thead th { background:rgba(12,74,125,0.28); color:var(--text-primary); font-weight:600; font-size:0.82rem; letter-spacing:0.02em; }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:rgba(111,180,227,0.04); }
+    td code, .mono { font-family:var(--font-mono); font-size:0.84rem; color:var(--accent); }
+    .col-vs thead th:nth-child(2) { color:var(--accent); }
+    .col-vs thead th:nth-child(3) { color:var(--sunrise); }
+
+    /* status chips */
+    .chip { display:inline-flex; align-items:center; gap:0.35rem; font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
+      padding:0.18rem 0.55rem; border-radius:999px; letter-spacing:0.04em; white-space:nowrap; }
+    .chip::before { content:''; width:7px; height:7px; border-radius:50%; }
+    .chip.auto { background:rgba(0,182,159,0.14); color:#5fe6cf; } .chip.auto::before { background:var(--teal); }
+    .chip.sched { background:rgba(111,180,227,0.14); color:#a9d4f3; } .chip.sched::before { background:var(--accent); }
+    .chip.man { background:rgba(250,165,26,0.14); color:#ffcd7a; } .chip.man::before { background:var(--sunrise); }
+    .chip.gap { background:rgba(216,22,50,0.16); color:#ff8a98; } .chip.gap::before { background:var(--danger); }
+
+    .state-key { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:1.2rem; }
+
+    /* gaps */
+    .gaps { list-style:none; counter-reset:g; display:grid; gap:0.9rem; margin-top:0.5rem; }
+    .gaps li {
+      position:relative; counter-increment:g; padding:1rem 1.1rem 1rem 3.2rem;
+      background:var(--bg-card); border:1px solid var(--border); border-left:3px solid var(--danger); border-radius:10px;
+    }
+    .gaps li::before {
+      content:counter(g); position:absolute; left:0.95rem; top:0.95rem; width:1.5rem; height:1.5rem;
+      display:flex; align-items:center; justify-content:center; border-radius:50%;
+      background:rgba(216,22,50,0.16); color:#ff8a98; font-family:var(--font-mono); font-weight:700; font-size:0.8rem;
+    }
+    .gaps li b { color:var(--text-primary); }
+    .gaps li .mono { color:var(--accent); }
+
+    /* proposal steps */
+    .steps { list-style:none; counter-reset:s; display:grid; gap:0.9rem; margin-top:0.5rem; }
+    .steps li {
+      position:relative; counter-increment:s; padding:1rem 1.1rem 1rem 3.2rem;
+      background:var(--bg-card); border:1px solid var(--border); border-left:3px solid var(--teal); border-radius:10px;
+    }
+    .steps li::before {
+      content:counter(s); position:absolute; left:0.95rem; top:0.95rem; width:1.5rem; height:1.5rem;
+      display:flex; align-items:center; justify-content:center; border-radius:50%;
+      background:rgba(0,182,159,0.16); color:#5fe6cf; font-family:var(--font-mono); font-weight:700; font-size:0.8rem;
+    }
+    .steps li b { color:var(--text-primary); }
+    .steps li ul { margin:0.5rem 0 0 1rem; color:var(--text-secondary); }
+    .steps li ul li { all:revert; margin-bottom:0.2rem; }
+    .principle {
+      margin-top:1.4rem; padding:1.1rem 1.3rem; border-radius:12px;
+      background:linear-gradient(135deg, rgba(0,182,159,0.10), rgba(111,180,227,0.06));
+      border:1px solid rgba(0,182,159,0.25);
+    }
+    .principle b { color:var(--teal); }
+
+    /* notion cards */
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:0.9rem; margin-top:1rem; }
+    .card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
+    .card h4 { font-size:0.98rem; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
+    .card .id { font-family:var(--font-mono); font-size:0.72rem; color:var(--accent); }
+    .card p { font-size:0.86rem; color:var(--text-secondary); margin-top:0.4rem; }
+    .card.spine { border-color:rgba(0,182,159,0.4); background:linear-gradient(135deg, rgba(0,182,159,0.10), transparent); }
+    .dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .dot.purple{background:var(--purple)} .dot.sky{background:var(--accent)} .dot.teal{background:var(--teal)} .dot.blue{background:var(--fourth-deep-blue)} .dot.grey{background:var(--text-muted)}
+
+    /* field discipline callout */
+    .field-note { margin-top:1rem; font-size:0.88rem; color:var(--text-secondary); background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1.1rem; }
+    .field-note .mono { color:var(--accent); }
+
+    /* ===================== FOOTER ===================== */
+    footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:1rem; }
+    .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
+    .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
+    .foot-grid .pwr .iq { color:var(--teal); }
+    .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
+
+    @media (max-width:720px) {
+      html { font-size:16px; }
+      .topbar-inner { gap:0.6rem 1rem; }
+      .crumbs { width:100%; order:3; }
+      .scroll-hint { display:block; }
+      .foot-grid { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ===================== TOP BAR ===================== -->
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="/ai-enablement-decks/" aria-label="AI Enablement Decks home">
+        <!-- Custom FourthOS mark: orbiting nodes (connector ecosystem / OS motif) -->
+        <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
+          <circle cx="16" cy="16" r="3.4" fill="url(#fos-g)"/>
+          <circle cx="26.5" cy="9.5" r="2.1" fill="#00B69F"/>
+          <circle cx="5.5" cy="22.5" r="2.1" fill="#6FB4E3"/>
+          <circle cx="7" cy="8" r="1.6" fill="#FAA51A"/>
+        </svg>
+        <span class="wordmark"><b>Fourth</b><span class="os">OS</span></span>
+      </a>
+
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/ai-enablement-decks/">AI Enablement Decks</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <span class="current">Reporting System</span>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <header class="hero">
+      <div class="wrap">
+        <div class="eyebrow">System Documentation</div>
+        <h1>FourthOS Reporting System</h1>
+        <p class="sub">How work becomes Notion records and flows to two reporting outputs.</p>
+        <p class="thesis"><b>Capture once</b>, at the moment of work, into one tagged spine &mdash; then <b>report many</b> cuts from it.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/ai-enablement-decks/reporting-system/reporting-system.excalidraw" download>Open the Excalidraw diagram &darr;</a>
+          <a class="btn btn-ghost" href="#diagram">Jump to the system diagram</a>
+        </div>
+        <nav class="toc" aria-label="On this page">
+          <a href="#diagram">System diagram</a>
+          <a href="#stages">The four stages</a>
+          <a href="#spine">The Tracker spine</a>
+          <a href="#gaps">The gaps</a>
+          <a href="#proposal">One spine, two cuts</a>
+          <a href="#report">How to report</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ===================== 1. DIAGRAM ===================== -->
+    <section class="block" id="diagram">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">01 &middot; The map</span>
+          <h2>The system diagram &mdash; current state</h2>
+          <p class="lead">Work happens on four surfaces &rarr; it&rsquo;s captured into Notion &rarr; two reporting outputs pull from Notion to produce an internal team dashboard and an external sponsor briefing. The red dashed edges are the connections that <b>do not exist yet</b> &mdash; they are the point of this doc.</p>
+        </div>
+
+        <p class="scroll-hint">Scroll the diagram horizontally &rarr;</p>
+        <div class="diagram-scroll">
+          <figure class="diagram">
+            <svg viewBox="0 0 1200 800" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Current-state reporting flow: four work surfaces are captured into Notion mostly by manual paths; the Weekly Work Tracker is the spine but the team dashboard pipeline is broken because the ai-reporting MCP is unregistered, the sponsor site reads the Cockpit instead of the Tracker, and Eve, Donna and the scheduled FourthOS run have no path into the Tracker.">
+              <defs>
+                <marker id="ah-teal" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#00B69F"/></marker>
+                <marker id="ah-sky" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#6FB4E3"/></marker>
+                <marker id="ah-amber" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#FAA51A"/></marker>
+                <marker id="ah-red" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#D81632"/></marker>
+                <marker id="ah-grey" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8DA8C4"/></marker>
+                <filter id="spine-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+
+              <!-- layer bands -->
+              <rect x="16"  y="44" width="184" height="640" rx="14" fill="#9678B6" opacity="0.05"/>
+              <rect x="248" y="44" width="184" height="640" rx="14" fill="#6FB4E3" opacity="0.05"/>
+              <rect x="492" y="44" width="206" height="640" rx="14" fill="#00B69F" opacity="0.05"/>
+              <rect x="752" y="44" width="186" height="640" rx="14" fill="#0C4A7D" opacity="0.10"/>
+              <rect x="996" y="44" width="196" height="640" rx="14" fill="#8DA8C4" opacity="0.05"/>
+
+              <!-- column headers -->
+              <text class="hdr" x="108"  y="32" text-anchor="middle">1 &middot; WORK SURFACES</text>
+              <text class="hdr" x="340"  y="32" text-anchor="middle">2 &middot; CAPTURE</text>
+              <text class="hdr" x="595"  y="32" text-anchor="middle">3 &middot; NOTION</text>
+              <text class="hdr" x="845"  y="32" text-anchor="middle">4 &middot; REPORTING OUTPUTS</text>
+              <text class="hdr" x="1094" y="32" text-anchor="middle">5 &middot; AUDIENCE</text>
+
+              <!-- ===== EDGES (drawn before nodes) ===== -->
+              <!-- MANUAL capture -->
+              <path class="e-man" marker-end="url(#ah-amber)" d="M192,125 L252,139"/>
+              <path class="e-man" marker-end="url(#ah-amber)" d="M192,125 L252,265"/>
+              <path class="e-man" marker-end="url(#ah-amber)" d="M192,481 L252,481"/>
+              <path class="e-man" marker-end="url(#ah-amber)" d="M192,589 L252,498"/>
+              <path class="e-man" marker-end="url(#ah-amber)" d="M192,140 C150,300 150,455 252,468"/>
+              <text class="el" x="214" y="118" fill="#FAA51A">MANUAL</text>
+
+              <!-- AUTO into Tracker -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M424,139 L488,124"/>
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M424,265 L488,158"/>
+              <text class="el" x="430" y="118" fill="#00B69F">AUTO</text>
+
+              <!-- SCHEDULED generation -->
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M690,383 L756,376"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M690,479 L756,392"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M845,402 L845,436"/>
+              <text class="el" x="700" y="356" fill="#6FB4E3">SCHEDULED</text>
+
+              <!-- SERVES audience -->
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M930,181 L1000,181"/>
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M930,471 L1000,471"/>
+
+              <!-- GAP edges (red) -->
+              <path class="e-gap" marker-end="url(#ah-red)" d="M698,128 L756,176"/>
+              <text class="el" x="704" y="108" fill="#ff8a98">GAP: ai-reporting MCP</text>
+              <text class="el" x="704" y="120" fill="#ff8a98">unregistered &mdash; broken</text>
+
+              <path class="e-gap" marker-end="url(#ah-red)" d="M192,470 C330,460 470,300 488,180"/>
+              <text class="el" x="300" y="352" fill="#ff8a98">&#10007; no path</text>
+
+              <path class="e-gap" marker-end="url(#ah-red)" d="M192,575 C360,580 478,330 488,190"/>
+              <text class="el" x="392" y="430" fill="#ff8a98">&#10007; no path</text>
+
+              <path class="e-gap" marker-end="url(#ah-red)" d="M760,372 C716,300 706,230 700,160"/>
+              <text class="el" x="708" y="300" fill="#ff8a98">&#10007; never logs</text>
+
+              <!-- ===== NODES ===== -->
+              <!-- C1 surfaces (purple) -->
+              <g><rect x="24" y="96"  width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
+                <text class="nt" x="108" y="122" text-anchor="middle">Claude Code</text>
+                <text class="ns" x="108" y="140" text-anchor="middle">CCv3 &middot; execution</text></g>
+              <g><rect x="24" y="200" width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
+                <text class="nt" x="108" y="226" text-anchor="middle">Cowork</text>
+                <text class="ns" x="108" y="244" text-anchor="middle">team + editorial</text></g>
+              <g><rect x="24" y="452" width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
+                <text class="nt" x="108" y="478" text-anchor="middle">Eve</text>
+                <text class="ns" x="108" y="496" text-anchor="middle">Claude.ai &middot; strategy</text></g>
+              <g><rect x="24" y="560" width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
+                <text class="nt" x="108" y="586" text-anchor="middle">Donna</text>
+                <text class="ns" x="108" y="604" text-anchor="middle">Claude.ai &middot; Fourth biz</text></g>
+
+              <!-- C2 capture (sky) -->
+              <g><rect x="256" y="112" width="168" height="54" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="340" y="137" text-anchor="middle">/log-work skill</text>
+                <text class="ns" x="340" y="155" text-anchor="middle">manual invocation</text></g>
+              <g><rect x="256" y="236" width="168" height="58" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="340" y="262" text-anchor="middle">Bridge auto-mirror</text>
+                <text class="ns" x="340" y="280" text-anchor="middle">step 3b &middot; model-followed</text></g>
+              <g><rect x="256" y="452" width="168" height="58" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="340" y="478" text-anchor="middle">Bridge HQ</text>
+                <text class="ns" x="340" y="496" text-anchor="middle">queues + Impl. Log</text></g>
+
+              <!-- C3 notion (teal) — SPINE -->
+              <rect x="492" y="92" width="206" height="96" rx="12" fill="rgba(0,182,159,0.10)" stroke="#00B69F" stroke-width="2.6" filter="url(#spine-glow)"/>
+              <rect x="592" y="78" width="96" height="22" rx="11" fill="#00B69F"/>
+              <text class="badge-t" x="640" y="93" text-anchor="middle">SPINE</text>
+              <text class="nt-spine" x="595" y="132" text-anchor="middle">Weekly Work Tracker</text>
+              <text class="ns" x="595" y="152" text-anchor="middle">DB 3d7f2afd &middot; the reporting spine</text>
+              <text class="ns" x="595" y="168" text-anchor="middle">one row per unit of work</text>
+
+              <g><rect x="500" y="356" width="190" height="54" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
+                <text class="nt" x="595" y="381" text-anchor="middle">FourthOS Cockpit</text>
+                <text class="ns" x="595" y="399" text-anchor="middle">34076fd7</text></g>
+              <g><rect x="500" y="452" width="190" height="54" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
+                <text class="nt" x="595" y="477" text-anchor="middle">Leadership Dashboard</text>
+                <text class="ns" x="595" y="495" text-anchor="middle">e29dd1c4 &middot; 5 live DBs</text></g>
+
+              <!-- C4 outputs (deep-blue) -->
+              <g><rect x="760" y="150" width="170" height="62" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
+                <text class="nt" x="845" y="178" text-anchor="middle">Team dashboard</text>
+                <text class="ns" x="845" y="196" text-anchor="middle">Railway &middot; Next.js</text></g>
+              <g><rect x="760" y="356" width="170" height="46" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8" stroke-dasharray="3 3"/>
+                <text class="nt" x="845" y="376" text-anchor="middle">FourthOS run</text>
+                <text class="ns" x="845" y="393" text-anchor="middle">Fri 07:00 scheduled</text></g>
+              <g><rect x="760" y="440" width="170" height="62" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
+                <text class="nt" x="845" y="468" text-anchor="middle">Sponsor site</text>
+                <text class="ns" x="845" y="486" text-anchor="middle">GitHub Pages &middot; 3 tiers</text></g>
+
+              <!-- C5 audience (grey) -->
+              <g><rect x="1004" y="152" width="180" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1094" y="178" text-anchor="middle">AI Enablement Team</text>
+                <text class="ns" x="1094" y="196" text-anchor="middle">internal</text></g>
+              <g><rect x="1004" y="442" width="180" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1094" y="468" text-anchor="middle">Carly + Christian</text>
+                <text class="ns" x="1094" y="486" text-anchor="middle">VP / CTO</text></g>
+
+              <!-- ===== LEGEND ===== -->
+              <g transform="translate(0,724)">
+                <rect x="16" y="0" width="1176" height="60" rx="12" fill="#0A1929" stroke="rgba(111,180,227,0.16)"/>
+                <text class="hdr" x="40" y="24">EDGES</text>
+                <!-- AUTO -->
+                <line x1="110" y1="20" x2="150" y2="20" class="e-auto" marker-end="url(#ah-teal)"/>
+                <text class="el" x="158" y="24" fill="#CFD1D1">AUTO</text>
+                <!-- SCHEDULED -->
+                <line x1="230" y1="20" x2="270" y2="20" class="e-sched" marker-end="url(#ah-sky)"/>
+                <text class="el" x="278" y="24" fill="#CFD1D1">SCHEDULED</text>
+                <!-- MANUAL -->
+                <line x1="392" y1="20" x2="432" y2="20" class="e-man" marker-end="url(#ah-amber)"/>
+                <text class="el" x="440" y="24" fill="#CFD1D1">MANUAL</text>
+                <!-- GAP -->
+                <line x1="528" y1="20" x2="568" y2="20" class="e-gap" marker-end="url(#ah-red)"/>
+                <text class="el" x="576" y="24" fill="#CFD1D1">GAP / MISSING (no path)</text>
+                <!-- SERVES -->
+                <line x1="800" y1="20" x2="840" y2="20" class="e-serve" marker-end="url(#ah-grey)"/>
+                <text class="el" x="848" y="24" fill="#CFD1D1">serves audience</text>
+                <!-- LAYER swatches -->
+                <text class="hdr" x="40" y="48">LAYERS</text>
+                <rect x="110" y="40" width="12" height="12" rx="3" fill="#9678B6"/><text class="el" x="128" y="50" fill="#CFD1D1">surface</text>
+                <rect x="196" y="40" width="12" height="12" rx="3" fill="#6FB4E3"/><text class="el" x="214" y="50" fill="#CFD1D1">capture</text>
+                <rect x="282" y="40" width="12" height="12" rx="3" fill="#00B69F"/><text class="el" x="300" y="50" fill="#CFD1D1">notion</text>
+                <rect x="362" y="40" width="12" height="12" rx="3" fill="#0C4A7D"/><text class="el" x="380" y="50" fill="#CFD1D1">output</text>
+                <rect x="446" y="40" width="12" height="12" rx="3" fill="#8DA8C4"/><text class="el" x="464" y="50" fill="#CFD1D1">audience</text>
+                <rect x="538" y="40" width="12" height="12" rx="3" fill="rgba(0,182,159,0.20)" stroke="#00B69F" stroke-width="1.6"/><text class="el" x="556" y="50" fill="#CFD1D1">SPINE node (highlighted)</text>
+              </g>
+            </svg>
+          </figure>
+        </div>
+        <figcaption><b>Current state.</b> Capture is overwhelmingly <b>manual</b> (amber). Only the two paths into the Weekly Work Tracker are automatic. The team-dashboard pipeline is <b>broken</b>: the <span class="mono">ai-reporting</span> MCP that powers <span class="mono">collect_weekly_work_tracker</span> is <b>unregistered</b>, so <span class="mono">/weekly-report</span> Phase&nbsp;1 fails. The sponsor site reads the Cockpit + Leadership Dashboard, <b>not</b> the Tracker. Three red edges are connections that simply do not exist: Eve and Donna have no Tracker path, and the scheduled FourthOS run never logs back to the Tracker.</figcaption>
+
+        <h3>Target &mdash; one spine, two cuts</h3>
+        <p class="scroll-hint">Scroll the diagram horizontally &rarr;</p>
+        <div class="diagram-scroll">
+          <figure class="diagram compact">
+            <svg viewBox="0 0 1200 440" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Target state: every surface logs exactly one tagged row into the Weekly Work Tracker spine, which feeds two cuts — a full internal team cut and a filtered status-grade sponsor cut — each serving its own audience, with the Cockpit feeding only portfolio framing into the sponsor cut.">
+              <defs>
+                <filter id="spine-glow2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+
+              <text class="hdr" x="120"  y="28" text-anchor="middle">EVERY SURFACE</text>
+              <text class="hdr" x="495"  y="28" text-anchor="middle">ONE SPINE</text>
+              <text class="hdr" x="800"  y="28" text-anchor="middle">TWO CUTS</text>
+              <text class="hdr" x="1090" y="28" text-anchor="middle">AUDIENCE</text>
+
+              <!-- edges: sources -> spine (auto teal) -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,72  C330,80 360,150 392,196"/>
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,138 C330,150 360,180 392,206"/>
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,204 L392,214"/>
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,270 C330,262 360,240 392,224"/>
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,336 C330,330 360,260 392,234"/>
+              <text class="el" x="250" y="120" fill="#00B69F">1 tagged row each</text>
+
+              <!-- spine -> cuts -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M598,196 C660,170 690,150 736,138"/>
+              <text class="el" x="612" y="150" fill="#00B69F">full</text>
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M598,234 C660,260 690,280 736,296"/>
+              <text class="el" x="600" y="286" fill="#00B69F">filtered &middot; status-grade</text>
+
+              <!-- cockpit -> sponsor cut (sched) -->
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M598,372 C660,360 700,330 736,312"/>
+              <text class="el" x="600" y="392" fill="#6FB4E3">portfolio framing only</text>
+
+              <!-- cuts -> audience -->
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M906,128 L992,128"/>
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M906,300 L992,300"/>
+
+              <!-- source nodes -->
+              <g><rect x="60" y="50"  width="160" height="44" rx="9" fill="#0E2334" stroke="#9678B6" stroke-width="1.6"/><text class="ns" x="140" y="77" text-anchor="middle" style="font-size:11px;fill:#fff">Code &middot; reporting skill</text></g>
+              <g><rect x="60" y="116" width="160" height="44" rx="9" fill="#0E2334" stroke="#9678B6" stroke-width="1.6"/><text class="ns" x="140" y="143" text-anchor="middle" style="font-size:11px;fill:#fff">Donna &middot; addendum</text></g>
+              <g><rect x="60" y="182" width="160" height="44" rx="9" fill="#0E2334" stroke="#9678B6" stroke-width="1.6"/><text class="ns" x="140" y="209" text-anchor="middle" style="font-size:11px;fill:#fff">Eve</text></g>
+              <g><rect x="60" y="248" width="160" height="44" rx="9" fill="#0E2334" stroke="#2E78B0" stroke-width="1.6"/><text class="ns" x="140" y="275" text-anchor="middle" style="font-size:11px;fill:#fff">FourthOS run</text></g>
+              <g><rect x="60" y="314" width="160" height="44" rx="9" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.6"/><text class="ns" x="140" y="341" text-anchor="middle" style="font-size:11px;fill:#fff">Dave / Team</text></g>
+
+              <!-- spine -->
+              <rect x="392" y="172" width="206" height="86" rx="12" fill="rgba(0,182,159,0.10)" stroke="#00B69F" stroke-width="2.6" filter="url(#spine-glow2)"/>
+              <rect x="492" y="158" width="96" height="22" rx="11" fill="#00B69F"/>
+              <text class="badge-t" x="540" y="173" text-anchor="middle">SPINE</text>
+              <text class="nt-spine" x="495" y="208" text-anchor="middle">Weekly Work Tracker</text>
+              <text class="ns" x="495" y="228" text-anchor="middle">one canonical, Source-tagged row</text>
+              <text class="ns" x="495" y="244" text-anchor="middle">per reportable unit of work</text>
+
+              <!-- cut nodes -->
+              <g><rect x="736" y="100" width="170" height="56" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
+                <text class="nt" x="821" y="125" text-anchor="middle">Team cut</text>
+                <text class="ns" x="821" y="143" text-anchor="middle">full internal detail</text></g>
+              <g><rect x="736" y="272" width="170" height="56" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
+                <text class="nt" x="821" y="297" text-anchor="middle">Sponsor cut</text>
+                <text class="ns" x="821" y="315" text-anchor="middle">filtered status-grade</text></g>
+
+              <!-- cockpit (framing source) -->
+              <g><rect x="438" y="350" width="160" height="44" rx="9" fill="#0E2334" stroke="#00B69F" stroke-width="1.6"/><text class="ns" x="518" y="377" text-anchor="middle" style="font-size:11px;fill:#fff">FourthOS Cockpit</text></g>
+
+              <!-- audience -->
+              <g><rect x="992" y="100" width="170" height="56" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1077" y="125" text-anchor="middle">AI Enablement Team</text>
+                <text class="ns" x="1077" y="143" text-anchor="middle">internal</text></g>
+              <g><rect x="992" y="272" width="170" height="56" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1077" y="297" text-anchor="middle">Carly + Christian</text>
+                <text class="ns" x="1077" y="315" text-anchor="middle">VP / CTO</text></g>
+            </svg>
+          </figure>
+        </div>
+        <figcaption><b>Target state.</b> Keep two distinct <b>output cuts</b> &mdash; internal team vs VP/CTO sponsor (the audiences and content bar are intentionally different) &mdash; but make the Weekly Work Tracker the single canonical capture spine that both cuts draw from. The Cockpit stays only for portfolio framing on the sponsor cut.</figcaption>
+
+        <div class="state-key">
+          <span class="chip auto">AUTO &mdash; hook/skill writes it</span>
+          <span class="chip sched">SCHEDULED &mdash; runs on a clock</span>
+          <span class="chip man">MANUAL &mdash; model/Dave must remember</span>
+          <span class="chip gap">GAP &mdash; no path / broken today</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 2. THE FOUR STAGES ===================== -->
+    <section class="block" id="stages">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">02 &middot; Anatomy</span>
+          <h2>The four stages</h2>
+          <p class="lead">Two audiences, one body of work. Here is what sits in each column of the map.</p>
+        </div>
+
+        <h3>Stage 1 &mdash; Work surfaces</h3>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>Surface</th><th>Role</th><th>Owner</th></tr></thead>
+            <tbody>
+              <tr><td><b>Claude Code</b> (CCv3, here)</td><td>Execution &mdash; builds, fixes, ships</td><td>autonomous + Dave</td></tr>
+              <tr><td><b>Cowork</b></td><td>Fourth team work + the report editorial half</td><td>Dave + team</td></tr>
+              <tr><td><b>Claude.ai &mdash; Eve</b></td><td>Personal strategic layer (ideas, direction)</td><td>Dave</td></tr>
+              <tr><td><b>Claude.ai &mdash; Donna</b></td><td>Fourth-business strategic layer (SPARK, RFP, MS&nbsp;AI, competitive intel)</td><td>Dave</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Stage 2 &mdash; Capture into Notion</h3>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>Path</th><th>What it does</th><th>Automation</th></tr></thead>
+            <tbody>
+              <tr><td><code>/log-work</code> skill</td><td>Creates one Weekly Work Tracker row</td><td><span class="chip man">MANUAL</span> explicit invocation</td></tr>
+              <tr><td>Bridge <b>auto-mirror</b> (notion-bridge step&nbsp;3b)</td><td>Every Code&rarr;Eve/Donna writeback also creates a Tracker row</td><td><span class="chip man">MANUAL</span> model-followed &mdash; not hook-enforced</td></tr>
+              <tr><td>Bridge HQ handoff queues + Implementation Log</td><td>Eve/Donna/Code coordination + shipped log</td><td><span class="chip man">MANUAL</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">No hook enforces capture. The two paths into the Tracker run their <em>writes</em> automatically once invoked &mdash; but invoking them is manual, so unreported work is invisible to reporting.</p>
+
+        <h3>Stage 3 &mdash; The Notion data layer</h3>
+        <div class="cards">
+          <div class="card spine">
+            <h4><span class="dot teal"></span> Weekly Work Tracker <span class="id">3d7f2afd</span></h4>
+            <p>The reporting <b>spine</b>. One row per reportable unit of work, Source-tagged. Full field reference below.</p>
+          </div>
+          <div class="card">
+            <h4><span class="dot teal"></span> FourthOS Daily Cockpit <span class="id">34076fd7</span></h4>
+            <p>Operational cockpit. Read by the sponsor-site generator for portfolio framing.</p>
+          </div>
+          <div class="card">
+            <h4><span class="dot teal"></span> Leadership Portfolio Dashboard <span class="id">e29dd1c4</span></h4>
+            <p>5 live DBs. Plus the Update Package prompt <span class="id">82c202b8</span> and Connector master plan <span class="id">38776fd7</span>.</p>
+          </div>
+          <div class="card">
+            <h4><span class="dot sky"></span> Bridge HQ <span class="id">30e76fd7</span></h4>
+            <p>Eve/Donna/Code queues, Key Decisions, Implementation Log, and the <span class="mono">bridge sync</span> archive.</p>
+          </div>
+        </div>
+
+        <h3>Stage 4 &mdash; Reporting outputs (two)</h3>
+        <div class="tbl-scroll">
+          <table class="col-vs">
+            <thead><tr><th></th><th>Team dashboard</th><th>Sponsor site</th></tr></thead>
+            <tbody>
+              <tr><td><b>Skill</b></td><td><code>/weekly-report</code></td><td><code>fourthos-weekly</code></td></tr>
+              <tr><td><b>Reads</b></td><td>Weekly Work Tracker (via <span class="mono">ai-reporting</span> MCP <span class="mono">collect_weekly_work_tracker</span>)</td><td>FourthOS Cockpit + Leadership Dashboard (<b>not</b> the Tracker)</td></tr>
+              <tr><td><b>Output</b></td><td>Railway / NeonDB Next.js dashboard</td><td>3 self-contained HTML tiers &rarr; GitHub Pages</td></tr>
+              <tr><td><b>Cadence</b></td><td><span class="chip man">MANUAL</span> 2 sessions/wk (Code data half + Cowork/Desktop editorial half)</td><td><span class="chip sched">SCHEDULED</span> generate (Fri 07:00 <span class="mono">CCv3-FourthOS-Weekly</span>) + <span class="chip man">MANUAL</span> promote</td></tr>
+              <tr><td><b>Audience</b></td><td>AI Enablement <b>team</b> (internal)</td><td><b>Carly + Christian</b> (VP / CTO)</td></tr>
+              <tr><td><b>Content bar</b></td><td>Full operational detail</td><td>Status-grade only &mdash; honesty / badge system</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 3. THE SPINE ===================== -->
+    <section class="block" id="spine">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">03 &middot; The spine</span>
+          <h2>The Weekly Work Tracker</h2>
+          <p class="lead">The single canonical capture surface. <code>DB 3d7f2afd</code>. Every reportable unit of work is exactly one row &mdash; <span class="mono">Source</span>-tagged &mdash; and <span class="mono">Dashboard Section</span> decides which report section it surfaces in.</p>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>Field</th><th>Values / meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>Title</code></td><td>Verb-led, one line</td></tr>
+              <tr><td><code>Date</code></td><td>When the work happened</td></tr>
+              <tr><td><code>Type</code></td><td>Ship / Fix / Feature / Integration / Deploy / Decision / Research / Design / Meeting</td></tr>
+              <tr><td><code>Source</code></td><td><b>Code / Donna / Eve / Dave / Team</b> &mdash; which surface produced it</td></tr>
+              <tr><td><code>Impact</code></td><td>High / Mid / Low</td></tr>
+              <tr><td><code>Dashboard Section</code></td><td>Deep Dive / Integration / Metric / Adoption / Roadmap / Decision / Highlight / None &mdash; drives which report section it surfaces in</td></tr>
+              <tr><td><code>Project</code></td><td>Relation &rarr; FourthOS Projects</td></tr>
+              <tr><td><code>Commits</code></td><td>Linked commit references</td></tr>
+              <tr><td><code>Writeback URL</code></td><td>Link back to the Bridge writeback / artifact</td></tr>
+              <tr><td><code>Published in Report</code></td><td>Checkbox &mdash; leave unchecked; the collector sets it</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 4. THE GAPS ===================== -->
+    <section class="block" id="gaps">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">04 &middot; Current state, honestly</span>
+          <h2>The gaps &mdash; why it doesn&rsquo;t flow yet</h2>
+          <p class="lead">These are the present-day failures, stated as ground truth. They are the reason this document exists; the proposal below is the fix.</p>
+        </div>
+        <ol class="gaps">
+          <li><b>No shared spine.</b> The team dashboard reads the Tracker; the sponsor site reads the Cockpit instead &mdash; and the scheduled FourthOS run never logs to the Tracker. The two outputs don&rsquo;t feed each other or share an upstream.</li>
+          <li><b>Eve &amp; Donna can&rsquo;t reach the Tracker.</b> <span class="mono">Source = Eve</span> / <span class="mono">Source = Donna</span> exist in the schema, but neither surface has a path that writes a Tracker row. Their work lands in Bridge queues only.</li>
+          <li><b>Capture is manual / un-enforced.</b> <code>/log-work</code> and the Bridge auto-mirror both depend on the model remembering to run them; no hook enforces capture. Unreported work is invisible to reporting.</li>
+          <li><b>The team-dashboard pipeline is currently broken.</b> The <span class="mono">ai-reporting</span> MCP server (which powers <span class="mono">collect_weekly_work_tracker</span>) is <b>unregistered</b> in <span class="mono">settings.json</span> / <span class="mono">.mcp.json</span> &mdash; the repo exists at <span class="mono">C:/Users/david.hayes/ai-reporting-mcp/</span> but isn&rsquo;t wired in, so <span class="mono">/weekly-report</span> Phase&nbsp;1 will fail until it&rsquo;s registered.</li>
+          <li><b>The collector lives outside the repo.</b> <span class="mono">tracker_collector.py</span> / the <span class="mono">ai-reporting</span> MCP are a sibling project (<span class="mono">ai-reporting-mcp/</span>), not in continuous-claude &mdash; easy to lose track of.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== 5. THE PROPOSAL ===================== -->
+    <section class="block" id="proposal">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">05 &middot; The fix</span>
+          <h2>One spine, two cuts</h2>
+          <p class="lead">Keep two distinct output cuts (internal team vs VP/CTO sponsor &mdash; the audiences and content bar are intentionally different), but make the Weekly Work Tracker the single canonical capture spine that both cuts draw from. Sequenced, cheapest-first.</p>
+        </div>
+        <ol class="steps">
+          <li><b>Re-wire the team pipeline.</b> Register the <span class="mono">ai-reporting</span> MCP (local stdio or Railway HTTP) and confirm <span class="mono">/weekly-report</span> Phase&nbsp;1 runs. Without this, the team cut is dead. <em>(External repo action.)</em></li>
+          <li><b>Make the Tracker the spine.</b> Every reportable unit of work lands exactly one Tracker row, <span class="mono">Source</span>-tagged, regardless of surface &mdash; the one rule the whole system hangs on.</li>
+          <li><b>Close the capture gaps:</b>
+            <ul>
+              <li><b>Code</b> &rarr; the new <span class="mono">reporting</span> discipline skill (when/what/how to log; one-spine rule).</li>
+              <li><b>Donna</b> &rarr; the Donna addendum (logs her Fourth work as <span class="mono">Source=Donna</span> rows).</li>
+              <li><b>FourthOS scheduled run</b> &rarr; add a step that logs a Tracker row (<span class="mono">Source=Code</span>, <span class="mono">Dashboard Section=Highlight</span>) so the sponsor work is also visible to the team report.</li>
+            </ul>
+          </li>
+          <li><b>Two cuts read one spine.</b> Team dashboard = full internal cut (unchanged). Sponsor site = filtered status-grade cut; optionally also read the Tracker for the cross-surface &ldquo;what shipped&rdquo; signal while keeping the Cockpit for portfolio framing.</li>
+          <li><b>(Optional) light enforcement.</b> A session-end nudge reminding Code to log unreported shippable work &mdash; a reminder, not a block &mdash; mirroring existing CCv3 hook patterns.</li>
+        </ol>
+        <div class="principle">
+          <p><b>The principle:</b> capture once, at the moment of work, into one tagged spine; render many cuts from it. Reporting quality is a <em>capture</em> problem, not a <em>rendering</em> problem &mdash; the renderers are already good.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 6. HOW TO REPORT ===================== -->
+    <section class="block" id="report">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">06 &middot; Quick reference</span>
+          <h2>How to report</h2>
+          <p class="lead">Who logs what, and when. The one rule: one tagged Tracker row per reportable unit of work.</p>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>You are&hellip;</th><th>When</th><th>Do this</th></tr></thead>
+            <tbody>
+              <tr><td><b>Claude Code</b></td><td>After any Ship/Fix/Feature/Integration/Deploy/Decision/Research/Design unit</td><td>Log a Tracker row (<span class="mono">Source=Code</span>) via the <span class="mono">reporting</span> skill / <code>/log-work</code>; on Eve/Donna handoffs the Bridge auto-mirror covers it</td></tr>
+              <tr><td><b>Donna</b></td><td>After significant Fourth-business work or a decision</td><td>Write a Tracker row (<span class="mono">Source=Donna</span>) per the addendum, in addition to the Bridge handoff</td></tr>
+              <tr><td><b>Eve</b></td><td>After a strategic decision worth reporting</td><td>(Optional) a Tracker row <span class="mono">Source=Eve</span>, or rely on the Code writeback auto-mirror</td></tr>
+              <tr><td><b>Dave</b></td><td>Anytime</td><td><code>/log-work</code> for anything not auto-captured; <span class="mono">bridge sync</span> to sweep</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field-note">
+          <b>Field discipline (every row):</b> <span class="mono">Title</span> (verb-led) &middot; <span class="mono">Type</span> &middot; <span class="mono">Impact</span> &middot; <span class="mono">Date</span> &middot; <span class="mono">Source</span> &middot; <span class="mono">Dashboard Section</span> (drives which report section it surfaces in) &middot; <span class="mono">Project</span> (relation) &middot; <span class="mono">Commits</span> &middot; <span class="mono">Writeback URL</span> &middot; leave <span class="mono">Published in Report</span> unchecked (the collector sets it).
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot-grid">
+      <span class="pwr">Powered by <span class="iq">iQ</span></span>
+      <span class="mid">FourthOS &middot; Principal AI Mandate</span>
+      <span class="gen">Generated 2026-06-26</span>
+    </div>
+  </footer>
+</body>
+</html>

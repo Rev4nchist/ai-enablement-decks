@@ -176,6 +176,29 @@
       "status": "shipped"
     },
     {
+      "id": "ccv3-state-of-rework",
+      "section": "claude-code-ccv3",
+      "tag": "Deep Review",
+      "title": "CCv3 State of Rework — Fable-5 Deep Review",
+      "description": "Current state -> what we are adjusting -> the elegant target. Four interactive architecture diagrams (Excalidraw), 190 confirmed review findings by severity, the four-tier backlog, and end-to-end data-flow traces.",
+      "href": "./ccv3-state-of-rework/",
+      "meta": "Deep Review · Jun 2026",
+      "date": "2026-06-27",
+      "status": "shipped",
+      "featured": true
+    },
+    {
+      "id": "reporting-system",
+      "section": "claude-code-ccv3",
+      "tag": "System Doc",
+      "title": "FourthOS Reporting System",
+      "description": "How work in Claude Code / Cowork / Claude.ai becomes Notion records and flows to the team dashboard + sponsor site — full map, the Tracker spine, and the 'one spine, two cuts' improvement plan.",
+      "href": "./reporting-system/",
+      "meta": "System Doc",
+      "date": "2026-06-26",
+      "status": "shipped"
+    },
+    {
       "id": "fastmcp-capabilities",
       "section": "mcp-capabilities",
       "tag": "Capabilities",

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CCv3 Diagram Viewer</title>
+<style>
+:root{
+  --bg:#0b1020; --panel:#0e1525; --bd:#1f2937; --bd-l:#2a3447;
+  --tx:#e5e7eb; --dim:#9ca3af; --mut:#6b7280; --accent:#fbbf24;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--bd)}
+header .back{font-size:12.5px;border:1px solid var(--bd-l);border-radius:6px;padding:5px 10px;color:var(--dim);text-decoration:none}
+header .back:hover{border-color:var(--accent);color:var(--accent)}
+header h1{font-size:15px;font-weight:700;margin:0}
+header .sp{flex:1}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font-size:12px;border:1px solid var(--bd-l);border-radius:20px;padding:5px 12px;color:var(--dim);background:transparent;cursor:pointer;text-decoration:none}
+.tab:hover{border-color:var(--accent);color:var(--accent)}
+.tab.active{background:rgba(251,191,36,.16);border-color:var(--accent);color:var(--accent)}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{font-size:12px;border:1px solid var(--bd-l);border-radius:6px;padding:6px 12px;color:var(--dim);background:transparent;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:rgba(251,191,36,.16);border-color:var(--accent);color:var(--accent);font-weight:600}
+#stage{position:absolute;inset:54px 0 0 0;overflow:auto;padding:18px;background:#070b14}
+#svgwrap{display:flex;justify-content:center;align-items:flex-start;min-height:100%}
+#svgwrap img{max-width:none;background:#fff;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.5)}
+#excal{position:absolute;inset:54px 0 0 0;display:none}
+#excal.on{display:block}
+#stage.off{display:none}
+.excalidraw .App-menu_top .buttonList{}
+.note{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--bd-l);
+  border-radius:8px;padding:8px 14px;font-size:12px;color:var(--dim);box-shadow:0 6px 18px rgba(0,0,0,.5);display:none}
+.note.show{display:block}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--bd-l);border-top-color:var(--accent);border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="../">← Deck</a>
+  <h1 id="title">CCv3 Diagram</h1>
+  <span class="sp"></span>
+  <nav class="tabs" id="tabs"></nav>
+  <span class="sp"></span>
+  <div class="actions">
+    <button class="btn primary" id="interactive">⚡ Interactive</button>
+    <a class="btn" id="dl" download>⬇ .excalidraw</a>
+    <a class="btn" id="svglink" target="_blank">↗ .svg</a>
+  </div>
+</header>
+
+<div id="stage"><div id="svgwrap"><img id="svg" alt="diagram"/></div></div>
+<div id="excal"></div>
+<div class="note" id="note"></div>
+
+<script>
+const DIAGRAMS = {
+  'master-3state':   'Three Horizons — Current → Adjusting → Target',
+  'subsystems':      'Subsystems — Pillars & WS-2 Substrate',
+  'dataflow-traces': 'Data-Flow Traces — End-to-End Paths',
+  'backlog-map':     'Backlog Map — Wave 0 → Tier 3 → Deletions',
+};
+const EXCAL_VER = '0.17.6';
+const ASSET = 'https://unpkg.com/@excalidraw/excalidraw@' + EXCAL_VER + '/dist/';
+
+const params = new URLSearchParams(location.search);
+let current = params.get('f');
+if (!DIAGRAMS[current]) current = 'master-3state';
+
+const $ = (id) => document.getElementById(id);
+function note(msg, ms) { const n=$('note'); n.innerHTML=msg; n.classList.add('show'); if(ms) setTimeout(()=>n.classList.remove('show'), ms); }
+
+function render() {
+  $('title').textContent = DIAGRAMS[current];
+  document.title = 'CCv3 — ' + DIAGRAMS[current];
+  $('svg').src = '../' + current + '.svg';
+  $('dl').href = '../' + current + '.excalidraw';
+  $('svglink').href = '../' + current + '.svg';
+  // tabs
+  $('tabs').innerHTML = Object.entries(DIAGRAMS).map(([k,v]) =>
+    `<a class="tab${k===current?' active':''}" href="?f=${k}">${v.split('—')[0].trim()}</a>`).join('');
+  // reset to SVG view
+  $('excal').classList.remove('on'); $('excal').innerHTML='';
+  $('stage').classList.remove('off');
+  excalLoaded = false;
+}
+
+// ---- interactive Excalidraw (load on demand) ----
+let excalScriptsPromise = null;
+let excalLoaded = false;
+function loadScript(src) { return new Promise((res, rej) => { const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error('failed '+src)); document.head.appendChild(s); }); }
+function loadCss(href) { const l=document.createElement('link'); l.rel='stylesheet'; l.href=href; document.head.appendChild(l); }
+
+function ensureExcalScripts() {
+  if (excalScriptsPromise) return excalScriptsPromise;
+  window.EXCALIDRAW_ASSET_PATH = ASSET;
+  loadCss(ASSET + 'excalidraw.production.min.css');
+  excalScriptsPromise = (async () => {
+    await loadScript('https://unpkg.com/react@18.2.0/umd/react.production.min.js');
+    await loadScript('https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js');
+    await loadScript(ASSET + 'excalidraw.production.min.js');
+  })();
+  return excalScriptsPromise;
+}
+
+async function goInteractive() {
+  if (excalLoaded) return;
+  note('<span class="spin"></span>Loading interactive canvas…');
+  const timeout = setTimeout(() => note('Interactive canvas is taking a while — the .svg and .excalidraw download work offline.', 6000), 12000);
+  try {
+    await ensureExcalScripts();
+    if (!window.ExcalidrawLib || !window.React || !window.ReactDOM) throw new Error('libs missing');
+    const data = await fetch('../' + current + '.excalidraw').then(r => { if(!r.ok) throw new Error('fetch '+r.status); return r.json(); });
+    clearTimeout(timeout);
+    $('stage').classList.add('off');
+    $('excal').classList.add('on');
+    const editable = params.get('edit') === '1';
+    const App = () => window.React.createElement(window.ExcalidrawLib.Excalidraw, {
+      initialData: {
+        elements: data.elements || [],
+        appState: Object.assign({}, data.appState, { viewBackgroundColor: '#ffffff' }),
+        files: data.files || {},
+        scrollToContent: true,
+      },
+      viewModeEnabled: !editable,
+      theme: 'light',
+      UIOptions: { canvasActions: { loadScene: false } },
+    });
+    window.ReactDOM.createRoot($('excal')).render(window.React.createElement(App));
+    excalLoaded = true;
+    note('Interactive canvas ready · scroll to zoom, drag to pan' + (editable ? ' · editing on' : ' · add &edit=1 to URL to edit'), 4000);
+  } catch (e) {
+    clearTimeout(timeout);
+    note('Couldn\'t load the interactive canvas (offline or CDN blocked). The SVG below and the .excalidraw download still work. ' + e.message, 8000);
+    $('stage').classList.remove('off'); $('excal').classList.remove('on');
+  }
+}
+
+$('interactive').addEventListener('click', goInteractive);
+render();
+// auto-launch interactive if ?mode=interactive
+if (params.get('mode') === 'interactive') goInteractive();
+</script>
+</body>
+</html>
