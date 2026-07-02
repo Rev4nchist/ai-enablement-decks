@@ -41,6 +41,18 @@
   ],
   "decks": [
     {
+      "id": "fourthos-2026-07-01",
+      "section": "sponsor-updates",
+      "tag": "Sponsor Update",
+      "title": "FourthOS — 1 July 2026",
+      "description": "Connector security proven 16/16 — zero leakage — and NetSuite joins the ecosystem as connector #3 in discovery. Hardening from real alpha use deployed (rev 0000020).",
+      "href": "./fourthos/2026-07-01/",
+      "meta": "1 July 2026",
+      "date": "2026-07-01",
+      "status": "shipped",
+      "featured": true
+    },
+    {
       "id": "fourthos-2026-06-24",
       "section": "sponsor-updates",
       "tag": "Sponsor Update",
@@ -50,7 +62,7 @@
       "meta": "24 Jun 2026",
       "date": "2026-06-24",
       "status": "shipped",
-      "featured": true
+      "featured": false
     },
     {
       "id": "vp-briefing-april-2026",
