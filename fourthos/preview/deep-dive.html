@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FourthOS — Flagship Deep Dive | Salesforce Connector</title>
+  <meta name="description" content="A teaching deep dive on the FourthOS Salesforce Connector: the adversarial security test that proved per-user isolation 16/16, the governance-proxy pattern, and how the ecosystem grows to NetSuite and Zendesk.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:#0A1929; --bg-secondary:#0F2A3F; --bg-tertiary:#153650;
+      --bg-midnight:#051526; --bg-card:rgba(15,42,63,0.55);
+      --text-primary:#FFFFFF; --text-secondary:#CFD1D1; --text-muted:#8DA8C4;
+      --accent:#6FB4E3; --teal:#00B69F; --sunrise:#FAA51A; --danger:#D81632; --purple:#9678B6;
+      --fourth-deep-blue:#0C4A7D;
+      --vignette:linear-gradient(25deg,#00B69F 0%,#6FB4E3 40%,#0C4A7D 100%);
+      --border:rgba(111,180,227,0.10); --border-accent:rgba(111,180,227,0.22);
+      --font-display:'Poppins',sans-serif; --font-body:'Poppins',sans-serif; --font-mono:'JetBrains Mono',monospace;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+    }
+    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-size:18px; scroll-padding-top:80px; }
+    body {
+      font-family:var(--font-body); background:var(--bg-primary); color:var(--text-primary);
+      line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    }
+    a { color:inherit; text-decoration:none; }
+    .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
+    .wrap-wide { max-width:1160px; }
+    :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
+
+    /* ===================== TOP BAR (shared shell) ===================== */
+    .topbar {
+      position:sticky; top:0; z-index:50;
+      background:rgba(5,21,38,0.82); backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner {
+      display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap;
+      padding:0.7rem 0;
+    }
+    /* brand mark */
+    .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; letter-spacing:0.01em; }
+    .brand svg { width:26px; height:26px; flex-shrink:0; display:block; }
+    .brand .wordmark { font-size:1.02rem; }
+    .brand .wordmark b { font-weight:700; }
+    .brand .wordmark .os { color:var(--teal); font-weight:700; }
+    /* breadcrumb */
+    .crumbs { display:flex; align-items:center; gap:0.45rem; font-size:0.82rem; color:var(--text-muted); flex-wrap:wrap; }
+    .crumbs a { color:var(--text-secondary); transition:color .2s; }
+    .crumbs a:hover { color:var(--accent); }
+    .crumbs .sep { color:var(--text-muted); opacity:0.6; }
+    .crumbs .current { color:var(--text-primary); font-weight:500; }
+    /* right cluster */
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem 1.25rem; flex-wrap:wrap; }
+    /* tier tabs */
+    .tabs { display:flex; align-items:center; gap:0.25rem; }
+    .tabs a {
+      font-size:0.82rem; font-weight:500; color:var(--text-secondary);
+      padding:0.35rem 0.7rem; border-radius:8px; transition:color .2s, background .2s;
+    }
+    .tabs a:hover { color:var(--text-primary); background:rgba(111,180,227,0.08); }
+    body[data-tier="hub"]        .tab-hub,
+    body[data-tier="briefing"]   .tab-briefing,
+    body[data-tier="deep-dive"]  .tab-deepdive {
+      color:var(--teal); background:rgba(0,182,159,0.12);
+    }
+    /* week switcher */
+    .wkswitch { position:relative; display:inline-flex; align-items:center; }
+    .wkswitch select {
+      appearance:none; -webkit-appearance:none;
+      font-family:var(--font-body); font-size:0.8rem; font-weight:500; color:var(--text-secondary);
+      background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:999px;
+      padding:0.4rem 2rem 0.4rem 0.95rem; cursor:pointer; transition:border-color .2s, color .2s;
+    }
+    .wkswitch select:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); }
+    .wkswitch::after {
+      content:'▾'; position:absolute; right:0.85rem; top:50%; transform:translateY(-50%);
+      pointer-events:none; color:var(--accent); font-size:0.7rem;
+    }
+
+    /* ===================== TIER PAGER ===================== */
+    .pager { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
+    .pager a {
+      display:inline-flex; align-items:center; gap:0.5rem; font-size:0.9rem; font-weight:500;
+      color:var(--text-secondary); border:1px solid var(--border-accent); border-radius:10px;
+      padding:0.7rem 1.1rem; transition:color .2s, border-color .2s, background .2s;
+    }
+    .pager a:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); background:rgba(0,182,159,0.06); }
+
+    /* ---------- progress ---------- */
+    .progress { position:fixed; top:0; left:0; height:3px; width:0%; z-index:60; background:linear-gradient(90deg,var(--accent),var(--teal)); transition:width .15s ease-out; }
+
+    /* ---------- RAG ---------- */
+    .rag { display:inline-flex; align-items:center; gap:0.55rem; padding:0.4rem 0.9rem; border-radius:999px; font-size:0.82rem; font-weight:600; border:1px solid; }
+    .rag .pip { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .rag-yellow { color:var(--sunrise); border-color:rgba(250,165,26,0.45); background:rgba(250,165,26,0.10); }
+    .rag-yellow .pip { background:var(--sunrise); box-shadow:0 0 8px rgba(250,165,26,0.55); }
+    .rag-green { color:var(--teal); border-color:rgba(0,182,159,0.45); background:rgba(0,182,159,0.10); }
+    .rag-green .pip { background:var(--teal); box-shadow:0 0 8px rgba(0,182,159,0.55); }
+
+    /* ---------- hero ---------- */
+    .hero { position:relative; overflow:hidden; background:linear-gradient(160deg,#051526 0%,#0A1929 60%,#0F2A3F 100%); padding:clamp(4rem,9vw,6.5rem) 0 clamp(3rem,6vw,5rem); border-bottom:1px solid var(--border); }
+    .hero::before { content:''; position:absolute; inset:0; background:var(--vignette); opacity:0.13; pointer-events:none; }
+    .hero::after { content:''; position:absolute; width:560px; height:560px; border-radius:50%; filter:blur(120px); background:rgba(0,182,159,0.13); top:-200px; left:-120px; pointer-events:none; }
+    .hero .wrap { position:relative; z-index:1; }
+    .eyebrow { font-size:0.72rem; font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+    .hero h1 { font-family:var(--font-display); font-weight:600; line-height:1.1; font-size:clamp(2.3rem,5.5vw,3.8rem); margin-bottom:1rem; letter-spacing:-0.01em; }
+    .hero h1 .grad { background:var(--vignette); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+    .hero .state { font-size:1.05rem; color:var(--text-secondary); max-width:640px; margin-top:0.5rem; }
+    .hero-meta { display:flex; flex-wrap:wrap; gap:1rem; margin-top:2rem; align-items:center; }
+    .hero-meta .updated { font-size:0.85rem; color:var(--text-muted); }
+
+    /* ---------- sections ---------- */
+    section.s { padding:clamp(3rem,6vw,4.75rem) 0; border-bottom:1px solid var(--border); }
+    .sec-label { font-size:0.72rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .sec-label .b { width:6px; height:6px; border-radius:50%; background:var(--teal); }
+    h2 { font-family:var(--font-display); font-weight:600; font-size:clamp(1.6rem,3.2vw,2.3rem); line-height:1.2; margin-bottom:1.25rem; }
+    h3 { font-family:var(--font-display); font-weight:600; font-size:1.2rem; margin-bottom:0.5rem; }
+    p { color:var(--text-secondary); margin-bottom:1rem; max-width:680px; }
+    .lead { font-size:1.12rem; color:var(--text-primary); }
+
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:stretch; margin-top:0.5rem; }
+    .panel { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:1.75rem; backdrop-filter:blur(8px); }
+    .panel.teal { border-left:3px solid var(--teal); }
+    .panel.sky { border-left:3px solid var(--accent); }
+    .panel h3 { color:var(--text-primary); }
+    .panel p { margin-bottom:0; font-size:0.98rem; }
+
+    /* ---------- concept spotlight ---------- */
+    .spotlight { position:relative; overflow:hidden; border-radius:20px; border:1px solid rgba(0,182,159,0.3); background:linear-gradient(135deg,rgba(0,182,159,0.12) 0%,rgba(111,180,227,0.06) 45%,transparent 80%); padding:clamp(2rem,4vw,3rem); }
+    .spotlight::after { content:''; position:absolute; width:360px; height:360px; border-radius:50%; filter:blur(90px); background:rgba(0,182,159,0.16); bottom:-160px; right:-120px; pointer-events:none; }
+    .spotlight .sl-tag { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.7rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:1.25rem; }
+    .spotlight .sl-tag svg { width:18px; height:18px; }
+    .spotlight .term { font-family:var(--font-display); font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:600; margin-bottom:1.25rem; position:relative; z-index:1; }
+    .spotlight .term .mono { font-family:var(--font-mono); font-size:0.6em; color:var(--accent); font-weight:500; }
+    .spotlight .plain { color:var(--text-secondary); font-size:1.05rem; max-width:760px; position:relative; z-index:1; margin-bottom:0; }
+    .spotlight .plain strong { color:var(--text-primary); font-weight:600; }
+
+    /* ---------- architecture ---------- */
+    .arch-frame { background:var(--bg-secondary); border:1px solid var(--border); border-radius:16px; padding:clamp(1rem,3vw,2rem); margin-top:0.5rem; }
+    .arch-svg { width:100%; height:auto; display:block; }
+    .arch-caption { font-size:0.85rem; color:var(--text-muted); margin-top:1rem; text-align:center; max-width:none; }
+    .arch-legend { display:flex; flex-wrap:wrap; gap:1.25rem; justify-content:center; margin-top:1.25rem; font-size:0.78rem; color:var(--text-secondary); }
+    .arch-legend span { display:inline-flex; align-items:center; gap:0.45rem; }
+    .arch-legend .sw { width:24px; height:0; border-top:2px solid; }
+    .legend-live .sw { border-color:var(--teal); }
+    .legend-built .sw { border-color:var(--accent); }
+    .legend-future .sw { border-top-style:dashed; border-color:var(--text-muted); }
+
+    /* ===== shared badge component (LIVE · ALPHA / BUILT IN-REPO / NEXT) ===== */
+    .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; vertical-align:middle; }
+    .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
+    .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
+    .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
+    .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
+
+    /* workstream card header with badge */
+    .ws-card .ws-head { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.5rem; }
+    .ws-card .ws-head h3 { margin-bottom:0; }
+
+    /* ===== Interactive 3-view governed-report toggle ===== */
+    .rtoggle{border:1px solid var(--border-accent);border-radius:16px;background:var(--bg-secondary);overflow:hidden;margin:1.5rem 0;}
+    .rtoggle-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 1.25rem;border-bottom:1px solid var(--border);}
+    .rtoggle-tabs{display:inline-flex;background:var(--bg-midnight);border:1px solid var(--border);border-radius:10px;padding:0.25rem;}
+    .rt-tab{font-family:var(--font-body);font-size:0.85rem;font-weight:600;color:var(--text-secondary);background:transparent;border:0;padding:0.45rem 1rem;border-radius:8px;cursor:pointer;transition:color .2s,background .2s;}
+    .rt-tab.is-active{color:#04141f;background:var(--teal);}
+    .rt-class{font-size:0.7rem;font-weight:700;letter-spacing:0.04em;padding:0.3rem 0.7rem;border-radius:999px;border:1px solid;}
+    .rt-class-leadership{color:var(--accent);border-color:rgba(111,180,227,.4);background:rgba(111,180,227,.08);}
+    .rt-class-it,.rt-class-governance{color:var(--sunrise);border-color:rgba(250,165,26,.45);background:rgba(250,165,26,.10);}
+    .rt-view{padding:1.4rem 1.25rem;transition:opacity .18s ease;min-height:260px;}
+    .rt-verdict,.rt-audit{border-radius:10px;padding:0.9rem 1.1rem;font-size:0.95rem;color:var(--text-secondary);margin-bottom:1.1rem;}
+    .rt-green{background:rgba(0,182,159,.08);border:1px solid rgba(0,182,159,.3);}
+    .rt-verdict b,.rt-audit b{color:var(--teal);}
+    .rt-ask{margin-top:0.4rem;font-size:0.85rem;color:var(--text-muted);}
+    .rt-stats,.rt-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1.2rem;}
+    .rt-stat,.rt-kpi{background:var(--bg-midnight);border:1px solid var(--border);border-radius:10px;padding:0.9rem;}
+    .rt-v{display:block;font-size:1.35rem;font-weight:700;color:var(--text-primary);font-variant-numeric:tabular-nums;}
+    .rt-k{display:block;font-size:0.72rem;color:var(--text-muted);margin-top:0.2rem;letter-spacing:0.03em;}
+    .rt-sub,.rt-pu-h{font-size:0.72rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:0.6rem;}
+    .rt-uc{margin-bottom:1.1rem;}
+    .rt-ucrow{display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.9rem;}
+    .rt-ucn{color:var(--teal);font-weight:600;font-variant-numeric:tabular-nums;}
+    .rt-locked{display:flex;gap:0.6rem;align-items:flex-start;background:rgba(111,180,227,.06);border:1px dashed rgba(111,180,227,.4);border-radius:10px;padding:1rem 1.1rem;font-size:0.9rem;color:var(--text-secondary);}
+    .rt-pu-h{display:flex;align-items:center;gap:0.6rem;}
+    .rt-pseudo{font-weight:500;letter-spacing:0;text-transform:none;color:var(--text-muted);font-size:0.7rem;}
+    .rt-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+    .rt-table th{text-align:left;color:var(--text-muted);font-size:0.72rem;font-weight:600;padding:0.4rem 0.6rem;border-bottom:1px solid var(--border);}
+    .rt-table td{padding:0.45rem 0.6rem;border-bottom:1px solid var(--border);color:var(--text-secondary);font-variant-numeric:tabular-nums;}
+    .rt-tok{font-family:var(--font-mono);color:var(--accent);}
+    .rt-anoms{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;}
+    .rt-anom{display:flex;gap:0.6rem;align-items:flex-start;font-size:0.88rem;color:var(--text-secondary);}
+    .rt-adot{width:8px;height:8px;border-radius:50%;margin-top:0.45rem;flex-shrink:0;}
+    .rt-ok .rt-adot{background:var(--teal);}
+    .rt-flag .rt-adot{background:var(--sunrise);}
+    .rt-defer .rt-adot{background:var(--text-muted);}
+    .rt-cov{font-size:0.8rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:0.8rem;margin-bottom:1rem;}
+    .rt-note{padding:0.8rem 1.25rem;border-top:1px solid var(--border);font-size:0.78rem;color:var(--text-muted);font-family:var(--font-mono);}
+    @media(max-width:560px){.rt-stats,.rt-kpis{grid-template-columns:1fr 1fr;}}
+    .rt-caption{font-size:0.9rem;color:var(--text-muted);margin-top:1rem;max-width:none;}
+    .rt-caption strong{color:var(--text-secondary);}
+
+    /* ===== Feedback full-loop diagram ===== */
+    .floop{display:flex;flex-wrap:wrap;align-items:stretch;gap:0.6rem;margin:1.5rem 0 1rem;}
+    .floop-node{flex:1 1 160px;position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.1rem;backdrop-filter:blur(8px);}
+    .floop-node.is-next{border-style:dashed;border-color:rgba(141,168,196,0.5);background:transparent;}
+    .floop-step{font-family:var(--font-mono);font-size:0.72rem;color:var(--teal);font-weight:600;margin-bottom:0.55rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;}
+    .floop-node.is-next .floop-step{color:var(--text-muted);}
+    .floop-node h4{font-size:0.92rem;color:var(--text-primary);font-weight:600;margin-bottom:0.4rem;}
+    .floop-node p{font-size:0.8rem;color:var(--text-muted);margin-bottom:0;max-width:none;}
+    .floop-arrow{display:flex;align-items:center;color:var(--text-muted);font-size:1.2rem;flex:0 0 auto;}
+    @media(max-width:880px){.floop-arrow{transform:rotate(90deg);width:100%;justify-content:center;}}
+
+    /* ===== Composability worked example ===== */
+    .compose{background:var(--bg-secondary);border:1px solid var(--border-accent);border-radius:16px;padding:clamp(1.5rem,3vw,2rem);margin-top:0.5rem;}
+    .compose-ask{font-size:1.08rem;color:var(--text-primary);font-style:italic;border-left:3px solid var(--teal);padding-left:1rem;margin-bottom:1.5rem;max-width:none;}
+    .legs{display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.4rem;}
+    .leg{display:flex;gap:0.9rem;align-items:flex-start;background:var(--bg-midnight);border:1px solid var(--border);border-radius:10px;padding:0.95rem 1.1rem;}
+    .leg-sys{display:flex;align-items:center;gap:0.5rem;min-width:175px;flex-shrink:0;font-weight:600;color:var(--text-primary);font-size:0.9rem;flex-wrap:wrap;}
+    .leg-desc{font-size:0.88rem;color:var(--text-secondary);}
+    .compose-join{font-size:0.9rem;color:var(--text-secondary);background:rgba(111,180,227,0.06);border:1px dashed rgba(111,180,227,0.3);border-radius:10px;padding:0.95rem 1.1rem;margin-bottom:1.2rem;}
+    .compose-join b{color:var(--accent);}
+    .compose-out{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;}
+    .compose-out .co{background:rgba(0,182,159,0.06);border:1px solid rgba(0,182,159,0.25);border-radius:10px;padding:1rem 1.1rem;font-size:0.9rem;color:var(--text-secondary);}
+    .compose-out .co b{color:var(--teal);}
+    .compose-kicker{font-size:0.92rem;color:var(--text-muted);font-style:italic;border-top:1px solid var(--border);padding-top:1rem;margin-bottom:0;max-width:none;}
+    @media(max-width:720px){.compose-out{grid-template-columns:1fr;}.leg{flex-direction:column;gap:0.5rem;}.leg-sys{min-width:0;}}
+
+    /* ---------- workstreams ---------- */
+    .ws-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; counter-reset:ws; }
+    .ws-card { position:relative; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1.5rem 1.5rem 1.5rem 3.75rem; backdrop-filter:blur(8px); }
+    .ws-card::before { counter-increment:ws; content:counter(ws,decimal-leading-zero); position:absolute; left:1.4rem; top:1.5rem; font-family:var(--font-mono); font-size:0.95rem; font-weight:600; color:var(--teal); }
+    .ws-card h3 { font-size:1.05rem; color:var(--text-primary); margin-bottom:0.5rem; }
+    .ws-card p { font-size:0.92rem; margin-bottom:0; }
+
+    /* ---------- focus row ---------- */
+    .focus-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+    .focus-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1.5rem; border-top:3px solid var(--accent); }
+    .focus-card.decision { border-top-color:var(--sunrise); }
+    .focus-card .fc-label { font-size:0.68rem; font-weight:600; letter-spacing:0.13em; text-transform:uppercase; color:var(--accent); margin-bottom:0.6rem; }
+    .focus-card.decision .fc-label { color:var(--sunrise); }
+    .focus-card p { font-size:0.95rem; margin-bottom:0; }
+
+    /* ---------- risk chips ---------- */
+    .chips { display:flex; flex-wrap:wrap; gap:0.6rem; }
+    .chip-risk { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.88rem; font-weight:500; padding:0.5rem 0.95rem; border-radius:999px; background:rgba(250,165,26,0.08); border:1px solid rgba(250,165,26,0.28); color:var(--text-secondary); }
+    .chip-risk .pip { width:8px; height:8px; border-radius:50%; background:var(--sunrise); flex-shrink:0; }
+
+    /* ---------- learn more ---------- */
+    .links-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+    .link-card { display:flex; align-items:center; justify-content:space-between; gap:1rem; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:12px; padding:1.1rem 1.4rem; transition:transform .3s var(--ease), border-color .3s var(--ease); }
+    .link-card:hover, .link-card:focus-visible { transform:translateY(-3px); border-color:rgba(0,182,159,0.4); outline:none; }
+    .link-card .lc-text { font-weight:500; color:var(--text-primary); }
+    .link-card .arrow { color:var(--teal); flex-shrink:0; }
+    .link-card.feature { border-color:rgba(0,182,159,0.35); background:linear-gradient(135deg,rgba(0,182,159,0.10) 0%,transparent 60%); }
+
+    /* ---------- footer ---------- */
+    footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
+    .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
+    .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
+    .foot-grid .pwr .iq { color:var(--teal); }
+    .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
+
+    /* ---------- deep-link anchor offset (sticky top bar) ---------- */
+    #outputs, #concept, #architecture, #reporting, #feedback { scroll-margin-top:80px; }
+
+    /* ---------- reveal ---------- */
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.visible { opacity:1; transform:none; }
+
+    @media (max-width:880px) {
+      .two, .ws-grid, .focus-grid, .links-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:720px) {
+      .crumbs { width:100%; order:3; }
+      .topbar-right { width:100%; justify-content:space-between; }
+    }
+    @media (max-width:560px) {
+      html { font-size:16px; }
+      .foot-grid { flex-direction:column; align-items:flex-start; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .reveal { opacity:1; transform:none; transition:none; }
+      html { scroll-behavior:auto; }
+    }
+  </style>
+</head>
+<body data-tier="deep-dive">
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <!-- ===================== SHARED TOP BAR ===================== -->
+  <div class="topbar">
+    <div class="wrap wrap-wide topbar-inner">
+      <a class="brand" href="/ai-enablement-decks/fourthos/2026-07-01/" aria-label="FourthOS Sponsor Update home">
+        <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse"><stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/></linearGradient></defs>
+          <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
+          <circle cx="16" cy="16" r="3.4" fill="url(#fos-g)"/>
+          <circle cx="26.5" cy="9.5" r="2.1" fill="#00B69F"/>
+          <circle cx="5.5" cy="22.5" r="2.1" fill="#6FB4E3"/>
+          <circle cx="7" cy="8" r="1.6" fill="#FAA51A"/>
+        </svg>
+        <span class="wordmark"><b>Fourth</b><span class="os">OS</span></span>
+      </a>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/ai-enablement-decks/#sponsor-updates">Sponsor Updates</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <a href="/ai-enablement-decks/fourthos/2026-07-01/">1 July 2026</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <span class="current">Deep Dive</span>
+      </nav>
+      <div class="topbar-right">
+        <nav class="tabs" aria-label="Sections">
+          <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
+          <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
+          <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+        </nav>
+        <label class="wkswitch">
+          <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
+          <select id="weekSwitch" aria-label="Switch to another week's update">
+            <option value="2026-07-01" selected>1 July 2026</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Flagship Deep Dive &middot; Tier 2</p>
+      <h1>Flagship Deep Dive — <span class="grad">Salesforce Connector</span></h1>
+      <p class="state">Active / Green — live in alpha, hardened by real pilot use, and security-proven: 16 deliberate cross-user leak attempts, all blocked. The ecosystem it molds is growing: NetSuite entered discovery as connector #3.</p>
+      <div class="hero-meta">
+        <span class="rag rag-green" role="status" aria-label="Flagship health: Green"><span class="pip" aria-hidden="true"></span> Health: Green</span>
+        <span class="updated">Updated 1 July 2026 &middot; for Carly &amp; Christian</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- WHY / OUTCOME -->
+    <section class="s">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The thesis</p>
+        <h2 class="reveal">The connector is the <span style="color:var(--teal);">mold</span>.</h2>
+        <p class="lead reveal">The Salesforce connector isn't a one-off integration — it's the mold. Build the governance once (identity, audit, read-only access, reporting, feedback) and every future connector is stamped from it. Governed, composable connectors are the data-and-action substrate for FourthOS performance intelligence, not just another integration pile.</p>
+        <div class="two">
+          <div class="panel teal reveal">
+            <h3>Why this matters</h3>
+            <p>The hard part — per-user identity, default-deny, audit, governed reporting — is solved once and inherited. Connector #2 writes connector logic, not governance. That is reusable leverage, not a one-off win.</p>
+          </div>
+          <div class="panel sky reveal">
+            <h3>Expected outcome</h3>
+            <p>A reusable connector pattern that starts live with Salesforce, proves itself with Zendesk, then scales to NetSuite (now in discovery) and Jira — each inheriting identity, audit, reporting, and feedback automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE: inheritance (moved before Concept per v3 order) -->
+    <section class="s" id="architecture">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Architecture</p>
+        <h2 class="reveal">Build the mold once — every stamp inherits the governance</h2>
+        <p class="reveal">Every request flows through one governed checkpoint. The live proxy resolves per-user identity, enforces read-only / default-deny access, and writes an append-only audit trail — then brokers the call to the live system. Its reporting engine and feedback loop are built in-repo. Future connectors are stamped from the same mold and inherit all four assets.</p>
+        <div class="arch-frame reveal">
+          <svg class="arch-svg" viewBox="0 0 1000 560" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
+            <title id="archTitle">FourthOS connector inheritance architecture</title>
+            <desc id="archDesc">You sign in with Microsoft; Claude connects through a live FastMCP v3 governance proxy on Azure that enforces per-user identity via Entra and on-behalf-of token exchange, an append-only audit ledger, and read-only default-deny access. The proxy brokers a live-in-alpha connection to Salesforce. Below it sit two built-in-repo outputs: a three-tier reporting engine and a feedback loop. Dashed clone arrows show three future stamped connectors — Zendesk next, NetSuite in discovery, Jira future — each inheriting identity, audit, reporting, and feedback.</desc>
+            <defs>
+              <linearGradient id="proxyGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00B69F"/>
+                <stop offset="45%" stop-color="#6FB4E3"/>
+                <stop offset="100%" stop-color="#0C4A7D"/>
+              </linearGradient>
+              <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00B69F"/></marker>
+              <marker id="arrowSky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6FB4E3"/></marker>
+              <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8DA8C4"/></marker>
+            </defs>
+
+            <!-- You node -->
+            <g>
+              <rect x="18" y="104" width="146" height="72" rx="14" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="91" y="136" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="16" font-weight="600">You</text>
+              <text x="91" y="157" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="12">Microsoft sign-in</text>
+            </g>
+            <!-- arrow You -> Claude -->
+            <line x1="166" y1="140" x2="193" y2="140" stroke="#6FB4E3" stroke-width="2" marker-end="url(#arrowSky)"/>
+            <!-- Claude node -->
+            <g>
+              <rect x="196" y="104" width="120" height="72" rx="14" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="256" y="146" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="17" font-weight="600">Claude</text>
+            </g>
+            <!-- arrow Claude -> proxy (LIVE) -->
+            <line x1="318" y1="140" x2="361" y2="140" stroke="#00B69F" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+            <text x="339" y="131" text-anchor="middle" fill="#00B69F" font-family="JetBrains Mono,monospace" font-size="10">LIVE</text>
+
+            <!-- Governance proxy (centerpiece, LIVE) -->
+            <g>
+              <rect x="364" y="66" width="300" height="250" rx="16" fill="#0A1929" stroke="url(#proxyGrad)" stroke-width="2.5"/>
+              <rect x="364" y="66" width="300" height="46" rx="16" fill="url(#proxyGrad)" opacity="0.18"/>
+              <text x="514" y="89" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="16" font-weight="600">FastMCP v3 Governance Proxy</text>
+              <text x="514" y="106" text-anchor="middle" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="11">on Azure (ACA) &#183; LIVE</text>
+              <!-- pillar 1 Identity -->
+              <g>
+                <rect x="384" y="128" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="406" cy="154" r="5" fill="#6FB4E3"/>
+                <text x="422" y="150" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Identity</text>
+                <text x="422" y="167" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Entra &#8594; OBO (per-user)</text>
+              </g>
+              <!-- pillar 2 Audit -->
+              <g>
+                <rect x="384" y="186" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="406" cy="212" r="5" fill="#00B69F"/>
+                <text x="422" y="208" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Audit</text>
+                <text x="422" y="225" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Append-only ledger</text>
+              </g>
+              <!-- pillar 3 Access -->
+              <g>
+                <rect x="384" y="244" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="406" cy="270" r="5" fill="#FAA51A"/>
+                <text x="422" y="266" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Access</text>
+                <text x="422" y="283" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Read-only &#183; default-deny</text>
+              </g>
+            </g>
+
+            <!-- arrow proxy -> Salesforce (LIVE) -->
+            <line x1="664" y1="152" x2="718" y2="152" stroke="#00B69F" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+            <text x="691" y="143" text-anchor="middle" fill="#00B69F" font-family="JetBrains Mono,monospace" font-size="10">LIVE</text>
+            <!-- Salesforce node (live in alpha) -->
+            <g>
+              <rect x="720" y="116" width="160" height="72" rx="14" fill="#0F2A3F" stroke="#00B69F" stroke-width="2"/>
+              <text x="800" y="148" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="17" font-weight="600">Salesforce</text>
+              <text x="800" y="169" text-anchor="middle" fill="#00B69F" font-family="Poppins,sans-serif" font-size="12" font-weight="500">live in alpha</text>
+            </g>
+
+            <!-- arrows proxy -> outputs (sky, BUILT) -->
+            <line x1="436" y1="316" x2="436" y2="349" stroke="#6FB4E3" stroke-width="2" marker-end="url(#arrowSky)"/>
+            <line x1="591" y1="316" x2="591" y2="349" stroke="#6FB4E3" stroke-width="2" marker-end="url(#arrowSky)"/>
+            <!-- output: 3-tier Reporting (BUILT IN-REPO) -->
+            <g>
+              <rect x="364" y="350" width="145" height="80" rx="12" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="436" y="381" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">3-tier Reporting</text>
+              <text x="436" y="403" text-anchor="middle" fill="#6FB4E3" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">BUILT IN-REPO</text>
+            </g>
+            <!-- output: Feedback loop (BUILT IN-REPO) -->
+            <g>
+              <rect x="519" y="350" width="145" height="80" rx="12" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="591" y="381" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Feedback loop</text>
+              <text x="591" y="403" text-anchor="middle" fill="#6FB4E3" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">BUILT IN-REPO</text>
+            </g>
+
+            <!-- clone arrows proxy -> stamped stubs (dashed) -->
+            <path d="M664 296 C 702 330, 700 358, 718 368" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.6"/>
+            <path d="M664 300 C 698 398, 700 416, 718 422" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.55"/>
+            <path d="M664 304 C 692 456, 700 470, 718 476" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.5"/>
+            <text x="690" y="332" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="9" opacity="0.85">clone &#8595;</text>
+
+            <!-- stamped stub: Zendesk (NEXT) -->
+            <g opacity="0.78">
+              <rect x="720" y="346" width="160" height="44" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="800" y="373" text-anchor="middle" fill="#CFD1D1" font-family="Poppins,sans-serif" font-size="13" font-weight="500">Zendesk &#183; NEXT</text>
+            </g>
+            <!-- stamped stub: NetSuite (DISCOVERY) -->
+            <g opacity="0.75">
+              <rect x="720" y="400" width="160" height="44" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="800" y="427" text-anchor="middle" fill="#CFD1D1" font-family="Poppins,sans-serif" font-size="13" font-weight="500">NetSuite &#183; DISCOVERY</text>
+            </g>
+            <!-- stamped stub: Jira (FUTURE) -->
+            <g opacity="0.55">
+              <rect x="720" y="454" width="160" height="44" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="800" y="481" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="13" font-weight="500">Jira &#183; FUTURE</text>
+            </g>
+            <!-- inherits label -->
+            <text x="800" y="524" text-anchor="middle" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="10.5">inherits: identity &#183; audit &#183; reporting &#183; feedback</text>
+          </svg>
+          <div class="arch-legend">
+            <span class="legend-live"><span class="sw" aria-hidden="true"></span> Live &#183; alpha</span>
+            <span class="legend-built"><span class="sw" aria-hidden="true"></span> Built in-repo</span>
+            <span class="legend-future"><span class="sw" aria-hidden="true"></span> Designed &#183; next / future</span>
+          </div>
+          <p class="arch-caption">Build the mold once. Every stamp inherits the governance.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONCEPT SPOTLIGHT -->
+    <section class="s" id="concept">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Concept spotlight</p>
+        <div class="spotlight reveal">
+          <span class="sl-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00B69F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+            Here's the idea
+          </span>
+          <div class="term">Adversarial security testing <span class="mono">(red-team your own connector)</span></div>
+          <p class="plain">Rather than <em>assume</em> the connector keeps each user's data separate, we tried to <strong>break that separation on purpose</strong>: 16 crafted attempts to make one user's query leak another user's data — forced row-limit bypasses, child-query tricks, injection attempts. <strong>All 16 were blocked</strong>: zero leakage, correct per-user scoping, every guardrail held. &ldquo;Demonstrated, not assumed&rdquo; is the bar we set before letting more people into the pilot — and because every future connector is stamped from this same mold, the proof carries forward to Zendesk and NetSuite.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTING SPOTLIGHT + interactive toggle -->
+    <section class="s" id="reporting">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Reporting spotlight</p>
+        <h2 class="reveal">One week of audit data, three governed files <span class="badge built">Built In-Repo</span></h2>
+        <p class="reveal">Plain-English default-deny: a report tier can only ever contain what its audience is entitled to see. The same week of connector audit data (snapshot: the 22–28 June validation window) renders into Leadership, IT, and Governance files — and the Leadership file you'd email out <strong style="color:var(--text-primary);font-weight:600;">physically does not contain</strong> the per-user rows. That's the default-deny serializer (S5): the single output contract every future connector's reports pass through. Switch tiers below and watch the per-user table appear and disappear.</p>
+        <div class="reveal">
+          <!-- ===== Interactive 3-view governed-report toggle ===== -->
+          <div class="rtoggle" id="rtoggle" aria-label="Governed report tier preview">
+            <div class="rtoggle-head">
+              <div class="rtoggle-tabs" role="tablist">
+                <button role="tab" class="rt-tab is-active" data-tier="leadership">Leadership</button>
+                <button role="tab" class="rt-tab" data-tier="it">IT</button>
+                <button role="tab" class="rt-tab" data-tier="governance">Governance</button>
+              </div>
+              <span class="rt-class" id="rt-class"></span>
+            </div>
+            <div class="rt-view" id="rt-view"></div>
+            <p class="rt-note" id="rt-note"></p>
+          </div>
+          <script>
+          (function(){
+            var WEEK = "Week of 22–28 June 2026";
+            var DATA = {
+              leadership: {
+                cls: "Internal",
+                verdict: { state:"green", text:"Pilot is healthy — usage holding/growing, connector reliable, stayed strictly read-only.", ask:"Recommend opening the next 16 seats." },
+                stats: [
+                  {k:"Answers this week", v:"403"},
+                  {k:"Time saved (wk)", v:"525 min"},
+                  {k:"Active users", v:"10"},
+                  {k:"New testers", v:"5"},
+                  {k:"Cumulative answers", v:"789"},
+                  {k:"Cumulative time saved", v:"1,050 min"}
+                ],
+                useCases: [["Pipeline & account research",304],["Support & contact lookup",34],["Lead qualification",4]],
+                perUser: null
+              },
+              it: {
+                cls: "Confidential · do not forward",
+                kpis: [
+                  {k:"Success", v:"391 / 403"},
+                  {k:"Denied (governed)", v:"6"},
+                  {k:"Errors", v:"6"},
+                  {k:"Latency p50 / p95", v:"2.4s / 5.1s"},
+                  {k:"Secret expiry", v:"153 days"}
+                ],
+                perUser: [
+                  {u:"U-94c03293", calls:132, ok:131, err:1},
+                  {u:"U-74b97def", calls:74, ok:72, err:2},
+                  {u:"U-35962524", calls:56, ok:54, err:0},
+                  {u:"U-d3d6e5ae", calls:48, ok:45, err:3},
+                  {u:"U-1f7a2b80", calls:39, ok:39, err:0}
+                ]
+              },
+              governance: {
+                cls: "Confidential · Governance & Security",
+                audit: { pct:100, band:"green" },
+                anomalies: [
+                  {k:"Denial spike", s:"ok", d:"7 denials; no spike vs prior max 6"},
+                  {k:"Error cluster", s:"flag", d:"errors concentrated in ToolError (6/6)"},
+                  {k:"Unusual object", s:"flag", d:"14 objects absent from trailing 3-week baseline"},
+                  {k:"New sensitive principal", s:"defer", d:"insufficient baseline at pilot scale"},
+                  {k:"Off-hours", s:"defer", d:"deferred pending timezone decision"}
+                ],
+                coverage:"1,003 audited calls reconciled from Cosmos · 0 duplicates · integrity hash verified"
+              }
+            };
+            var esc=function(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});};
+            function perUserBlock(rows){
+              if(!rows) return '<div class="rt-locked">🔒 Per-user activity is <b>not in this file</b>. The Leadership report literally omits it — the serializer never emits per-user rows into this tier.</div>';
+              var body=rows.map(function(r){return '<tr><td class="rt-tok">'+esc(r.u)+'</td><td>'+r.calls+'</td><td>'+r.ok+'</td><td>'+r.err+'</td></tr>';}).join('');
+              return '<div class="rt-pu"><div class="rt-pu-h">Per-user activity <span class="rt-pseudo">pseudonyms only — never real identities</span></div>'+
+                '<table class="rt-table"><thead><tr><th>User</th><th>Calls</th><th>OK</th><th>Err</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+            }
+            function render(tier){
+              var d=DATA[tier], h='';
+              document.getElementById('rt-class').textContent=d.cls;
+              document.getElementById('rt-class').className='rt-class rt-class-'+tier;
+              if(tier==='leadership'){
+                h+='<div class="rt-verdict rt-green"><b>GREEN</b> — '+esc(d.verdict.text)+'<div class="rt-ask">Ask: '+esc(d.verdict.ask)+'</div></div>';
+                h+='<div class="rt-stats">'+d.stats.map(function(s){return '<div class="rt-stat"><span class="rt-v">'+esc(s.v)+'</span><span class="rt-k">'+esc(s.k)+'</span></div>';}).join('')+'</div>';
+                h+='<div class="rt-uc"><div class="rt-sub">What people used it for</div>'+d.useCases.map(function(u){return '<div class="rt-ucrow"><span>'+esc(u[0])+'</span><span class="rt-ucn">'+u[1]+'</span></div>';}).join('')+'</div>';
+                h+=perUserBlock(null);
+              } else if(tier==='it'){
+                h+='<div class="rt-kpis">'+d.kpis.map(function(s){return '<div class="rt-kpi"><span class="rt-v">'+esc(s.v)+'</span><span class="rt-k">'+esc(s.k)+'</span></div>';}).join('')+'</div>';
+                h+=perUserBlock(d.perUser);
+              } else {
+                h+='<div class="rt-audit rt-green"><b>Audit completeness '+d.audit.pct+'%</b> — every governed call reconciled and accounted for.</div>';
+                h+='<div class="rt-anoms">'+d.anomalies.map(function(a){return '<div class="rt-anom rt-'+a.s+'"><span class="rt-adot"></span><b>'+esc(a.k)+'</b> — '+esc(a.d)+'</div>';}).join('')+'</div>';
+                h+='<div class="rt-cov">'+esc(d.coverage)+'</div>';
+                h+=perUserBlock(DATA.it.perUser);
+              }
+              var view=document.getElementById('rt-view');
+              view.style.opacity=0;
+              setTimeout(function(){ view.innerHTML=h; view.style.opacity=1; },120);
+              document.getElementById('rt-note').textContent=WEEK+' · tier = '+tier.charAt(0).toUpperCase()+tier.slice(1)+' · classification: '+d.cls;
+            }
+            var tabs=document.querySelectorAll('#rtoggle .rt-tab');
+            tabs.forEach(function(t){ t.addEventListener('click',function(){ tabs.forEach(function(x){x.classList.remove('is-active');x.setAttribute('aria-selected','false');}); t.classList.add('is-active'); t.setAttribute('aria-selected','true'); render(t.dataset.tier); }); });
+            render('leadership');
+          })();
+          </script>
+        </div>
+        <p class="rt-caption reveal">Same week of audit data. Three files. The Leadership file you'd email out <strong>physically does not contain</strong> the per-user rows — that's the default-deny serializer (S5), the one output contract every future connector's reports pass through.</p>
+      </div>
+    </section>
+
+    <!-- FEEDBACK SPOTLIGHT + loop diagram -->
+    <section class="s" id="feedback">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Feedback spotlight</p>
+        <h2 class="reveal">The feedback loop, end to end <span class="badge built">Built In-Repo</span></h2>
+        <p class="reveal">Testers give feedback inside the chat with one tap — identity auto-filled, no form to hunt for. It lands in a system of record and can be pulled on demand. Three of the four legs are built today; the instant alert is the next step — and every future connector inherits the whole loop.</p>
+        <div class="floop reveal">
+          <div class="floop-node">
+            <div class="floop-step">&#9312; Capture <span class="badge built">Built</span></div>
+            <h4>In-chat, one tap</h4>
+            <p>Identity auto-filled — no form to find.</p>
+          </div>
+          <span class="floop-arrow" aria-hidden="true">&rarr;</span>
+          <div class="floop-node">
+            <div class="floop-step">&#9313; Store <span class="badge built">Built</span></div>
+            <h4>Cosmos <span style="font-family:var(--font-mono);">feedback</span></h4>
+            <p>The system of record — every note retained.</p>
+          </div>
+          <span class="floop-arrow" aria-hidden="true">&rarr;</span>
+          <div class="floop-node">
+            <div class="floop-step">&#9314; Pull <span class="badge built">Built</span></div>
+            <h4><span style="font-family:var(--font-mono);">read_feedback</span></h4>
+            <p>On demand, in the operator's own session, under their own identity.</p>
+          </div>
+          <span class="floop-arrow" aria-hidden="true">&rarr;</span>
+          <div class="floop-node is-next">
+            <div class="floop-step">&#9315; Alert <span class="badge next">Designed · Next</span></div>
+            <h4>Auto-alert</h4>
+            <p>Slack / email the moment new feedback lands. Designed, not yet built.</p>
+          </div>
+        </div>
+        <p class="rt-caption reveal">Capture, store, and pull are built today; the instant alert is the next step — and every future connector inherits the whole loop.</p>
+      </div>
+    </section>
+
+    <!-- WORKSTREAMS / OUTPUTS -->
+    <section class="s" id="outputs">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Workstreams</p>
+        <h2 class="reveal">The seven moving parts — what's built, what's next</h2>
+        <div class="ws-grid">
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Salesforce connector (#1)</h3><span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span></div>
+            <p>FastMCP v3 governance proxy on ACA, released for alpha testing. This week: hardened by a real alpha cycle (rev 0000020) and security-proven — the adversarial boundary test passed 16/16 with zero leakage; acceptance re-test 7/8 green.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Reporting + gated hosting</h3><span class="badge built">Built In-Repo</span></div>
+            <p>In-repo pipeline for 3 audience tiers (Leadership/IT/Governance); default-deny serializer, HMAC pseudonyms. Hosted distribution — scheduled ACA Job + gated SWA + Entra groups — is <span class="badge next">Designed · Next</span>.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Zendesk connector (#2)</h3><span class="badge next">Next</span></div>
+            <p>The next connector; the goal is harvesting the framework from the #1-vs-#2 diff, not "another integration." Green-light criteria pending — the #2-vs-#3 sequencing is now an open call.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>NetSuite connector (#3)</h3><span class="badge next">Discovery</span></div>
+            <p>In discovery as of 1 July: NetSuite's administrators aligned on the governed model — per-user delegated sign-in, read-only standard tools. Architecture ADR written; Phase-0 decision after the week-of-6-July follow-up.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Shared template + reporting package</h3><span class="badge next">Next · deferred</span></div>
+            <p>fourth-connector-template + fourth-mcp-reporting; deliberately deferred until connector #2 validates the abstraction.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Composability + orchestration</h3><span class="badge next">Future</span></div>
+            <p>One user ask spans Salesforce + Zendesk + NetSuite + Jira under per-user identity and unified audit.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Developer experience surface</h3><span class="badge next">Future</span></div>
+            <p>Connectors should become visible, useful platform leverage: examples, tutorials, playbooks — not internal plumbing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPOSABILITY WORKED EXAMPLE -->
+    <section class="s">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The payoff</p>
+        <h2 class="reveal">What the ecosystem unlocks (impossible with point integrations)</h2>
+        <div class="compose reveal">
+          <p class="compose-ask">A regional manager asks Claude: "Which of my Tier-1 accounts are at risk right now — and draft the save-play?"</p>
+          <p style="max-width:none;margin-bottom:1.2rem;">One governed turn. One identity. Four legs — each scoped to this manager's own permissions:</p>
+          <div class="legs">
+            <div class="leg">
+              <span class="leg-sys">Salesforce <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span></span>
+              <span class="leg-desc">At-risk accounts in this manager's territory + renewal dates — only the fields this manager may see (per-user FLS).</span>
+            </div>
+            <div class="leg">
+              <span class="leg-sys">Zendesk <span class="badge next">Next</span></span>
+              <span class="leg-desc">Each account's open P1 tickets + support-load trend (org-scoped).</span>
+            </div>
+            <div class="leg">
+              <span class="leg-sys">NetSuite <span class="badge next">Discovery</span></span>
+              <span class="leg-desc">AR aging &gt;60 days under this user's finance role — not a god-mode account.</span>
+            </div>
+            <div class="leg">
+              <span class="leg-sys">Fourth labor telemetry <span class="badge next">Future</span></span>
+              <span class="leg-desc">Is the at-risk site also understaffed vs forecast? The signal no external vendor has.</span>
+            </div>
+          </div>
+          <p class="compose-join">Joined by an <b>explicit, confidence-scored entity match</b> that degrades honestly — "matched 0.7 — confirm?" — never a silent wrong join.</p>
+          <div class="compose-out">
+            <div class="co"><b>One Leadership-tier brief</b> through the default-deny serializer — a field this manager isn't entitled to <em>cannot</em> appear.</div>
+            <div class="co"><b>One signed receipt</b> — this human, this time, read these records across four systems, and mutated nothing.</div>
+          </div>
+          <p class="compose-kicker">A point-integration competitor gets three disconnected dumps, three identities, no join key.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOCUS / PROOF / DECISION -->
+    <section class="s">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Where it stands</p>
+        <h2 class="reveal">Focus, proof, and the ask</h2>
+        <div class="focus-grid">
+          <div class="focus-card reveal">
+            <div class="fc-label">Current focus</div>
+            <p>Widen the Marketing alpha (connector); gated hosting + scheduled report job (ecosystem); verify the NetSuite auth model hands-on (discovery).</p>
+          </div>
+          <div class="focus-card reveal">
+            <div class="fc-label">Next proof point</div>
+            <p>Gated SWA + per-audience Entra groups + scheduled report ACA Job; NetSuite Phase-0 architecture decision.</p>
+          </div>
+          <div class="focus-card decision reveal">
+            <div class="fc-label">Sponsor decision</div>
+            <p>Confirm reporting hosting topology; green-light Zendesk as connector #2 — or make the #2-vs-#3 sequencing call.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RISKS -->
+    <section class="s">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Risks</p>
+        <h2 class="reveal">What we're watching</h2>
+        <div class="chips reveal">
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> IT-grant bottleneck</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Premature abstraction</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> NetSuite auth model unproven (Phase-0)</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Upstream MCP / tool-list churn</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Portal disconnect</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEARN MORE -->
+    <section class="s" style="border-bottom:none;">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Learn more</p>
+        <h2 class="reveal">Go deeper</h2>
+        <div class="links-grid">
+          <a class="link-card feature reveal" href="https://rev4nchist.github.io/ai-enablement-decks/governed-ai-access/" target="_blank" rel="noopener">
+            <span class="lc-text">Governed AI Access deck</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/38776fd7ac8281c7a286ce6ae478b6be" target="_blank" rel="noopener">
+            <span class="lc-text">Connector Ecosystem Master Plan</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/34076fd7ac82805dac89dd26476e2c47" target="_blank" rel="noopener">
+            <span class="lc-text">FourthOS Cockpit</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/e29dd1c4e6a64e39a45473525a765e5e" target="_blank" rel="noopener">
+            <span class="lc-text">Leadership Portfolio Dashboard</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/38776fd7ac8281c7a286ce6ae478b6be" target="_blank" rel="noopener">
+            <span class="lc-text">Ecosystem first-principles strategy</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIER PAGER -->
+    <section class="s" style="border-bottom:none; padding-top:0;">
+      <div class="wrap">
+        <nav class="pager" aria-label="Tier navigation">
+          <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">&larr; The Briefing</a>
+          <a href="/ai-enablement-decks/fourthos/2026-07-01/">Back to Hub &rarr;</a>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot-grid">
+      <span class="pwr">Powered by <span class="iq">iQ</span></span>
+      <span class="mid">FourthOS &middot; Principal AI Mandate</span>
+      <span class="gen">Generated 2026-07-01</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // scroll progress
+      var bar = document.getElementById('progress');
+      function onScroll() {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+        bar.style.width = p + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // reveal on scroll
+      var items = document.querySelectorAll('.reveal');
+      if (reduce || !('IntersectionObserver' in window)) {
+        items.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      items.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+
+  <script>
+    /* Data-driven week switcher (shared shell) */
+    (function () {
+      var sel = document.getElementById('weekSwitch');
+      if (!sel) return;
+      var root = location.pathname.split('/fourthos/')[0];
+      var current = "2026-07-01";
+      fetch(root + '/decks.json', { cache: 'no-cache' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var weeks = (data.decks || []).filter(function (d) { return d.section === 'sponsor-updates' && d.date; })
+            .sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+          if (!weeks.length) return;
+          sel.innerHTML = '';
+          weeks.forEach(function (w) {
+            var o = document.createElement('option'); o.value = w.date;
+            o.textContent = (w.meta || w.date) + (w.date === current ? ' (current)' : '');
+            if (w.date === current) o.selected = true; sel.appendChild(o);
+          });
+        }).catch(function () {});
+      sel.addEventListener('change', function () { if (sel.value && sel.value !== current) location.href = root + '/fourthos/' + sel.value + '/'; });
+    })();
+  </script>
+</body>
+</html>
