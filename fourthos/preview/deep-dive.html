@@ -81,6 +81,16 @@
       pointer-events:none; color:var(--accent); font-size:0.7rem;
     }
 
+    /* ===== hover section nav (tab ToC) ===== */
+    .tab-wrap { position:relative; display:inline-flex; }
+    .tab-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%); min-width:225px; display:none; flex-direction:column; gap:0.1rem; z-index:60; background:rgba(5,21,38,0.97); backdrop-filter:blur(14px); border:1px solid var(--border-accent); border-radius:12px; padding:0.55rem; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
+    .tab-wrap:hover .tab-menu, .tab-wrap:focus-within .tab-menu { display:flex; }
+    .tab-menu .mh { font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); padding:0.3rem 0.7rem 0.2rem; }
+    .tab-menu a { display:block; font-size:0.82rem; font-weight:500; color:var(--text-secondary); padding:0.4rem 0.7rem; border-radius:8px; white-space:nowrap; transition:color .15s, background .15s; }
+    .tab-menu a:hover { color:var(--text-primary); background:rgba(111,180,227,0.10); }
+    #thesis, #payoff { scroll-margin-top:80px; }
+    @media (max-width:720px) { .tab-menu { display:none !important; } }
+
     /* ===================== TIER PAGER ===================== */
     .pager { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
     .pager a {
@@ -312,9 +322,38 @@
       </nav>
       <div class="topbar-right">
         <nav class="tabs" aria-label="Sections">
-          <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
-          <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
-          <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+          <div class="tab-wrap">
+            <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
+            <div class="tab-menu" aria-label="Hub sections">
+              <span class="mh">Hub</span>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/#glance">This week, for you</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/#next">Where to next</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/#seeds">What this seeds</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
+            <div class="tab-menu" aria-label="Briefing sections">
+              <span class="mh">The Briefing</span>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#sponsor-actions">For your decision</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio">Active portfolio</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#risk-radar">Risk radar</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#outcomes">Outcomes &amp; evidence</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+            <div class="tab-menu" aria-label="Deep Dive sections">
+              <span class="mh">Deep Dive</span>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#thesis">The thesis</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#architecture">Architecture</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#concept">Concept spotlight</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#reporting">Governed reporting</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#feedback">Feedback loop</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#outputs">Workstreams</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#payoff">The payoff</a>
+            </div>
+          </div>
         </nav>
         <label class="wkswitch">
           <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
@@ -330,7 +369,7 @@
     <div class="wrap">
       <p class="eyebrow">Flagship Deep Dive &middot; Tier 2</p>
       <h1>Flagship Deep Dive — <span class="grad">Salesforce Connector</span></h1>
-      <p class="state">Active / Green — live in alpha, hardened by real pilot use, and security-proven: 16 deliberate cross-user leak attempts, all blocked. The ecosystem it molds is growing: NetSuite entered discovery as connector #3.</p>
+      <p class="state">Active / Green — live in alpha, hardened by real pilot use, and boundary-tested: 16 deliberate cross-user leak attempts, all blocked. The ecosystem stamped from it is growing: NetSuite entered discovery as connector #3.</p>
       <div class="hero-meta">
         <span class="rag rag-green" role="status" aria-label="Flagship health: Green"><span class="pip" aria-hidden="true"></span> Health: Green</span>
         <span class="updated">Updated 1 July 2026 &middot; for Carly &amp; Christian</span>
@@ -340,7 +379,7 @@
 
   <main>
     <!-- WHY / OUTCOME -->
-    <section class="s">
+    <section class="s" id="thesis">
       <div class="wrap">
         <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The thesis</p>
         <h2 class="reveal">The connector is the <span style="color:var(--teal);">mold</span>.</h2>
@@ -367,7 +406,7 @@
         <div class="arch-frame reveal">
           <svg class="arch-svg" viewBox="0 0 1000 560" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
             <title id="archTitle">FourthOS connector inheritance architecture</title>
-            <desc id="archDesc">You sign in with Microsoft; Claude connects through a live FastMCP v3 governance proxy on Azure that enforces per-user identity via Entra and on-behalf-of token exchange, an append-only audit ledger, and read-only default-deny access. The proxy brokers a live-in-alpha connection to Salesforce. Below it sit two built-in-repo outputs: a three-tier reporting engine and a feedback loop. Dashed clone arrows show three future stamped connectors — Zendesk next, NetSuite in discovery, Jira future — each inheriting identity, audit, reporting, and feedback.</desc>
+            <desc id="archDesc">You sign in with Microsoft; Claude connects through a live FastMCP v3 governance proxy on Azure that enforces your own per-user identity, an append-only audit ledger, and read-only default-deny access. The proxy brokers a live-in-alpha connection to Salesforce. Below it sit two built-in-repo outputs: a three-tier reporting engine and a feedback loop. Dashed clone arrows show three future stamped connectors — Zendesk next, NetSuite in discovery, Jira future — each inheriting identity, audit, reporting, and feedback.</desc>
             <defs>
               <linearGradient id="proxyGrad" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stop-color="#00B69F"/>
@@ -407,7 +446,7 @@
                 <rect x="384" y="128" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
                 <circle cx="406" cy="154" r="5" fill="#6FB4E3"/>
                 <text x="422" y="150" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Identity</text>
-                <text x="422" y="167" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Entra &#8594; OBO (per-user)</text>
+                <text x="422" y="167" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Your own Microsoft sign-in (per-user)</text>
               </g>
               <!-- pillar 2 Audit -->
               <g>
@@ -522,18 +561,18 @@
           </div>
           <script>
           (function(){
-            var WEEK = "Week of 22–28 June 2026";
+            var WEEK = "Week of 22–28 June 2026 · validation-window snapshot";
             var DATA = {
               leadership: {
                 cls: "Internal",
-                verdict: { state:"green", text:"Pilot is healthy — usage holding/growing, connector reliable, stayed strictly read-only.", ask:"Recommend opening the next 16 seats." },
+                verdict: { state:"green", text:"Pilot is healthy — usage holding/growing, connector reliable, stayed strictly read-only.", ask:"No ask inside this demo — the live decision is report hosting (Decision 01 on the Briefing)." },
                 stats: [
-                  {k:"Answers this week", v:"403"},
-                  {k:"Time saved (wk)", v:"525 min"},
+                  {k:"Governed calls (wk)", v:"403"},
+                  {k:"Est. time saved (wk)", v:"525 min"},
                   {k:"Active users", v:"10"},
                   {k:"New testers", v:"5"},
-                  {k:"Cumulative answers", v:"789"},
-                  {k:"Cumulative time saved", v:"1,050 min"}
+                  {k:"Cumulative calls", v:"789"},
+                  {k:"Cumulative est. time saved", v:"1,050 min"}
                 ],
                 useCases: [["Pipeline & account research",304],["Support & contact lookup",34],["Lead qualification",4]],
                 perUser: null
@@ -559,20 +598,20 @@
                 cls: "Confidential · Governance & Security",
                 audit: { pct:100, band:"green" },
                 anomalies: [
-                  {k:"Denial spike", s:"ok", d:"7 denials; no spike vs prior max 6"},
-                  {k:"Error cluster", s:"flag", d:"errors concentrated in ToolError (6/6)"},
+                  {k:"Denial spike", s:"ok", d:"6 denials; in line with the prior week's max of 6"},
+                  {k:"Error cluster", s:"flag", d:"all 6 errors share one cause type — clustered, not scattered"},
                   {k:"Unusual object", s:"flag", d:"14 objects absent from trailing 3-week baseline"},
                   {k:"New sensitive principal", s:"defer", d:"insufficient baseline at pilot scale"},
                   {k:"Off-hours", s:"defer", d:"deferred pending timezone decision"}
                 ],
-                coverage:"1,003 audited calls reconciled from Cosmos · 0 duplicates · integrity hash verified"
+                coverage:"403 governed calls reconciled from the system of record · 0 duplicates · integrity hash verified"
               }
             };
             var esc=function(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});};
             function perUserBlock(rows){
               if(!rows) return '<div class="rt-locked">🔒 Per-user activity is <b>not in this file</b>. The Leadership report literally omits it — the serializer never emits per-user rows into this tier.</div>';
               var body=rows.map(function(r){return '<tr><td class="rt-tok">'+esc(r.u)+'</td><td>'+r.calls+'</td><td>'+r.ok+'</td><td>'+r.err+'</td></tr>';}).join('');
-              return '<div class="rt-pu"><div class="rt-pu-h">Per-user activity <span class="rt-pseudo">pseudonyms only — never real identities</span></div>'+
+              return '<div class="rt-pu"><div class="rt-pu-h">Per-user activity — top 5 of 10 users <span class="rt-pseudo">pseudonyms only — never real identities</span></div>'+
                 '<table class="rt-table"><thead><tr><th>User</th><th>Calls</th><th>OK</th><th>Err</th></tr></thead><tbody>'+body+'</tbody></table></div>';
             }
             function render(tier){
@@ -604,7 +643,7 @@
           })();
           </script>
         </div>
-        <p class="rt-caption reveal">Same week of audit data. Three files. The Leadership file you'd email out <strong>physically does not contain</strong> the per-user rows — that's the default-deny serializer (S5), the one output contract every future connector's reports pass through.</p>
+        <p class="rt-caption reveal">You just watched the safety mechanism work. The only thing between these files and your teams is the hosting decision — <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#action-01" style="color:var(--accent);border-bottom:1px solid rgba(111,180,227,0.4);">Decision 01 on the Briefing</a>.</p>
       </div>
     </section>
 
@@ -651,11 +690,11 @@
         <div class="ws-grid">
           <div class="ws-card reveal">
             <div class="ws-head"><h3>Salesforce connector (#1)</h3><span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span></div>
-            <p>FastMCP v3 governance proxy on ACA, released for alpha testing. This week: hardened by a real alpha cycle (rev 0000020) and security-proven — the adversarial boundary test passed 16/16 with zero leakage; acceptance re-test 7/8 green.</p>
+            <p>FastMCP v3 governance proxy on Azure, released for alpha testing. This week: hardened by a real alpha cycle (deployment 0000020) and boundary-tested — 16/16 adversarial attempts blocked with zero leakage; acceptance re-test 7/8 green.</p>
           </div>
           <div class="ws-card reveal">
             <div class="ws-head"><h3>Reporting + gated hosting</h3><span class="badge built">Built In-Repo</span></div>
-            <p>In-repo pipeline for 3 audience tiers (Leadership/IT/Governance); default-deny serializer, HMAC pseudonyms. Hosted distribution — scheduled ACA Job + gated SWA + Entra groups — is <span class="badge next">Designed · Next</span>.</p>
+            <p>In-repo pipeline for 3 audience tiers (Leadership/IT/Governance); reports can only ever contain what their audience is entitled to see. Hosted distribution — an access-gated report site plus a scheduled report job — is <span class="badge next">Designed · Next</span>.</p>
           </div>
           <div class="ws-card reveal">
             <div class="ws-head"><h3>Zendesk connector (#2)</h3><span class="badge next">Next</span></div>
@@ -663,7 +702,7 @@
           </div>
           <div class="ws-card reveal">
             <div class="ws-head"><h3>NetSuite connector (#3)</h3><span class="badge next">Discovery</span></div>
-            <p>In discovery as of 1 July: NetSuite's administrators aligned on the governed model — per-user delegated sign-in, read-only standard tools. Architecture ADR written; Phase-0 decision after the week-of-6-July follow-up.</p>
+            <p>In discovery as of 1 July: NetSuite's administrators aligned on the governed model — each person signs in as themselves, standard tools read-only. Architecture decision record written; Phase-0 decision after the week-of-6-July follow-up.</p>
           </div>
           <div class="ws-card reveal">
             <div class="ws-head"><h3>Shared template + reporting package</h3><span class="badge next">Next · deferred</span></div>
@@ -682,7 +721,7 @@
     </section>
 
     <!-- COMPOSABILITY WORKED EXAMPLE -->
-    <section class="s">
+    <section class="s" id="payoff">
       <div class="wrap wrap-wide">
         <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The payoff</p>
         <h2 class="reveal">What the ecosystem unlocks (impossible with point integrations)</h2>
@@ -725,15 +764,15 @@
         <div class="focus-grid">
           <div class="focus-card reveal">
             <div class="fc-label">Current focus</div>
-            <p>Widen the Marketing alpha (connector); gated hosting + scheduled report job (ecosystem); verify the NetSuite auth model hands-on (discovery).</p>
+            <p>Widen the Marketing alpha (connector); ship governed reports to real audiences (ecosystem); verify NetSuite per-user sign-in hands-on (discovery).</p>
           </div>
           <div class="focus-card reveal">
             <div class="fc-label">Next proof point</div>
-            <p>Gated SWA + per-audience Entra groups + scheduled report ACA Job; NetSuite Phase-0 architecture decision.</p>
+            <p>The access-gated report site with per-audience security groups, plus the scheduled report job; NetSuite's Phase-0 architecture decision.</p>
           </div>
           <div class="focus-card decision reveal">
             <div class="fc-label">Sponsor decision</div>
-            <p>Confirm reporting hosting topology; green-light Zendesk as connector #2 — or make the #2-vs-#3 sequencing call.</p>
+            <p>Decide where governed reports are hosted; green-light Zendesk as connector #2 — or make the #2-vs-#3 sequencing call.</p>
           </div>
         </div>
       </div>
@@ -745,11 +784,11 @@
         <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Risks</p>
         <h2 class="reveal">What we're watching</h2>
         <div class="chips reveal">
-          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> IT-grant bottleneck</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> IT access-group bottleneck</span>
           <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Premature abstraction</span>
-          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> NetSuite auth model unproven (Phase-0)</span>
-          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Upstream MCP / tool-list churn</span>
-          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Portal disconnect</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> NetSuite sign-in model unproven (Phase-0)</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Upstream vendor API churn</span>
+          <span class="chip-risk"><span class="pip" aria-hidden="true"></span> Developer-portal disconnect</span>
         </div>
       </div>
     </section>
@@ -776,7 +815,7 @@
             <span class="lc-text">Leadership Portfolio Dashboard</span>
             <span class="arrow" aria-hidden="true">&#8599;</span>
           </a>
-          <a class="link-card reveal" href="https://app.notion.com/p/38776fd7ac8281c7a286ce6ae478b6be" target="_blank" rel="noopener">
+          <a class="link-card reveal" href="https://app.notion.com/p/38776fd7ac828168a516e7af38fa729c" target="_blank" rel="noopener">
             <span class="lc-text">Ecosystem first-principles strategy</span>
             <span class="arrow" aria-hidden="true">&#8599;</span>
           </a>

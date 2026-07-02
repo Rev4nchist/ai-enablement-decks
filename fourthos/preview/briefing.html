@@ -80,6 +80,15 @@
       pointer-events:none; color:var(--accent); font-size:0.7rem;
     }
 
+    /* ===== hover section nav (tab ToC) ===== */
+    .tab-wrap { position:relative; display:inline-flex; }
+    .tab-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%); min-width:225px; display:none; flex-direction:column; gap:0.1rem; z-index:60; background:rgba(5,21,38,0.97); backdrop-filter:blur(14px); border:1px solid var(--border-accent); border-radius:12px; padding:0.55rem; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
+    .tab-wrap:hover .tab-menu, .tab-wrap:focus-within .tab-menu { display:flex; }
+    .tab-menu .mh { font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); padding:0.3rem 0.7rem 0.2rem; }
+    .tab-menu a { display:block; font-size:0.82rem; font-weight:500; color:var(--text-secondary); padding:0.4rem 0.7rem; border-radius:8px; white-space:nowrap; transition:color .15s, background .15s; }
+    .tab-menu a:hover { color:var(--text-primary); background:rgba(111,180,227,0.10); }
+    @media (max-width:720px) { .tab-menu { display:none !important; } }
+
     /* ===================== TIER PAGER ===================== */
     .pager { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
     .pager a {
@@ -122,17 +131,23 @@
     .pulse-top { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; margin-bottom:1.75rem; }
     .pulse-top .updated { font-size:0.85rem; color:var(--text-muted); }
 
-    .stat-tiles { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; }
+    .stat-tiles { display:grid; grid-template-columns:1fr 1fr; gap:0.9rem; }
     .tile {
+      display:flex; align-items:flex-start; gap:1.1rem;
       background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
-      padding:1.15rem 1.15rem 1.3rem; backdrop-filter:blur(10px);
+      padding:1rem 1.25rem; backdrop-filter:blur(10px);
     }
     .tile .t-label {
-      font-size:0.66rem; font-weight:600; letter-spacing:0.13em; text-transform:uppercase;
-      color:var(--accent); margin-bottom:0.6rem; display:flex; align-items:center; gap:0.4rem;
+      flex:0 0 150px; font-size:0.66rem; font-weight:600; letter-spacing:0.13em; text-transform:uppercase;
+      color:var(--accent); display:flex; align-items:center; gap:0.4rem; padding-top:0.25rem;
     }
     .tile .t-label .b { width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0; }
-    .tile .t-val { font-size:0.92rem; color:var(--text-primary); font-weight:500; line-height:1.4; }
+    .tile .t-val { font-size:0.95rem; color:var(--text-primary); font-weight:500; line-height:1.45; }
+    .tile.wide { grid-column:1/-1; display:block; }
+    .tile.wide .t-label { flex:none; padding-top:0; margin-bottom:0.75rem; }
+    .tile.wide ul { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:0.55rem 1.75rem; }
+    .tile.wide li { display:flex; gap:0.6rem; align-items:flex-start; font-size:0.93rem; color:var(--text-primary); font-weight:500; line-height:1.45; }
+    .tile.wide li .tick { color:var(--teal); font-weight:700; flex-shrink:0; }
 
     /* ---------- generic section ---------- */
     section.block { padding:clamp(2.75rem,5vw,4rem) 0; border-bottom:1px solid var(--border); }
@@ -166,6 +181,8 @@
       border-radius:999px; background:var(--bg-tertiary); border:1px solid var(--border); color:var(--text-secondary);
     }
     .chip-owner { border-color:rgba(0,182,159,0.3); color:var(--teal); background:rgba(0,182,159,0.08); }
+    .action-card.fyi { border-style:dashed; background:var(--bg-secondary); }
+    .action-card .row .v a:hover { color:var(--text-primary); }
 
     /* ---------- active portfolio ---------- */
     .proj-card { background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:clamp(1.5rem,3vw,2rem); backdrop-filter:blur(10px); position:relative; overflow:hidden; }
@@ -239,15 +256,20 @@
     .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
 
     /* ---------- deep-link anchor offset (sticky top bar) ---------- */
-    #sponsor-actions, #portfolio, #risk-radar, #outcomes { scroll-margin-top:80px; }
+    #sponsor-actions, #portfolio, #risk-radar, #outcomes, #action-01, #action-02, #action-03 { scroll-margin-top:80px; }
 
     /* ---------- reveal ---------- */
     .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
     .reveal.visible { opacity:1; transform:none; }
 
     @media (max-width:900px) {
-      .stat-tiles { grid-template-columns:repeat(2,1fr); }
+      .stat-tiles { grid-template-columns:1fr; }
+      .tile.wide ul { grid-template-columns:1fr; }
       .action-grid, .proj-body, .risk-grid, .outcome-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:560px) {
+      .tile { flex-direction:column; gap:0.4rem; }
+      .tile .t-label { flex:none; padding-top:0; }
     }
     @media (max-width:720px) {
       .crumbs { width:100%; order:3; }
@@ -288,9 +310,38 @@
       </nav>
       <div class="topbar-right">
         <nav class="tabs" aria-label="Sections">
-          <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
-          <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
-          <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+          <div class="tab-wrap">
+            <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
+            <div class="tab-menu" aria-label="Hub sections">
+              <span class="mh">Hub</span>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/#glance">This week, for you</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/#next">Where to next</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/#seeds">What this seeds</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
+            <div class="tab-menu" aria-label="Briefing sections">
+              <span class="mh">The Briefing</span>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#sponsor-actions">For your decision</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio">Active portfolio</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#risk-radar">Risk radar</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#outcomes">Outcomes &amp; evidence</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+            <div class="tab-menu" aria-label="Deep Dive sections">
+              <span class="mh">Deep Dive</span>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#thesis">The thesis</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#architecture">Architecture</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#concept">Concept spotlight</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#reporting">Governed reporting</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#feedback">Feedback loop</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#outputs">Workstreams</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#payoff">The payoff</a>
+            </div>
+          </div>
         </nav>
         <label class="wkswitch">
           <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
@@ -307,10 +358,10 @@
       <p class="eyebrow">The Briefing &middot; Tier 1 Dashboard</p>
       <h1>Portfolio Pulse</h1>
       <div class="pulse-top">
-        <span class="rag rag-yellow" role="status" aria-label="Overall portfolio health: Yellow">
+        <a class="rag rag-yellow" href="#sponsor-actions" role="status" aria-label="Overall portfolio health: Yellow — see the decisions below">
           <span class="pip" aria-hidden="true"></span> Overall health: Yellow
-        </span>
-        <span class="updated">Updated 1 July 2026 &middot; for Carly &amp; Christian</span>
+        </a>
+        <span class="updated">Yellow because the engineering is green and the bottleneck is the decisions below — reporting is built but unshipped pending the hosting call. &middot; Updated 1 July 2026, for Carly &amp; Christian</span>
       </div>
       <div class="stat-tiles">
         <div class="tile">
@@ -319,19 +370,24 @@
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Biggest decision</div>
-          <div class="t-val">Confirm reporting hosting topology and green-light Zendesk as connector #2 — plus a sequencing call as NetSuite #3 accelerates</div>
+          <div class="t-val">Approve where the stakeholder reports will live — 2 more calls in For Your Decision below</div>
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Biggest risk</div>
-          <div class="t-val">IT-grant / Entra group bottleneck could stall gated reporting distribution</div>
+          <div class="t-val">Waiting on IT to create the access groups that gate report distribution</div>
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Next proof point</div>
-          <div class="t-val">Widen the Marketing alpha; stand up the gated SWA + scheduled report job; prove the NetSuite auth model (Phase-0)</div>
+          <div class="t-val">Widen the Marketing alpha; stand up the access-gated report site + scheduled report job; verify NetSuite sign-in hands-on</div>
         </div>
-        <div class="tile">
-          <div class="t-label"><span class="b" aria-hidden="true"></span> What changed</div>
-          <div class="t-val">Hardening from real alpha use shipped and re-validated (rev 0000020); an adversarial security boundary test passed 16/16 with zero leakage; the portfolio split into product vs program; NetSuite entered discovery as connector #3 after admin alignment.</div>
+        <div class="tile wide">
+          <div class="t-label"><span class="b" aria-hidden="true"></span> What changed this week</div>
+          <ul>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Adversarial security test passed 16/16 — zero data leakage</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Hardening from real alpha use — fixed, redeployed, and re-validated within the week</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> NetSuite entered discovery as connector #3 after admin alignment</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Portfolio split: connector product (Green) vs ecosystem program (Yellow)</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -346,36 +402,39 @@
             <span class="ico" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="#FAA51A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
             </span>
-            <h2>Sponsor Action Required</h2>
+            <h2>For Your Decision</h2>
           </div>
           <div class="action-grid">
-            <div class="action-card">
-              <div class="num">ACTION 01 &middot; Sponsor unlock</div>
-              <h3>Ship the built reporting mechanism to real Leadership / IT / Governance audiences — the first stakeholder-visible output beyond the build team</h3>
-              <div class="row"><span class="k">What it unlocks</span><span class="v">The 3-tier reporting engine is already built in-repo; confirming the hosting topology is the single decision that lets it reach real audiences.</span></div>
-              <div class="row"><span class="k">Topology (detail)</span><span class="v">Recommended: one shared Static Web App with a per-connector path namespace, gated by per-audience Entra groups — URL secrecy is not authorization.</span></div>
-              <div class="row"><span class="k">Next milestone</span><span class="v">Gated SWA + scheduled ACA job validated</span></div>
+            <div class="action-card" id="action-01">
+              <div class="num">DECISION 01</div>
+              <h3>Approve where the stakeholder reports will live</h3>
+              <div class="row"><span class="k">Recommendation</span><span class="v">One shared, access-gated report site — one section per connector, each audience admitted by its own security group. A secret web address is not real access control.</span></div>
+              <div class="row"><span class="k">Decide by</span><span class="v">The 7 July review</span></div>
+              <div class="row"><span class="k">Cost of waiting</span><span class="v">Every week undecided is a week the already-built reporting engine reaches no stakeholders.</span></div>
+              <div class="row"><span class="k">See it working</span><span class="v"><a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#reporting" style="color:var(--accent);border-bottom:1px solid rgba(111,180,227,0.4);">The governed report demo &rarr;</a></span></div>
               <div class="row"><span class="k">Owner</span>
                 <span class="owners"><span class="chip chip-owner">Carly</span><span class="chip chip-owner">Christian</span><span class="chip chip-owner">IT</span></span>
               </div>
             </div>
-            <div class="action-card">
-              <div class="num">ACTION 02</div>
-              <h3>Green-light Zendesk as connector #2 and agree its green-light criteria</h3>
-              <div class="row"><span class="k">Why it matters</span><span class="v">Connector #2 is what proves the reusable pattern; template extraction is intentionally blocked until it exists — avoid abstracting from a sample of one.</span></div>
-              <div class="row"><span class="k">New this week</span><span class="v">NetSuite #3 discovery is moving faster than Zendesk #2 — worth an explicit sequencing call on which connector proves the pattern next.</span></div>
-              <div class="row"><span class="k">Next milestone</span><span class="v">Zendesk green-light criteria defined</span></div>
+            <div class="action-card" id="action-02">
+              <div class="num">DECISION 02</div>
+              <h3>Choose which connector proves the reusable pattern next — Zendesk (#2 as planned) or NetSuite (moving faster)?</h3>
+              <div class="row"><span class="k">Recommendation</span><span class="v">Keep Zendesk as connector #2 — NetSuite's sign-in approach is unproven until its Phase-0 check lands. Revisit after the week-of-6-July admin follow-up.</span></div>
+              <div class="row"><span class="k">First step</span><span class="v">Agree what &ldquo;ready to start&rdquo; means for connector #2 — then confirm which connector it is.</span></div>
+              <div class="row"><span class="k">Decide by</span><span class="v">The 7 July review</span></div>
+              <div class="row"><span class="k">Cost of waiting</span><span class="v">The shared connector template stays blocked until connector #2 exists — every future connector inherits from that comparison.</span></div>
               <div class="row"><span class="k">Owner</span>
                 <span class="owners"><span class="chip chip-owner">Carly</span><span class="chip chip-owner">Christian</span></span>
               </div>
             </div>
-            <div class="action-card">
-              <div class="num">ACTION 03 &middot; FYI / Endorse</div>
-              <h3>NetSuite connector #3: endorse the discovery direction ahead of the Phase-0 architecture decision</h3>
-              <div class="row"><span class="k">Where it stands</span><span class="v">NetSuite's administrators aligned on the governed model (1 July): per-user delegated sign-in over shared service accounts, standard tools read-only, writes only later via narrowly-scoped custom tools. A constrained test role is granted for hands-on verification.</span></div>
-              <div class="row"><span class="k">Next milestone</span><span class="v">Admin follow-up (week of 6 July) &rarr; Phase-0 architecture decision &rarr; clone the Salesforce chassis</span></div>
+            <div class="action-card fyi" id="action-03">
+              <div class="num">ENDORSE &middot; FYI</div>
+              <h3>Endorse the NetSuite discovery direction</h3>
+              <div class="row"><span class="k">Where it stands</span><span class="v">NetSuite's administrators aligned (1 July): each person signs in as themselves — no shared service accounts; standard tools read-only; writes only later via narrowly-scoped custom tools. A deliberately limited test account is in hand for hands-on verification.</span></div>
+              <div class="row"><span class="k">Respond by</span><span class="v">Friday 4 July, ahead of the week-of-6-July admin follow-up</span></div>
+              <div class="row"><span class="k">If we don't hear</span><span class="v">Discovery continues as described — this is an endorsement, not a blocker.</span></div>
               <div class="row"><span class="k">Owner</span>
-                <span class="owners"><span class="chip chip-owner">David</span><span class="chip chip-owner">NetSuite admins</span><span class="chip chip-owner">Sponsors informed</span></span>
+                <span class="owners"><span class="chip chip-owner">Program lead</span><span class="chip chip-owner">NetSuite admins</span></span>
               </div>
             </div>
           </div>
@@ -420,7 +479,7 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Hardened + security-validated: real alpha use drove a fix cycle, deployed as rev 0000020; acceptance re-test 7/8 green; an adversarial security boundary test passed 16/16 with zero data leakage and correct per-user isolation.</div>
+              <div class="f-val">Hardened + security-validated: real alpha use drove a fix cycle, redeployed and re-validated live within the week; an adversarial security boundary test passed 16/16 with zero data leakage and correct per-user isolation.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
@@ -452,38 +511,37 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Gated reporting distribution (SWA + scheduled ACA job) + define Zendesk #2 green-light criteria</div>
+              <div class="f-val">Ship governed reports to real audiences (access-gated site + scheduled job) + define Zendesk #2 green-light criteria</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Stand up gated SWA and scheduled reporting job</div>
+              <div class="f-val">Stand up the access-gated report site and the scheduled report job</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Connector #1 (Salesforce) split out to its own project. The program is now the reusable framework + governed reporting distribution: gated SWA with per-audience Entra groups (with IT), then the scheduled report job; Zendesk #2 proves the pattern before template extraction.</div>
+              <div class="f-val">Connector #1 (Salesforce) split out to its own project. The program is now the reusable framework + governed report distribution: an access-gated report site with per-audience security groups (with IT), then the scheduled report job; Zendesk #2 proves the pattern before the shared template is extracted.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
-              <div class="f-val">29 June 2026 — refresh due</div>
+              <div class="f-val">Next review week of 6 July — figures current as of 1 July</div>
             </div>
             <div class="field" style="grid-column:1/-1;">
               <div class="f-label"><span class="b" aria-hidden="true"></span> What connectors #2 and #3 inherit automatically</div>
               <div class="f-val">identity model (per-user, no shared accounts) &middot; audit trail &middot; governance proxy &middot; 3-tier reporting &middot; feedback loop — the next connector writes connector logic, not governance.</div>
             </div>
           </div>
-          <span class="decision-flag">
+          <a class="decision-flag" href="#action-01">
             <svg viewBox="0 0 24 24" fill="none" stroke="#FAA51A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="m6.41 6.41 2.83 2.83"/><path d="M2 12h4"/><circle cx="12" cy="14" r="6"/></svg>
-            Decision needed — see Sponsor Actions above
-          </span>
+            Decisions 01 &amp; 02 — see For Your Decision above
+          </a>
         </div>
 
         <div class="proj-card reveal" style="margin-top:1.5rem;">
           <div class="proj-head">
             <h3>NetSuite Connector</h3>
             <div class="proj-badges">
-              <span class="badge-status">Shape</span>
+              <span class="badge-status">Discovery</span>
               <span class="rag rag-yellow rag-sm" aria-label="Project health: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
-              <span class="badge next">Designed · Next</span>
             </div>
           </div>
           <div class="pillars">
@@ -497,25 +555,25 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Discovery sprint: test the native connector on a constrained role, review the vendor's AI materials, verify the auth model hands-on — feeding the Phase-0 architecture decision.</div>
+              <div class="f-val">Discovery sprint: test the native connector on a constrained role, review the vendor's AI materials, verify per-user sign-in hands-on — feeding the Phase-0 architecture decision.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Admin follow-up meeting (week of 6 July) &rarr; Phase-0 architecture decision &rarr; clone the Salesforce chassis</div>
+              <div class="f-val">Admin follow-up meeting (week of 6 July) &rarr; Phase-0 architecture decision &rarr; reuse the Salesforce build as the mold</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Admin-alignment call held 1 July: centralized governed connector confirmed as the target; per-user delegated sign-in endorsed over shared service accounts; standard tools read-only, writes only later via narrowly-scoped custom tools; a constrained test role granted for hands-on verification.</div>
+              <div class="f-val">Admin-alignment call held 1 July: a centrally governed connector confirmed as the target; each person signs in as themselves — no shared service accounts; standard tools read-only, writes only later via narrowly-scoped custom tools; a deliberately limited test account granted for hands-on verification.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
               <div class="f-val">7 July 2026</div>
             </div>
           </div>
-          <span class="decision-flag">
+          <a class="decision-flag" href="#action-03">
             <svg viewBox="0 0 24 24" fill="none" stroke="#FAA51A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="m6.41 6.41 2.83 2.83"/><path d="M2 12h4"/><circle cx="12" cy="14" r="6"/></svg>
-            Decision needed — see Sponsor Actions above
-          </span>
+            Endorsement requested — see For Your Decision above
+          </a>
         </div>
       </div>
     </section>
@@ -530,12 +588,12 @@
         <div class="risk-grid">
           <div class="risk-card reveal">
             <div class="r-top">
-              <h3>IT-grant / Entra group bottleneck</h3>
+              <h3>IT access-group bottleneck</h3>
               <span class="rag rag-yellow rag-sm" aria-label="Risk severity: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
             </div>
-            <div class="r-row"><span class="k">Why it matters</span><span class="v">Per-connector Entra/admin asks could stall gated reporting distribution and scale-out.</span></div>
-            <div class="r-row"><span class="k">Mitigation</span><span class="v">Batch the ecosystem-wide privileged asks once and reuse.</span></div>
-            <div class="r-row"><span class="k">What to watch</span><span class="v">Speed of the IT grant for per-audience Entra groups.</span></div>
+            <div class="r-row"><span class="k">Why it matters</span><span class="v">Each connector needs IT to create security groups and grant permissions; done one-by-one, that could stall report distribution and scale-out.</span></div>
+            <div class="r-row"><span class="k">Mitigation</span><span class="v">Batch the privileged IT requests once for the whole ecosystem and reuse them.</span></div>
+            <div class="r-row"><span class="k">What to watch</span><span class="v">How quickly IT stands up the per-audience access groups.</span></div>
           </div>
           <div class="risk-card reveal">
             <div class="r-top">
@@ -580,16 +638,16 @@
               <h3>Hardening sprint — deployed</h3>
               <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span>
             </div>
-            <p>Real alpha use surfaced the rough edges — related records returning bare IDs, ambiguous schema answers, broken counts, name searches missing results. All fixed in one cycle, deployed (rev 0000020), then re-validated live: acceptance re-test 7/8 green.</p>
+            <p>Real alpha use surfaced the rough edges — related records returning bare IDs, ambiguous data-structure answers, broken counts, name searches missing results. All fixed in one cycle, redeployed, then re-validated live: acceptance re-test 7/8 green (the remaining case is a count-style query edge case — not security-related, fix queued).</p>
             <span class="oc-type">Type: Prototype Outcome</span>
           </div>
           <div class="outcome-card reveal">
             <div class="oc-head">
-              <h3>NetSuite: architecture ADR + admin alignment</h3>
-              <span class="badge next">Designed · Next</span>
+              <h3>NetSuite: architecture decision + admin alignment</h3>
+              <span class="badge next">Discovery</span>
             </div>
-            <p>Connector #3's architecture decision record is written, and NetSuite's administrators aligned on the governed model: per-user delegated sign-in over shared service accounts, read-only standard tools, writes only later via narrowly-scoped custom tools.</p>
-            <span class="oc-type">Type: Decision / ADR</span>
+            <p>Connector #3's architecture decision record is written, and NetSuite's administrators aligned on the governed model: each person signs in as themselves (no shared service accounts), standard tools are read-only, and writes come later only through narrowly-scoped custom tools.</p>
+            <span class="oc-type">Type: Decision record</span>
           </div>
         </div>
       </div>
