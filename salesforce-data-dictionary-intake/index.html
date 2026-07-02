@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Salesforce Connector — Data Dictionary &amp; Priority Objects · Intake for Ivan</title>
+<style>
+  :root{
+    --deep:#0C4A7D; --teal:#00B69F; --sky:#6fb4e3; --navy:#002747;
+    --ink:#373e42; --soft:#F5F5F5; --line:#e4eaf0; --mut:#6b7681;
+    --amber:#b7791f; --amber-bg:#fef6e7; --teal-bg:#e6f7f4;
+    --red:#b91c1c; --red-bg:#fdecec;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--ink);background:#fff;margin:0;line-height:1.55;font-size:15px}
+  main{max-width:66rem;margin:0 auto;padding:2rem 1.25rem 5rem}
+  .band{background:linear-gradient(90deg,var(--navy),var(--deep));color:#fff;border-radius:12px;padding:1.3rem 1.5rem;margin-bottom:1rem}
+  .band h1{margin:0 0 .3rem;font-size:1.35rem;font-weight:650}
+  .band p{margin:0;color:#cfe3f4;font-size:.93rem}
+  .band .tag{display:inline-block;background:rgba(255,255,255,.14);border-radius:999px;padding:.1rem .7rem;font-size:.72rem;margin-bottom:.5rem;letter-spacing:.05em;text-transform:uppercase}
+  .savebar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);padding:.5rem .25rem;display:flex;gap:.75rem;align-items:center;font-size:.85rem}
+  .savebar .dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--teal)}
+  .savebar .status{color:var(--mut)}
+  .savebar .tally{margin-left:auto;color:var(--deep);font-weight:600}
+  h2{color:var(--deep);font-size:1.15rem;margin:2rem 0 .35rem}
+  h2 .step{display:inline-block;background:var(--teal);color:#fff;border-radius:999px;width:1.55rem;height:1.55rem;text-align:center;line-height:1.55rem;font-size:.85rem;margin-right:.5rem;vertical-align:-2px}
+  .lede{color:var(--mut);margin:0 0 .8rem;max-width:58rem;font-size:.92rem}
+  .callout{border-left:4px solid var(--teal);background:var(--teal-bg);border-radius:6px;padding:.7rem 1rem;margin:.8rem 0;font-size:.9rem}
+  .callout.warn{border-color:var(--amber);background:var(--amber-bg)}
+  code{background:var(--soft);border-radius:4px;padding:0 .3em;font-size:.86em;color:var(--deep)}
+  .card{border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem;background:#fff;margin:.8rem 0}
+  .card h3{margin:0 0 .2rem;font-size:1rem;color:var(--navy)}
+  .card .ctx{font-size:.86rem;color:var(--mut);margin:.15rem 0 .6rem}
+  .card .ctx b{color:var(--ink)}
+  .pill{display:inline-block;border-radius:999px;padding:.02rem .55rem;font-size:.7rem;font-weight:600;margin-right:.4rem;vertical-align:1px}
+  .p-decide{background:var(--amber-bg);color:var(--amber)}
+  .p-broken{background:var(--red-bg);color:var(--red)}
+  .opts{display:flex;flex-direction:column;gap:.3rem;margin:.4rem 0 .5rem}
+  .opts label{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;cursor:pointer}
+  .opts input[type=radio]{margin-top:.25rem;accent-color:var(--teal)}
+  input[type=text], textarea{
+    font-family:inherit;font-size:.9rem;color:var(--ink);border:1px solid var(--line);
+    border-radius:8px;padding:.45rem .6rem;width:100%;background:#fff;
+  }
+  input[type=text]:focus, textarea:focus{outline:2px solid var(--sky);border-color:var(--sky)}
+  textarea{resize:vertical;min-height:3.2rem}
+  .inline-field{margin:.25rem 0 .25rem 1.6rem;max-width:26rem}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem}
+  .fld label{display:block;font-size:.76rem;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin-bottom:.15rem}
+  table{border-collapse:collapse;width:100%;font-size:.86rem;margin:.5rem 0}
+  th,td{border:1px solid var(--line);padding:.35rem .45rem;text-align:left;vertical-align:top}
+  th{background:var(--soft);color:var(--navy);font-weight:600;font-size:.74rem;text-transform:uppercase;letter-spacing:.03em}
+  td input[type=text], td textarea{border:none;padding:.25rem .3rem;border-radius:4px;min-height:1.6rem}
+  td input[type=text]:focus, td textarea:focus{outline:2px solid var(--sky)}
+  .btn{font-family:inherit;font-size:.85rem;font-weight:600;border-radius:9px;padding:.5rem .95rem;border:1px solid var(--line);background:#fff;color:var(--deep);cursor:pointer}
+  .btn:hover{border-color:var(--sky)}
+  .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+  .btn.primary:hover{background:#009e8a}
+  .btn.small{font-size:.78rem;padding:.3rem .7rem}
+  .btn.danger{color:var(--red)}
+  .submitbox{border:2px solid var(--teal);border-radius:12px;padding:1.1rem 1.2rem;margin-top:2rem;background:var(--teal-bg)}
+  .submitbox h2{margin-top:0}
+  .btnrow{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0}
+  .muted{color:var(--mut);font-size:.84rem}
+  .rowdel{color:var(--red);cursor:pointer;border:none;background:none;font-size:1rem;line-height:1}
+  footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:.8rem;color:var(--mut);font-size:.78rem}
+  .toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;border-radius:9px;padding:.55rem 1.1rem;font-size:.85rem;opacity:0;transition:opacity .25s;pointer-events:none}
+  .toast.show{opacity:1}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+
+<div class="band">
+  <span class="tag">Salesforce Connector · Alpha · For Ivan Jdrakov</span>
+  <h1>Data Dictionary &amp; Custom Objects of Interest — Intake</h1>
+  <p>Two deliverables from the data-dictionary call, both yours to define. Type directly into this page — <b>everything autosaves in your browser</b> (a refresh won't lose work; it stays on this device). When you're done, hit <b>Send to Dave</b> at the bottom. Partial answers welcome — Section A1 unblocks the most.</p>
+</div>
+
+<div class="savebar">
+  <span class="dot" id="saveDot"></span><span class="status" id="saveStatus">Nothing saved yet — start typing.</span>
+  <span class="tally" id="tally"></span>
+</div>
+
+<div class="callout">
+  <b>Why this matters (30 seconds):</b> the connector lets pilots ask Claude questions answered from live Salesforce, read-only, as themselves. Claude is only as good as its map of the org. Today it starts with just <b>Account, Contact, Opportunity, Case</b> — and no official word on what terms like <i>"segment"</i> or <i>"churn risk"</i> mean in <b>our</b> org. Your answers close both gaps.
+</div>
+
+<!-- ============ A1 ============ -->
+<h2><span class="step">A1</span>Six decisions — the field the draft assumed isn't the real answer</h2>
+<p class="lede">Each was validated against the live org on 30 June (as David Hayes / Read Only). Pick an option; add corrections or context in the notes. If you've researched a term in your own Claude session, paste its output into the notes — verbatim is fine.</p>
+<div id="a1cards"></div>
+
+<!-- ============ A2 ============ -->
+<h2><span class="step">A2</span>New terms marketing actually uses</h2>
+<p class="lede">The other 26 drafted concepts verified clean and just need your nod (tell us in notes below if any look wrong). Here, add terms we <b>haven't</b> drafted — the words marketing says out loud that should resolve to a real field.</p>
+<table id="termsTable">
+  <thead><tr><th style="width:7rem">Object</th><th style="width:9rem">Business term</th><th style="width:12rem">The ONE real field (exact API name)</th><th>Plain-English definition</th><th>Valid values &amp; meanings</th><th>Look-alikes to AVOID</th><th style="width:2rem"></th></tr></thead>
+  <tbody></tbody>
+</table>
+<button class="btn small" id="addTerm">+ Add a term</button>
+
+<div class="fld" style="margin-top:1rem">
+  <label for="a2paste">Paste zone — output from your own Claude/AI session about definitions, or any free-form notes</label>
+  <textarea id="a2paste" data-save="a2paste" rows="5" placeholder="Paste anything here — Dave's tooling will parse it. Verbatim AI output, spreadsheet rows, bullet notes: all fine."></textarea>
+</div>
+
+<div class="callout warn"><b>Ground rules that made the draft fail live:</b> pick fields that are actually <b>populated</b> (three proposed fields turned out empty or nonexistent); one canonical field per term; and decoys are as valuable as answers — knowing what <i>not</i> to use prevents confidently wrong answers.</div>
+
+<!-- ============ B ============ -->
+<h2><span class="step">B</span>Custom objects of interest — the pilot shortlist</h2>
+<p class="lede">The connector pre-loads an orientation map at startup so Claude knows what exists and can <i>suggest</i> it. Name <b>5–15 custom objects, ranked</b>, biased to what marketing pilots actually ask about. Copy API names exactly from Setup → Object Manager (incl. <code>__c</code>) — the server validates them and a typo blocks deploy.</p>
+<table id="objTable">
+  <thead><tr><th style="width:2.2rem">#</th><th style="width:13rem">Object API name (exact)</th><th>What it is (one sentence)</th><th>Example question it answers</th><th>Key fields (3–8)</th><th style="width:9rem">Related to</th><th style="width:5.5rem">Live / legacy</th><th style="width:2rem"></th></tr></thead>
+  <tbody></tbody>
+</table>
+<button class="btn small" id="addObj">+ Add an object</button>
+
+<div class="fld" style="margin-top:1rem">
+  <label for="bpaste">Paste zone — object lists / notes from your own research</label>
+  <textarea id="bpaste" data-save="bpaste" rows="4" placeholder="Anything goes — object names with commentary, a pasted AI answer, etc."></textarea>
+</div>
+
+<div class="fld" style="margin-top:1rem">
+  <label for="exclusions">Exclusions — objects or fields that should NEVER be surfaced to pilots (sensitive / misleading)</label>
+  <textarea id="exclusions" data-save="exclusions" rows="3" placeholder="e.g. anything PII-heavy, compensation-related, or known-bad legacy objects."></textarea>
+</div>
+
+<div class="card">
+  <label style="display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;cursor:pointer">
+    <input type="checkbox" id="permAck" data-save="permAck" style="margin-top:.25rem;accent-color:var(--teal)">
+    <span><b>Permission check:</b> I'll confirm the <b>Custom MCP Proxy Server</b> permission set grants <b>Read</b> on the objects I've shortlisted (listing an object here does not grant access — pilots only ever see what their Salesforce permissions allow).</span>
+  </label>
+</div>
+
+<!-- ============ SUBMIT ============ -->
+<div class="submitbox">
+  <h2 style="color:var(--navy)">Send to Dave</h2>
+  <p class="muted" style="margin:.2rem 0 .5rem">This page has no server — your answers live in this browser until you export them. One click copies everything as a tidy report; paste it into an email or Teams message to Dave. (Or download the file and attach it.)</p>
+  <div class="fld" style="max-width:22rem;margin-bottom:.5rem">
+    <label for="who">Your name</label>
+    <input type="text" id="who" data-save="who" value="Ivan Jdrakov">
+  </div>
+  <div class="btnrow">
+    <button class="btn primary" id="btnCopy">📋 Copy results (then paste into email/Teams)</button>
+    <button class="btn" id="btnEmail">✉️ Open email to Dave</button>
+    <button class="btn" id="btnJson">⬇ Download JSON (for Dave's tooling)</button>
+  </div>
+  <p class="muted" id="progressLine"></p>
+  <div class="btnrow" style="margin-top:.4rem">
+    <button class="btn small danger" id="btnClear">Clear everything on this page</button>
+  </div>
+</div>
+
+<footer>
+  Prepared by Dave Hayes · Salesforce Connector alpha · grounded in the live-org validation of 2026-06-30. All input stays in your browser (localStorage) until you export it. This page makes zero network requests.
+</footer>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ---------- A1 decision data ---------- */
+var A1 = [
+  { id:"segment", pill:"DECIDE", cls:"p-decide", term:"Account · segment",
+    assumed:"Type",
+    reality:"Wrong meaning — Type holds lifecycle (Customer / Prospect / Lost…). Real segmentation appears to be Customer_Segment1__c (Enterprise / National / Emerging).",
+    options:[
+      {v:"confirm", t:"Confirm Customer_Segment1__c as the canonical “segment” field"},
+      {v:"other",   t:"A different field is the real answer:", input:true},
+      {v:"discuss", t:"Needs discussion"}
+    ],
+    extra:"Should Type become its own term (“lifecycle stage”)? Say so in notes." },
+  { id:"industry", pill:"BROKEN", cls:"p-broken", term:"Account · industry",
+    assumed:"Industry",
+    reality:"Field doesn't exist on Account (it exists on Lead). Populated candidate: ZI_C_INDUSTRY_PRIMARY__c (ZoomInfo).",
+    options:[
+      {v:"confirm", t:"Confirm ZI_C_INDUSTRY_PRIMARY__c"},
+      {v:"other",   t:"A different field is the trusted industry source:", input:true},
+      {v:"drop",    t:"Not reliably answerable — leave “industry” out"},
+      {v:"discuss", t:"Needs discussion"}
+    ]},
+  { id:"revenue", pill:"BROKEN", cls:"p-broken", term:"Account · company revenue",
+    assumed:"AnnualRevenue",
+    reality:"Not found. Two very different candidates: ZI_C_REVENUE__c (THEIR revenue, ZoomInfo) vs Total_Subscription_ARR__c (OUR ARR with them — well populated, ~173k records).",
+    options:[
+      {v:"both",    t:"Define BOTH as separate terms (“company revenue” = ZI_C_REVENUE__c, “our ARR” = Total_Subscription_ARR__c)"},
+      {v:"zi",      t:"Only ZI_C_REVENUE__c (their revenue)"},
+      {v:"arr",     t:"Only Total_Subscription_ARR__c (our ARR)"},
+      {v:"other",   t:"Something else:", input:true},
+      {v:"discuss", t:"Needs discussion"}
+    ],
+    extra:"When someone just says “revenue”, which should Claude assume? Put the default in notes." },
+  { id:"health", pill:"BROKEN", cls:"p-broken", term:"Account · customer health",
+    assumed:"Customer_Health_Score__c",
+    reality:"Not found. Adoption_CSAT_score__c is ~empty (1 record). Churn_Chance__c is the only populated health-ish signal.",
+    options:[
+      {v:"churn",   t:"Use Churn_Chance__c as the stand-in for “customer health”"},
+      {v:"other",   t:"A real health score exists — it's:", input:true},
+      {v:"drop",    t:"Not answerable — better no answer than a misleading one"},
+      {v:"discuss", t:"Needs discussion"}
+    ]},
+  { id:"churnrisk", pill:"BROKEN", cls:"p-broken", term:"Account · churn risk",
+    assumed:"Revenue_Risk__c",
+    reality:"Not found. Populated candidates: At_Risk_Subscriptions_MRR__c, Churn_Chance__c, Churn__c.",
+    options:[
+      {v:"atrisk",  t:"At_Risk_Subscriptions_MRR__c"},
+      {v:"chance",  t:"Churn_Chance__c"},
+      {v:"churn",   t:"Churn__c"},
+      {v:"other",   t:"Something else:", input:true},
+      {v:"discuss", t:"Needs discussion"}
+    ],
+    extra:"What do the chosen field's values actually mean? Spell it out in notes." },
+  { id:"leadrating", pill:"DECIDE", cls:"p-decide", term:"Lead · rating",
+    assumed:"Rating",
+    reality:"Field exists but is empty on every visible Lead.",
+    options:[
+      {v:"drop",    t:"It's unused — drop the term"},
+      {v:"used",    t:"It IS used (explain where/how in notes)"},
+      {v:"other",   t:"A different field carries lead quality:", input:true},
+      {v:"discuss", t:"Needs discussion"}
+    ]}
+];
+
+var LS_KEY = "sf-dd-intake-v1";
+var state = { a1:{}, terms:[], objects:[] };
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function el(tag, attrs, text){
+  var e = document.createElement(tag);
+  if (attrs) Object.keys(attrs).forEach(function(k){ e.setAttribute(k, attrs[k]); });
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function toast(msg){
+  var t = $("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2200);
+}
+
+/* ---------- render A1 cards ---------- */
+function renderA1(){
+  var host = $("a1cards");
+  A1.forEach(function(d){
+    var card = el("div", {class:"card", id:"card-"+d.id});
+    var h = el("h3");
+    var pill = el("span", {class:"pill "+d.cls}, d.pill);
+    h.appendChild(pill); h.appendChild(document.createTextNode(d.term));
+    card.appendChild(h);
+    var ctx = el("div", {class:"ctx"});
+    var b1 = el("b", null, "Draft assumed: ");
+    ctx.appendChild(b1); ctx.appendChild(document.createTextNode(d.assumed + ". "));
+    var b2 = el("b", null, "Live reality: ");
+    ctx.appendChild(b2); ctx.appendChild(document.createTextNode(d.reality));
+    card.appendChild(ctx);
+    var opts = el("div", {class:"opts"});
+    d.options.forEach(function(o){
+      var lab = el("label");
+      var r = el("input", {type:"radio", name:"a1-"+d.id, value:o.v});
+      r.addEventListener("change", function(){ onA1(d.id); });
+      lab.appendChild(r); lab.appendChild(document.createTextNode(o.t));
+      opts.appendChild(lab);
+      if (o.input){
+        var inp = el("input", {type:"text", class:"inline-field", id:"a1-"+d.id+"-other",
+          placeholder:"exact API name, e.g. My_Field__c"});
+        inp.addEventListener("input", function(){ onA1(d.id); });
+        opts.appendChild(inp);
+      }
+    });
+    card.appendChild(opts);
+    if (d.extra){ card.appendChild(el("div", {class:"muted"}, "↳ " + d.extra)); }
+    var g = el("div", {class:"grid2"});
+    var f1 = el("div", {class:"fld"});
+    f1.appendChild(el("label", {for:"a1-"+d.id+"-def"}, "Plain-English definition (optional)"));
+    var t1 = el("textarea", {id:"a1-"+d.id+"-def", rows:"2"});
+    t1.addEventListener("input", function(){ onA1(d.id); });
+    f1.appendChild(t1);
+    var f2 = el("div", {class:"fld"});
+    f2.appendChild(el("label", {for:"a1-"+d.id+"-notes"}, "Notes / paste from your Claude session"));
+    var t2 = el("textarea", {id:"a1-"+d.id+"-notes", rows:"2"});
+    t2.addEventListener("input", function(){ onA1(d.id); });
+    f2.appendChild(t2);
+    g.appendChild(f1); g.appendChild(f2);
+    card.appendChild(g);
+    host.appendChild(card);
+  });
+}
+function onA1(id){
+  var sel = document.querySelector('input[name="a1-'+id+'"]:checked');
+  state.a1[id] = {
+    decision: sel ? sel.value : "",
+    other: (document.getElementById("a1-"+id+"-other")||{}).value || "",
+    definition: $("a1-"+id+"-def").value,
+    notes: $("a1-"+id+"-notes").value
+  };
+  save();
+}
+
+/* ---------- dynamic tables ---------- */
+var TERM_COLS = ["object","term","field","definition","values","avoid"];
+var OBJ_COLS = ["api_name","what","question","key_fields","related","live"];
+
+function addRow(tableId, cols, data, listName){
+  var tb = $(tableId).querySelector("tbody");
+  var tr = el("tr");
+  if (tableId === "objTable"){
+    tr.appendChild(el("td", {class:"rowNum"}, String(tb.children.length + 1)));
+  }
+  cols.forEach(function(c){
+    var td = el("td");
+    var inp = el("input", {type:"text", "data-col":c});
+    inp.value = (data && data[c]) || "";
+    inp.addEventListener("input", function(){ collectTables(); save(); });
+    td.appendChild(inp);
+    tr.appendChild(td);
+  });
+  var tdDel = el("td");
+  var del = el("button", {class:"rowdel", type:"button", title:"remove row"}, "×");
+  del.addEventListener("click", function(){
+    tr.remove(); renumber(); collectTables(); save();
+  });
+  tdDel.appendChild(del);
+  tr.appendChild(tdDel);
+  tb.appendChild(tr);
+}
+function renumber(){
+  var rows = $("objTable").querySelectorAll("tbody tr");
+  rows.forEach(function(r,i){ var n = r.querySelector(".rowNum"); if (n) n.textContent = String(i+1); });
+}
+function collectTables(){
+  state.terms = [];
+  $("termsTable").querySelectorAll("tbody tr").forEach(function(tr){
+    var o = {};
+    tr.querySelectorAll("input[data-col]").forEach(function(i){ o[i.getAttribute("data-col")] = i.value; });
+    if (Object.keys(o).some(function(k){ return o[k].trim(); })) state.terms.push(o);
+  });
+  state.objects = [];
+  $("objTable").querySelectorAll("tbody tr").forEach(function(tr){
+    var o = {};
+    tr.querySelectorAll("input[data-col]").forEach(function(i){ o[i.getAttribute("data-col")] = i.value; });
+    if (Object.keys(o).some(function(k){ return o[k].trim(); })) state.objects.push(o);
+  });
+}
+
+/* ---------- persistence ---------- */
+var saveTimer = null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    document.querySelectorAll("[data-save]").forEach(function(n){
+      state[n.getAttribute("data-save")] = (n.type === "checkbox") ? n.checked : n.value;
+    });
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      var now = new Date();
+      $("saveStatus").textContent = "Saved in this browser ✓ " +
+        now.toTimeString().slice(0,5);
+    } catch(e) {
+      $("saveStatus").textContent = "Could not save (private browsing?) — export before closing!";
+    }
+    tally();
+  }, 350);
+}
+function restore(){
+  var raw = null;
+  try { raw = localStorage.getItem(LS_KEY); } catch(e){}
+  if (!raw) { addRow("termsTable", TERM_COLS); addRow("objTable", OBJ_COLS);
+              addRow("objTable", OBJ_COLS); addRow("objTable", OBJ_COLS); tally(); return; }
+  try { state = JSON.parse(raw); } catch(e){ state = {a1:{},terms:[],objects:[]}; }
+  state.a1 = state.a1 || {}; state.terms = state.terms || []; state.objects = state.objects || [];
+  Object.keys(state.a1).forEach(function(id){
+    var s = state.a1[id]; if (!s) return;
+    if (s.decision){
+      var r = document.querySelector('input[name="a1-'+id+'"][value="'+s.decision+'"]');
+      if (r) r.checked = true;
+    }
+    var o = document.getElementById("a1-"+id+"-other"); if (o) o.value = s.other || "";
+    var d = document.getElementById("a1-"+id+"-def"); if (d) d.value = s.definition || "";
+    var n = document.getElementById("a1-"+id+"-notes"); if (n) n.value = s.notes || "";
+  });
+  (state.terms.length ? state.terms : [{}]).forEach(function(t){ addRow("termsTable", TERM_COLS, t); });
+  var objs = state.objects.length ? state.objects : [{},{},{}];
+  objs.forEach(function(o){ addRow("objTable", OBJ_COLS, o); });
+  document.querySelectorAll("[data-save]").forEach(function(n){
+    var k = n.getAttribute("data-save");
+    if (state[k] === undefined) return;
+    if (n.type === "checkbox") n.checked = !!state[k]; else n.value = state[k];
+  });
+  $("saveStatus").textContent = "Restored your previous work ✓";
+  tally();
+}
+function tally(){
+  var made = Object.keys(state.a1).filter(function(k){ return state.a1[k] && state.a1[k].decision; }).length;
+  $("tally").textContent = made + "/6 decisions · " + state.terms.length + " terms · " + state.objects.length + " objects";
+  $("progressLine").textContent = "Progress: " + made + " of 6 decisions made, " +
+    state.terms.length + " new term(s), " + state.objects.length + " object(s) shortlisted.";
+}
+
+/* ---------- export ---------- */
+function labelFor(id, v){
+  var d = A1.filter(function(x){ return x.id === id; })[0];
+  if (!d) return v;
+  var o = d.options.filter(function(x){ return x.v === v; })[0];
+  return o ? o.t : v;
+}
+function buildMarkdown(){
+  var L = [];
+  L.push("# SF Connector — Data Dictionary & Priority Objects — Ivan's answers");
+  L.push("From: " + ($("who").value || "?") + " · " + new Date().toISOString().slice(0,10));
+  L.push("");
+  L.push("## A1 — The six decisions");
+  A1.forEach(function(d){
+    var s = state.a1[d.id] || {};
+    L.push("### " + d.term);
+    L.push("- Decision: " + (s.decision ? labelFor(d.id, s.decision) : "(no decision)") +
+           (s.other ? " -> " + s.other : ""));
+    if (s.definition) L.push("- Definition: " + s.definition);
+    if (s.notes) L.push("- Notes: " + s.notes);
+  });
+  L.push("");
+  L.push("## A2 — New terms");
+  if (!state.terms.length) L.push("(none added)");
+  state.terms.forEach(function(t){
+    L.push("- **" + (t.object||"?") + " · " + (t.term||"?") + "** -> `" + (t.field||"?") + "` — " +
+      (t.definition||"") + (t.values ? " | values: " + t.values : "") + (t.avoid ? " | avoid: " + t.avoid : ""));
+  });
+  if ((state.a2paste||"").trim()){ L.push(""); L.push("### A2 paste zone"); L.push(state.a2paste); }
+  L.push("");
+  L.push("## B — Custom objects of interest (ranked)");
+  if (!state.objects.length) L.push("(none added)");
+  state.objects.forEach(function(o, i){
+    L.push((i+1) + ". `" + (o.api_name||"?") + "` — " + (o.what||"") +
+      (o.question ? " | e.g. \"" + o.question + "\"" : "") +
+      (o.key_fields ? " | key fields: " + o.key_fields : "") +
+      (o.related ? " | related: " + o.related : "") +
+      (o.live ? " | " + o.live : ""));
+  });
+  if ((state.bpaste||"").trim()){ L.push(""); L.push("### B paste zone"); L.push(state.bpaste); }
+  if ((state.exclusions||"").trim()){ L.push(""); L.push("## Exclusions (never surface)"); L.push(state.exclusions); }
+  L.push("");
+  L.push("Permission-set check acknowledged: " + (state.permAck ? "YES" : "no"));
+  return L.join("\n");
+}
+function buildJson(){
+  return JSON.stringify({
+    kind:"sf-mcp-dictionary-intake", version:1,
+    submitted_by:$("who").value, exported_at:new Date().toISOString(),
+    a1_decisions:state.a1, a2_terms:state.terms, a2_paste:state.a2paste||"",
+    b_objects:state.objects, b_paste:state.bpaste||"",
+    exclusions:state.exclusions||"", permission_set_ack:!!state.permAck
+  }, null, 2);
+}
+function download(name, text, type){
+  var blob = new Blob([text], {type:type});
+  var a = el("a", {href:URL.createObjectURL(blob), download:name});
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- wire up ---------- */
+renderA1();
+restore();
+$("addTerm").addEventListener("click", function(){ addRow("termsTable", TERM_COLS); });
+$("addObj").addEventListener("click", function(){ addRow("objTable", OBJ_COLS); });
+document.querySelectorAll("[data-save]").forEach(function(n){
+  n.addEventListener("input", save); n.addEventListener("change", save);
+});
+$("btnCopy").addEventListener("click", function(){
+  collectTables();
+  var md = buildMarkdown();
+  function fallback(){
+    var ta = el("textarea"); ta.value = md; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy"); ta.remove();
+    toast("Copied ✓ now paste into an email or Teams message to Dave");
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(md).then(function(){
+      toast("Copied ✓ now paste into an email or Teams message to Dave");
+    }, fallback);
+  } else fallback();
+});
+$("btnEmail").addEventListener("click", function(){
+  collectTables();
+  var md = buildMarkdown();
+  function open(bodyNote){
+    location.href = "mailto:David.Hayes@fourth.com" +
+      "?subject=" + encodeURIComponent("Data dictionary + priority objects — my answers") +
+      "&body=" + encodeURIComponent(bodyNote);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(md).then(function(){
+      toast("Results copied ✓ paste into the email that opens");
+      open("Results are on my clipboard - pasting below:\n\n\n(If empty: I clicked 'Copy results' on the intake page and will paste here.)");
+    }, function(){ open("See attached / pasted results from the intake page."); });
+  } else open("See attached / pasted results from the intake page.");
+});
+$("btnJson").addEventListener("click", function(){
+  collectTables();
+  download("sf-dd-intake-" + new Date().toISOString().slice(0,10) + ".json", buildJson(), "application/json");
+  toast("Downloaded ✓ attach it to an email/Teams message to Dave");
+});
+$("btnClear").addEventListener("click", function(){
+  if (!confirm("Clear everything you've entered on this page? This cannot be undone.")) return;
+  try { localStorage.removeItem(LS_KEY); } catch(e){}
+  location.reload();
+});
+</script>
+</body>
+</html>
