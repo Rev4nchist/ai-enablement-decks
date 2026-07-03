@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fourth Platform Intelligence Kit</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230E5A4A'/%3E%3Ctext x='8' y='12' font-size='11' font-family='Georgia,serif' fill='%23F6F3EE' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+:root {
+  --paper: #F6F3EE;
+  --paper2: #EDE9E1;
+  --ink: #18140F;
+  --ink2: #3A332A;
+  --muted: #7A7269;
+  --dim: #ADA69D;
+  --rule: #D8D2C8;
+  --rule2: #EDE9E2;
+  --accent: #1B5E52;
+  --accent-l: #EAF3F1;
+  --card: #FDFCF9;
+  --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+/* NAV */
+nav { background: var(--ink); padding: 0 32px; display: flex; align-items: center; height: 48px; gap: 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+.nav-brand { font-family: var(--cond); font-size: 16px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #fff; margin-right: 28px; text-decoration: none; }
+.nav-brand span { color: #6ECFC4; }
+.nav-links { display: flex; gap: 2px; }
+.nav-link { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.5); padding: 6px 14px; border-radius: 3px; text-decoration: none; transition: all .15s; }
+.nav-link:hover { color: rgba(255,255,255,.85); background: rgba(255,255,255,.06); }
+.nav-link.active { color: #fff; background: rgba(255,255,255,.1); }
+.nav-tag { margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); }
+
+/* HERO */
+.hero { border-bottom: 1px solid var(--rule); padding: 52px 32px 40px; max-width: 1100px; margin: 0 auto; }
+.hero-kicker { font-family: var(--cond); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.hero-title { font-family: var(--cond); font-size: 52px; font-weight: 700; line-height: 1.0; letter-spacing: .01em; text-transform: uppercase; color: var(--ink); margin-bottom: 16px; }
+.hero-title em { font-style: normal; color: var(--accent); }
+.hero-body { font-size: 15px; color: var(--ink2); line-height: 1.7; max-width: 620px; }
+
+/* MAIN GRID */
+.main { max-width: 1100px; margin: 0 auto; padding: 40px 32px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+
+/* TOOL CARDS */
+.tool-card { background: var(--card); border: 1px solid var(--rule); border-top: 3px solid var(--ink); border-radius: 0 0 4px 4px; overflow: hidden; transition: border-top-color .15s; }
+.tool-card:hover { border-top-color: var(--accent); }
+.tc-head { padding: 24px 24px 18px; border-bottom: 1px solid var(--rule2); }
+.tc-num { font-family: var(--cond); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+.tc-title { font-family: var(--cond); font-size: 24px; font-weight: 700; text-transform: uppercase; color: var(--ink); line-height: 1.15; margin-bottom: 8px; }
+.tc-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.tc-body { padding: 18px 24px; }
+.tc-uses { list-style: none; margin-bottom: 18px; }
+.tc-uses li { font-size: 13px; color: var(--ink2); padding: 7px 0; border-bottom: 1px solid var(--rule2); display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+.tc-uses li:last-child { border-bottom: none; }
+.tc-uses li::before { content: '—'; color: var(--dim); flex-shrink: 0; font-weight: 500; }
+.tc-link { display: inline-flex; align-items: center; gap: 7px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; padding: 9px 18px; border-radius: 3px; text-decoration: none; transition: background .15s; }
+.tc-link:hover { background: var(--accent); }
+.tc-link::after { content: '→'; }
+
+/* HOW IT WORKS */
+.how { grid-column: 1 / -1; background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 28px 28px 24px; }
+.how-title { font-family: var(--cond); font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+.how-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; }
+.how-steps::before { content: ''; position: absolute; top: 18px; left: 10%; right: 10%; height: 1px; background: var(--rule); }
+.hs { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 10px; position: relative; z-index: 1; }
+.hs-dot { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--rule); background: var(--card); display: flex; align-items: center; justify-content: center; font-family: var(--cond); font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 10px; }
+.hs.done .hs-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+.hs.active .hs-dot { background: var(--ink); border-color: var(--ink); color: #fff; }
+.hs-label { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.hs-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* PRINCIPLE STRIP */
+.principles { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.pr { background: var(--card); padding: 18px 20px; }
+.pr-rule { font-family: var(--cond); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.pr-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.pr-body { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+/* CONFIDENCE KEY */
+.key { grid-column: 1 / -1; display: flex; gap: 20px; align-items: center; padding: 14px 20px; background: var(--card); border: 1px solid var(--rule); border-radius: 4px; }
+.key-lbl { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-right: 4px; }
+.ki { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink2); }
+.ki-line { width: 28px; height: 0; }
+.ki-line.solid { border-top: 3px solid var(--accent); }
+.ki-line.dashed { border-top: 2px dashed #b86c00; }
+.ki-line.dotted { border-top: 2px dotted #9b2c2c; }
+.key-note { margin-left: auto; font-size: 11px; color: var(--dim); font-style: italic; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">Fourth<span>iQ</span></a>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">Overview</a>
+    <a class="nav-link" href="christian-architecture-canvas.html">Architecture canvas</a>
+    <a class="nav-link" href="christian-interview-guide.html">Interview guide</a>
+    <a class="nav-link" href="cto-onepager.html">CTO one-pager</a>
+  </div>
+  <span class="nav-tag">Platform Intelligence Kit · June 2026</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-kicker">FourthOS · Principal AI Research & Enablement</div>
+  <h1 class="hero-title">Platform Intelligence<br><em>Working Kit</em></h1>
+  <p class="hero-body">Two working tools — plus a shareable CTO briefing — for extracting and structuring Christian Berthelsen's vision of the Fourth customer-facing AI platform — the system that lets any restaurant's AI agent connect through Fourth's governed front door. Use these together across multiple conversations to progressively build a complete specification from the source.</p>
+</div>
+
+<div class="main">
+
+  <!-- TOOL 1 -->
+  <div class="tool-card">
+    <div class="tc-head">
+      <div class="tc-num">Tool 01 of 03</div>
+      <div class="tc-title">Architecture<br>Canvas</div>
+      <div class="tc-desc">A live diagram of the full platform — every component laid out spatially so you and Christian can point at specific pieces and correct them in real time.</div>
+    </div>
+    <div class="tc-body">
+      <ul class="tc-uses">
+        <li>Open during calls — the whole architecture is visible without scrolling</li>
+        <li>Click any component to open an annotation panel and capture his exact words</li>
+        <li>Mark each box as Confirmed, Inferred, or Unknown as the conversation moves</li>
+        <li>Export the annotated state as JSON after each session — import it back next call to pick up exactly where you left</li>
+        <li>The progress bar shows how much of the vision is documented vs. still unknown</li>
+      </ul>
+      <a class="tc-link" href="christian-architecture-canvas.html">Open canvas</a>
+    </div>
+  </div>
+
+  <!-- TOOL 2 -->
+  <div class="tool-card">
+    <div class="tc-head">
+      <div class="tc-num">Tool 02 of 03</div>
+      <div class="tc-title">Interview<br>Guide</div>
+      <div class="tc-desc">A structured extraction framework across six domains. Not a script — a navigation map for what you need to leave each conversation with.</div>
+    </div>
+    <div class="tc-body">
+      <ul class="tc-uses">
+        <li>Six domains, each with 3–5 questions and a "listen for" panel of signals to notice</li>
+        <li>Every question shows why it matters and what specific output it produces for the Notion spec</li>
+        <li>Pre-populated with what's already confirmed from the June 4 transcript — don't re-ask what's captured</li>
+        <li>The capture template at the bottom defines the exact fields the FourthOS Notion page needs</li>
+        <li>Use alongside the canvas — when a question gets answered, flip to the canvas and mark it confirmed</li>
+      </ul>
+      <a class="tc-link" href="christian-interview-guide.html">Open guide</a>
+    </div>
+  </div>
+
+  <!-- TOOL 3 — CTO BRIEFING -->
+  <div class="tool-card" style="grid-column:1/-1;">
+    <div class="tc-head">
+      <div class="tc-num">Briefing 03 of 03</div>
+      <div class="tc-title">CTO<br>One-Pager</div>
+      <div class="tc-desc">The orientation briefing — &ldquo;Every AI in a restaurant runs through Fourth.&rdquo; A standalone document to share with Christian or Carly ahead of a deeper session.</div>
+    </div>
+    <div class="tc-body">
+      <ul class="tc-uses">
+        <li>The thesis, the problem worth solving, and the governed front door on one page</li>
+        <li>Print-ready — send as a PDF or share the link before a call</li>
+        <li>Use it to anchor the conversation, then switch to the canvas to capture what he says</li>
+      </ul>
+      <a class="tc-link" href="cto-onepager.html">Open one-pager</a>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how">
+    <div class="how-title">How to use this kit across conversations</div>
+    <div class="how-steps">
+      <div class="hs done">
+        <div class="hs-dot">1</div>
+        <div class="hs-label">Before the call</div>
+        <div class="hs-sub">Review the interview guide — note which domains are still red on the canvas</div>
+      </div>
+      <div class="hs active">
+        <div class="hs-dot">2</div>
+        <div class="hs-label">During the call</div>
+        <div class="hs-sub">Canvas open on screen — click boxes, type his words, flip statuses live</div>
+      </div>
+      <div class="hs">
+        <div class="hs-dot">3</div>
+        <div class="hs-label">After the call</div>
+        <div class="hs-sub">Export canvas JSON → paste into Notion as a code block for permanent record</div>
+      </div>
+      <div class="hs">
+        <div class="hs-dot">4</div>
+        <div class="hs-label">Next session</div>
+        <div class="hs-sub">Import the JSON back — canvas restores exactly as left, notes and all</div>
+      </div>
+      <div class="hs">
+        <div class="hs-dot">5</div>
+        <div class="hs-label">Spec complete</div>
+        <div class="hs-sub">All boxes confirmed — canvas becomes the living Notion project specification</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIDENCE KEY -->
+  <div class="key">
+    <span class="key-lbl">Confidence key</span>
+    <div class="ki"><span class="ki-line solid"></span>Confirmed — in his own words from transcript or deck</div>
+    <div class="ki"><span class="ki-line dashed"></span>Inferred — our best read, not yet verified by him</div>
+    <div class="ki"><span class="ki-line dotted"></span>Unknown — open question, needs his answer</div>
+    <span class="key-note">Status updates live on the canvas during calls. Export preserves all states.</span>
+  </div>
+
+  <!-- PRINCIPLES -->
+  <div class="principles">
+    <div class="pr">
+      <div class="pr-rule">Operating rule</div>
+      <div class="pr-title">Source first</div>
+      <div class="pr-body">Every confirmed item links back to his exact words — the June 4 transcript or the governed AI access deck. Nothing is marked confirmed from inference alone.</div>
+    </div>
+    <div class="pr">
+      <div class="pr-rule">Operating rule</div>
+      <div class="pr-title">Canvas is the spec</div>
+      <div class="pr-body">The Notion project page for the External Developer Experience Portal gets its content from this canvas. When all boxes are confirmed, the canvas becomes the brief.</div>
+    </div>
+    <div class="pr">
+      <div class="pr-rule">Operating rule</div>
+      <div class="pr-title">Wrong is useful</div>
+      <div class="pr-body">Inferred boxes exist to be corrected. A wrong guess on the canvas provokes a faster, more specific response than an open question. Use the wrong labels deliberately.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

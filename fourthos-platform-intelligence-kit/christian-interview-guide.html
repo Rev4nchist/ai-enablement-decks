@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Guide — Fourth Platform Intelligence Kit</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230E5A4A'/%3E%3Ctext x='8' y='12' font-size='11' font-family='Georgia,serif' fill='%23F6F3EE' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+
+:root {
+  --paper: #F6F3EE; --paper2: #EDE9E1;
+  --ink: #18140F; --ink2: #3A332A;
+  --muted: #7A7269; --dim: #ADA69D;
+  --rule: #D8D2C8; --rule2: #EDE9E2;
+  --accent: #1B5E52; --accent-l: #EAF3F1;
+  --card: #FDFCF9;
+  --teal: #1B5E52; --teal-l: #EAF3F1;
+  --gold: #8C5000; --gold-l: #FEF4E2;
+  --rose: #7A2323; --rose-l: #FCE9E9;
+  --purple: #3D2A7A; --purple-l: #EDEAF8;
+  --green: #1A5C32; --green-l: #E8F5EE;
+  --mid: #3A332A;
+  --navy: #18140F;
+  --bg: var(--paper);
+  --sans: 'Inter', system-ui, sans-serif;
+  --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav { background: var(--ink); padding: 0 24px; display: flex; align-items: center; height: 44px; position: sticky; top: 0; z-index: 50; }
+.nav-brand { font-family: var(--cond); font-size: 15px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #fff; margin-right: 24px; text-decoration: none; }
+.nav-brand span { color: #6ECFC4; }
+.nav-links { display: flex; gap: 2px; }
+.nav-link { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.45); padding: 5px 12px; border-radius: 3px; text-decoration: none; transition: all .15s; }
+.nav-link:hover { color: rgba(255,255,255,.8); }
+.nav-link.active { color: #fff; background: rgba(255,255,255,.1); }
+.nav-tag { margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.25); }
+
+/* ── FRAME ── */
+.frame {
+  max-width: 900px;
+  margin: 24px auto;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+/* ── OLD TOP BAR — replaced by nav above ── */
+.topbar { display: none; }
+.tb-left { display: none; }
+.tb-right { display: none; }
+
+/* ── INTENT STRIP ── */
+.intent {
+  background: var(--ink);
+  padding: 20px 36px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.intent-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+
+.intent-body {
+  font-size: 13px;
+  color: rgba(255,255,255,.72);
+  line-height: 1.65;
+}
+
+.intent-body strong { color: #fff; }
+
+/* ── WHAT WE KNOW ── */
+.know-section {
+  padding: 24px 36px 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.section-label {
+  font-family: var(--cond);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 12px;
+}
+
+.know-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.know-item {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  padding: 8px 11px;
+  background: var(--green-l);
+  border: 1px solid rgba(26,92,50,.15);
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.5;
+}
+
+.know-item::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+/* ── BODY ── */
+.body { padding: 0 36px; }
+
+/* ── DOMAIN SECTIONS ── */
+.domain {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.domain:last-child { border-bottom: none; }
+
+.domain-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.domain-num {
+  width: 30px;
+  height: 30px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--cond);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.domain-title-group {}
+
+.domain-title {
+  font-family: var(--cond);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink);
+  letter-spacing: .03em;
+  line-height: 1.15;
+}
+
+.domain-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── QUESTION CARDS ── */
+.q-stack { display: flex; flex-direction: column; gap: 8px; }
+
+.q-card {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  overflow: hidden;
+  background: var(--card);
+}
+
+.q-card-top {
+  padding: 11px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.q-intent {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+.qi-vision    { background: var(--purple-l); color: var(--purple); }
+.qi-structure { background: var(--teal-l); color: var(--teal); }
+.qi-customer  { background: var(--gold-l); color: var(--gold); }
+.qi-limits    { background: var(--rose-l); color: var(--rose); }
+.qi-timing    { background: var(--paper2); color: var(--muted); border: 1px solid var(--rule); }
+
+.q-text {
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.q-card-bottom {
+  padding: 8px 14px 10px 36px;
+  background: var(--paper);
+  border-top: 1px solid var(--rule2);
+}
+
+.q-why {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.q-why strong { color: var(--ink2); }
+
+/* ── KNOWN ANSWER CONTEXT ── */
+.q-context {
+  padding: 7px 14px 7px 36px;
+  background: var(--green-l);
+  border-top: 1px solid rgba(26,92,50,.1);
+  font-size: 11.5px;
+  color: var(--green);
+  line-height: 1.5;
+}
+
+.q-context strong { color: var(--green); }
+
+/* ── LISTEN-FOR CARDS ── */
+.listen-section {
+  margin-top: 14px;
+  background: var(--ink2);
+  overflow: hidden;
+}
+
+.listen-header {
+  padding: 9px 14px;
+  font-family: var(--cond);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.38);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.listen-grid {
+  padding: 10px 14px 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.listen-item {
+  display: flex;
+  gap: 8px;
+  font-size: 11.5px;
+  color: rgba(255,255,255,.6);
+  line-height: 1.5;
+}
+
+.listen-item::before {
+  content: '—';
+  color: #6ECFC4;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* ── CAPTURE TEMPLATE ── */
+.capture-section {
+  background: var(--paper2);
+  border-top: 1px solid var(--rule);
+  padding: 24px 36px;
+}
+
+.capture-title {
+  font-family: var(--cond);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+
+.capture-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.capture-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.capture-block {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  padding: 13px 15px;
+}
+
+.cb-label {
+  font-family: var(--cond);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 7px;
+}
+
+.cb-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cb-line {
+  border-bottom: 1px solid var(--rule2);
+  padding-bottom: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cb-q { display: flex; gap: 7px; }
+.cb-q::before {
+  content: '—';
+  color: var(--rule);
+  flex-shrink: 0;
+}
+
+.cb-line:last-child { border-bottom: none; padding-bottom: 0; }
+
+.cb-input {
+  width: 100%; box-sizing: border-box;
+  font: inherit; font-size: 12px; line-height: 1.45; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--rule);
+  border-radius: 2px; padding: 6px 8px; resize: vertical; min-height: 34px;
+}
+.cb-input:focus { outline: none; border-color: var(--accent); }
+.cb-input::placeholder { color: var(--dim); font-style: italic; }
+
+.capture-actions { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.ca-btn { font: inherit; font-size: 11px; font-weight: 600; padding: 7px 14px; cursor: pointer; border: 1px solid var(--ink); background: var(--card); color: var(--ink); border-radius: 2px; }
+.ca-btn.go { background: var(--ink); color: #fff; }
+.ca-btn:hover { border-color: var(--accent); color: var(--accent); }
+.ca-btn.go:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ca-status { margin-left: auto; font-size: 11px; color: var(--muted); font-style: italic; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 12px 36px;
+  border-top: 1px solid var(--rule);
+  background: var(--card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+/* tags inline */
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  margin-right: 4px;
+}
+
+/* legend */
+.legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 36px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .frame { margin: 0; }
+  .know-grid, .listen-grid, .capture-grid { grid-template-columns: 1fr; }
+  .intent { flex-direction: column; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">Fourth<span>iQ</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Overview</a>
+    <a class="nav-link" href="christian-architecture-canvas.html">Architecture canvas</a>
+    <a class="nav-link" href="christian-interview-guide.html">Interview guide</a>
+    <a class="nav-link" href="cto-onepager.html">CTO one-pager</a>
+  </div>
+  <span class="nav-tag">Platform Intelligence Kit · June 2026</span>
+</nav>
+
+<div class="frame">
+
+  <!-- TOP BAR (hidden by CSS — nav replaces it) -->
+  <div class="topbar">
+    <div class="tb-left">Christian Interview Guide — Fourth Platform Intelligence</div>
+    <div class="tb-right">
+      Prepared by Donna · FourthOS · June 2026<br>
+      Source material: June 4 meeting transcript · Governed AI Access deck
+    </div>
+  </div>
+
+  <!-- INTENT -->
+  <div class="intent">
+    <div class="intent-icon">🧭</div>
+    <div class="intent-body">
+      <strong>Purpose of this guide:</strong> Extract the full structure of Christian's platform intelligence vision — specifically the customer-facing connection layer — so it can be captured in FourthOS as a working specification. You won't ask these questions directly. Use them to orient conversation, notice when an answer lands, and know what to probe when he goes broad. The output is a Notion project page with enough clarity to start building against.
+    </div>
+  </div>
+
+  <!-- WHAT WE ALREADY KNOW -->
+  <div class="know-section">
+    <div class="section-label">What's already captured — don't re-ask these</div>
+    <div class="know-grid">
+      <div class="know-item">~300 tools planned for the MCP server covering all Fourth systems</div>
+      <div class="know-item">The Salesforce-model analogy — become the platform, not the app</div>
+      <div class="know-item">Revenue model: charge for intelligence layer even when customers use competitors</div>
+      <div class="know-item">The AI sprawl problem: 10+ vendor agents per restaurant, no central governance</div>
+      <div class="know-item">Any agent from any vendor must connect through Fourth to get location context</div>
+      <div class="know-item">Trust center exists — customers can report AI issues, data concerns</div>
+      <div class="know-item">Portal must be visual, live, example-led — not a 57-page documentation site</div>
+      <div class="know-item">Target audiences: CIOs, developers/engineers, restaurant consultants</div>
+      <div class="know-item">Governance proxy architecture: per-user identity, audit trail, rate limits</div>
+      <div class="know-item">Christian's tech is "way ahead of where people think it is" — he's being deliberate about timing</div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><span class="tag qi-vision">Vision</span> What does he see</div>
+    <div class="legend-item"><span class="tag qi-structure">Structure</span> How it's built / works</div>
+    <div class="legend-item"><span class="tag qi-customer">Customer</span> Who uses it, how</div>
+    <div class="legend-item"><span class="tag qi-limits">Limits</span> What's out of scope / risks</div>
+    <div class="legend-item"><span class="tag qi-timing">Timing</span> Sequence and gates</div>
+  </div>
+
+  <div class="body">
+
+    <!-- DOMAIN 1: THE PLATFORM VISION -->
+    <div class="domain">
+      <div class="domain-header">
+        <div class="domain-num">1</div>
+        <div class="domain-title-group">
+          <div class="domain-title">The Platform Vision — What He Actually Sees</div>
+          <div class="domain-subtitle">His mental model of the end state. What he's building toward, not just what's live now.</div>
+        </div>
+      </div>
+
+      <div class="q-stack">
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-vision">Vision</span>
+            <div class="q-text">When you imagine a customer's AI agent connecting to Fourth two years from now — walk me through what that looks like end to end. What does the customer's side look like, and what does Fourth's side do?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">The most open question on the list. Let him paint the picture without steering. <strong>What you need from this:</strong> the physical experience of the connection — what does the customer actually do, what does Fourth actually return, what does "governed access" feel like from the customer's seat.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-vision">Vision</span>
+            <div class="q-text">You mentioned getting me "inside the performance intelligence world" — what's the thing that, once I understand it, changes how I see everything else?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He said this directly in the June 4 meeting. It's an invitation he gave you — take it. <strong>What you need:</strong> the core concept that makes the whole platform make sense. Probably something about the intelligence layer being the product, not the application.</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Christian needs to get David inside the performance intelligence world to fully understand the vision." This is a door he already opened.</div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">The ~300 tools — how are they organised? Is it one big catalogue, or grouped by system, by role, by use case?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> the taxonomy of the tool catalogue. This is the foundation of the Developer Experience Portal — you can't design the portal until you know how the tools are grouped and discovered.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">What's the difference between a tool and a skill in your model? Are they the same thing, or does the platform offer both?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He mentioned "skills packaged inside connectors" in the June 4 meeting. There's a distinction in his mind between raw data access (tools) and pre-packaged intelligence (skills). <strong>What you need:</strong> clarity on whether the platform serves raw operations or pre-built intelligence packages — or both, layered.</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Custom connectors allow packaging skills directly inside the connector itself. This eliminates the need for users to manage separate connectors and skills."</div>
+        </div>
+
+      </div>
+
+      <div class="listen-section">
+        <div class="listen-header">Listen for these signals</div>
+        <div class="listen-grid">
+          <div class="listen-item">Whether he distinguishes between "accessing data" and "accessing intelligence" — these are different products</div>
+          <div class="listen-item">Any mention of the playbook — what it contains, who builds it, how it's maintained per location</div>
+          <div class="listen-item">Whether the 300 tools are already designed or still being conceived</div>
+          <div class="listen-item">Whether he uses "API" vs "agent" language — signals how he expects customers to connect</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOMAIN 2: THE CUSTOMER CONNECTION -->
+    <div class="domain">
+      <div class="domain-header">
+        <div class="domain-num">2</div>
+        <div class="domain-title-group">
+          <div class="domain-title">The Customer Connection — How It Actually Works</div>
+          <div class="domain-subtitle">The mechanics of how a customer's AI tool connects. The flow nobody has documented yet.</div>
+        </div>
+      </div>
+
+      <div class="q-stack">
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-customer">Customer</span>
+            <div class="q-text">If I'm a customer CIO and I want to connect my company's AI tool to Fourth — what's the actual first step? Do I get credentials, install something, configure something?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">The onboarding flow is completely undocumented. <strong>What you need:</strong> the literal sequence — what does a customer IT team do from day one. This becomes the "Getting Started" section of the portal.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">When a customer's AI tool sends a request — who authenticates it? Does the customer's user log in, or does the customer's IT team set up a service account, or something else?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">The internal governance proxy uses per-user Microsoft identity. It's unclear if that model extends to external customers. <strong>What you need:</strong> the external auth model — is it their own Microsoft tenant, a Fourth-issued credential, or something else entirely.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">You mentioned middleware that transforms vague prompts into specific actions. Where does that live — in Fourth's platform, or does the customer configure it, or is it something else?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> whether the intelligence transformation (raw prompt → governed action) happens inside Fourth's layer or requires customer configuration. This changes what the customer experience looks like significantly.</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Middleware can transform vague prompts into actionable requests using Salesforce navigation knowledge. Multiple middleware layers can transform requests in different ways for higher quality outputs."</div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-customer">Customer</span>
+            <div class="q-text">What does the customer actually get back? Is it data, a formatted answer, a dashboard, something they can act on — or do they decide?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">The governed AI access deck shows "apps, live dashboards, generative UI" as outputs. <strong>What you need:</strong> whether the output format is fixed by Fourth, configurable by the customer, or driven entirely by the AI tool the customer brings. The answer shapes what CMA's role is.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-customer">Customer</span>
+            <div class="q-text">Is there a customer who's already using this, or ready to pilot? If so, who — and what are they trying to do?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">The most grounding question on the list. <strong>What you need:</strong> a real use case with a real customer, even if it's early or informal. If he names one, that becomes the reference implementation for everything.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="listen-section">
+        <div class="listen-header">Listen for these signals</div>
+        <div class="listen-grid">
+          <div class="listen-item">Any mention of a specific customer, prospect, or pilot — even a "we're in conversations with..." signals what's real vs. theoretical</div>
+          <div class="listen-item">Whether he distinguishes between what a large enterprise customer vs. a restaurant consultant would do differently</div>
+          <div class="listen-item">How he handles the question of customers who use competitors' scheduling tools — can they still connect to Fourth's intelligence layer?</div>
+          <div class="listen-item">Any mention of pricing at the connection level — per call, per seat, subscription, or consumption-based</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOMAIN 3: THE PLAYBOOK & INTELLIGENCE LAYER -->
+    <div class="domain">
+      <div class="domain-header">
+        <div class="domain-num">3</div>
+        <div class="domain-title-group">
+          <div class="domain-title">The Intelligence Layer — What Makes It Worth Connecting To</div>
+          <div class="domain-subtitle">The "25 years of data" claim only has value if it's structured and accessible. What is it actually?</div>
+        </div>
+      </div>
+
+      <div class="q-stack">
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-vision">Vision</span>
+            <div class="q-text">You mentioned that AI agents need the "playbook and context for each location" to actually be useful. What is the playbook — is it structured data, a document, something Fourth builds, or something the customer builds?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">This is the core of the intelligence layer claim. <strong>What you need:</strong> is the playbook a Fourth-maintained knowledge base about how hospitality operations work, or is it customer-specific configuration, or both — and who is responsible for keeping it current.</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Simply feeding all restaurant data to an AI asking 'what should I schedule next week?' produces poor results without location-specific context. The intelligence platform provides this crucial context layer."</div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">How does Fourth's 25 years of data get turned into something a customer's AI agent can actually use? Is it pre-processed into benchmarks, surfaced on demand, or does it work differently?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> whether the intelligence layer is proactively packaged (benchmarks, patterns, norms) or reactively assembled (the AI asks, Fourth queries). This determines the architecture significantly.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">When a customer's agent asks about a specific location — how does Fourth know what's specific to that location vs. what's general hospitality knowledge?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> the data model for location-specificity. Is this customer-configured, or does Fourth derive it from operational data, or both. Critical for understanding what the portal needs to help customers set up.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-limits">Limits</span>
+            <div class="q-text">Is the intelligence layer limited to customers who are on Fourth's platform, or can a customer using a competitor's scheduling tool still get value from connecting to Fourth?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He mentioned this directly — "Fourth will be able to ingest data from competitors' systems." <strong>What you need:</strong> the concrete model for how that works. Does the customer import competitor data to Fourth, or does Fourth reach out to it, or something else.</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Fourth will be able to ingest data from competitors' systems and still provide the intelligence layer. The platform becomes a cost center/revenue stream even when customers use competitors' tools."</div>
+        </div>
+
+      </div>
+
+      <div class="listen-section">
+        <div class="listen-header">Listen for these signals</div>
+        <div class="listen-grid">
+          <div class="listen-item">Whether he differentiates between "operational data" (what happened) and "intelligence" (what it means) — the gap between them is the product</div>
+          <div class="listen-item">Any mention of benchmarking — comparing a location to industry norms or similar sites is likely the primary intelligence value-add</div>
+          <div class="listen-item">Whether customers configure the intelligence layer or Fourth does it on their behalf</div>
+          <div class="listen-item">Any mention of data quality or freshness — how current does the context need to be to be useful</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOMAIN 4: GOVERNANCE & TRUST -->
+    <div class="domain">
+      <div class="domain-header">
+        <div class="domain-num">4</div>
+        <div class="domain-title-group">
+          <div class="domain-title">Governance & Trust — What the Customer's IT Team Cares About</div>
+          <div class="domain-subtitle">The trust center, permissions, compliance. What Christian has already built and what's still needed.</div>
+        </div>
+      </div>
+
+      <div class="q-stack">
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">You mentioned building a trust center. What does a customer actually see when they open it? What can they do there?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He mentioned the trust center multiple times in the June 4 meeting but never described its interface. <strong>What you need:</strong> is it a dashboard, a reporting feed, an issue log, an admin panel — and who at the customer accesses it (CIO, IT team, end users).</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Christian has built a trust center where customers can report AI issues, data concerns, and problems. Issues route to both the customer's central trust center and Fourth's trust center for monitoring and correction."</div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">When a customer's CIO asks "what has your AI done with our data?" — what can Fourth show them today, and what are you building to show them in six months?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> the concrete answer to the data governance question every enterprise CIO will ask. This is both a technical specification and a sales message.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-customer">Customer</span>
+            <div class="q-text">How does a customer control what their AI agents are allowed to do in Fourth? Can a CIO say "this agent can read but not write" or "this agent can only access location X"?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> the permission model from the customer's perspective. The internal model uses persona routing — does the external model expose the same concept, and is it self-serve or Fourth-configured.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-limits">Limits</span>
+            <div class="q-text">What are the non-negotiables from a governance perspective — things you'll never allow any external AI agent to do regardless of what the customer wants?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> the hard limits. This defines the boundary of the platform and tells you what the portal documentation needs to be explicit about up front.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="listen-section">
+        <div class="listen-header">Listen for these signals</div>
+        <div class="listen-grid">
+          <div class="listen-item">Whether the trust center is already built and live, or conceptual — the June 4 notes say "Christian has built" it, but the scope is unclear</div>
+          <div class="listen-item">Whether the write/action capability is ever planned for external customers, or deliberately kept read-only</div>
+          <div class="listen-item">Any mention of compliance requirements (SOC 2, GDPR, HIPAA for healthcare hospitality) that shape what's permitted</div>
+          <div class="listen-item">Whether customers see each other's data in any way, or if isolation is total</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOMAIN 5: THE PORTAL -->
+    <div class="domain">
+      <div class="domain-header">
+        <div class="domain-num">5</div>
+        <div class="domain-title-group">
+          <div class="domain-title">The Developer Experience Portal — What He Built and What He Wants</div>
+          <div class="domain-subtitle">He built a 4-hour prototype site. Dave owns this going forward. What's the brief?</div>
+        </div>
+      </div>
+
+      <div class="q-stack">
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-vision">Vision</span>
+            <div class="q-text">When you imagine a customer's developer team landing on the portal for the first time — what's the one thing you want them to understand in the first 30 seconds?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He has strong opinions about this (not a 57-page docs site, keep it visual and live). <strong>What you need:</strong> the single message the portal must land. This becomes the hero of every page Dave builds.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">You built the initial site in four hours. Can you walk me through it — what sections are there, what were you trying to show with each one?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">The site is at rev4nchist.github.io/ai-enablement-decks/governed-ai-access/ — Dave has seen it. But asking Christian to walk through his own intent will surface what he was trying to communicate, not just what's there. <strong>What you need:</strong> his mental model of the portal structure, in his words.</div>
+          </div>
+          <div class="q-context"><strong>Already captured from the site:</strong> The deck covers: the core idea, why a governance proxy, the 4-step connection flow, governance features live today, the connector foundation, the multiplier (cross-system), beyond-text outputs, and current state/roadmap.</div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-customer">Customer</span>
+            <div class="q-text">Who's the primary person you imagine using the portal — a developer writing integration code, a CIO evaluating whether to connect, or someone else?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He mentioned developers, engineers, CIOs, IT departments, restaurant consultants. These have very different needs. <strong>What you need:</strong> who he'd design the portal for if he could only pick one audience, and whether the others get their own paths or a shared experience.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-structure">Structure</span>
+            <div class="q-text">What does "working example" look like to you — code someone can copy, a live demo they can interact with, a video, or something else?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He explicitly wants examples, not documentation. <strong>What you need:</strong> the format he has in mind so Dave builds the right things — runnable code samples, interactive sandboxes, recorded demos, or live environments.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-timing">Timing</span>
+            <div class="q-text">What's the minimum state the portal needs to reach before you'd show it to a real customer or prospect?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> his bar for what "ready to show externally" means. This is the MVP definition Dave needs to work from.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="listen-section">
+        <div class="listen-header">Listen for these signals</div>
+        <div class="listen-grid">
+          <div class="listen-item">Any mention of a specific feature or section he's tried to build but wasn't happy with — those are the pain points to solve first</div>
+          <div class="listen-item">Whether he sees the portal as marketing (discovery and evangelism) or technical documentation (integration support) — they require different structures</div>
+          <div class="listen-item">Whether webinars and live content are part of his model, or whether he sees the site itself as the primary channel</div>
+          <div class="listen-item">Any frustration with how the current site doesn't communicate what he wants — this is the brief in disguise</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOMAIN 6: GO-TO-MARKET & TIMING -->
+    <div class="domain">
+      <div class="domain-header">
+        <div class="domain-num">6</div>
+        <div class="domain-title-group">
+          <div class="domain-title">Go-to-Market & Timing — What Has to Be True Before This Launches</div>
+          <div class="domain-subtitle">The sequence, the gates, the first customer. He's deliberate about not rushing this.</div>
+        </div>
+      </div>
+
+      <div class="q-stack">
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-timing">Timing</span>
+            <div class="q-text">What's the thing that has to be true before you'd let an external customer connect their AI to Fourth — technically, commercially, or from a trust perspective?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> his personal launch gate. This is more important than a timeline — it tells you what to build toward.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-customer">Customer</span>
+            <div class="q-text">Who's the first customer you'd want to try this — do you have someone in mind, or is it a type of customer rather than a specific name?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> a real name or profile. If it's a specific customer, everything should be designed against that pilot. If it's a type, that type needs to be defined precisely enough to build for.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-timing">Timing</span>
+            <div class="q-text">How do you see this being sold or introduced — does it go through the existing sales team, is it self-serve, or is it a different motion entirely?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> whether this is a top-down CTO/CIO sale, a self-serve developer adoption, or a product-led motion. This determines who the portal is actually designed to convince.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-limits">Limits</span>
+            <div class="q-text">What's the thing you're most worried about getting wrong on the external customer side — technically, commercially, or reputationally?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why">He said CIOs who "get it in seconds" are the ones who understand head office transformation. The others will "be hit like a truck" by AI sprawl. <strong>What you need:</strong> what keeps him up at night about this specifically. His top risk is the best signal for what to design defensively.</div>
+          </div>
+        </div>
+
+        <div class="q-card">
+          <div class="q-card-top">
+            <span class="q-intent qi-vision">Vision</span>
+            <div class="q-text">You described this as creating a new category — a network platform. What does Fourth need to have done in 18 months for that claim to be credible?</div>
+          </div>
+          <div class="q-card-bottom">
+            <div class="q-why"><strong>What you need:</strong> success looks like what, specifically. Not KPIs — the concrete evidence that would tell him (and tell Carly and Scott) that the bet paid off.</div>
+          </div>
+          <div class="q-context"><strong>From his June 4 words:</strong> "Success depends on whether Fourth is 'truly creating a new category' and getting others to adopt the platform." He knows this is the measure — ask him to make it concrete.</div>
+        </div>
+
+      </div>
+
+      <div class="listen-section">
+        <div class="listen-header">Listen for these signals</div>
+        <div class="listen-grid">
+          <div class="listen-item">Whether he has a specific customer, pilot, or partner in mind — any proper noun here is gold</div>
+          <div class="listen-item">The "grind element" he mentioned — ecosystem building takes time. Does he have a timeframe in mind, or is he deliberately not committing to one?</div>
+          <div class="listen-item">Any mention of Scott (CEO) or board-level visibility on this — signals how strategically prioritised this actually is</div>
+          <div class="listen-item">Whether pricing is designed or still being worked out — if he hasn't landed on a model yet, that's a decision Dave can help shape</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end body -->
+
+  <!-- CAPTURE TEMPLATE -->
+  <div class="capture-section">
+    <div class="capture-title">What to capture after the meeting — the Notion spec</div>
+    <div class="capture-sub">These are the fields the FourthOS project page for the External Developer Experience Portal needs to contain. If a conversation produces an answer, type it here during the session — answers autosave in this browser and can be exported straight into Notion.</div>
+    <div class="capture-grid">
+
+      <div class="capture-block">
+        <div class="cb-label">The Platform Vision</div>
+        <div class="cb-lines">
+          <div class="cb-line"><span class="cb-q">The end state in one sentence (Christian's words)</span><textarea class="cb-input" data-k="vision.1" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">What "performance intelligence" means concretely</span><textarea class="cb-input" data-k="vision.2" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">How the ~300 tools are organised / what domains they cover</span><textarea class="cb-input" data-k="vision.3" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">What a "skill" is vs. a "tool" in his model</span><textarea class="cb-input" data-k="vision.4" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="capture-block">
+        <div class="cb-label">The Customer Connection</div>
+        <div class="cb-lines">
+          <div class="cb-line"><span class="cb-q">Step-by-step: how a customer connects their AI to Fourth</span><textarea class="cb-input" data-k="connection.1" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Authentication model for external customers</span><textarea class="cb-input" data-k="connection.2" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">What the customer's AI actually receives back</span><textarea class="cb-input" data-k="connection.3" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">First customer / pilot name or profile</span><textarea class="cb-input" data-k="connection.4" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="capture-block">
+        <div class="cb-label">The Intelligence Layer</div>
+        <div class="cb-lines">
+          <div class="cb-line"><span class="cb-q">What the "playbook" is — structure, ownership, maintenance</span><textarea class="cb-input" data-k="intelligence.1" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">How 25 years of data is made queryable by external AI</span><textarea class="cb-input" data-k="intelligence.2" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Whether competitor-data ingestion is real and how it works</span><textarea class="cb-input" data-k="intelligence.3" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">What intelligence is pre-packaged vs. assembled on demand</span><textarea class="cb-input" data-k="intelligence.4" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="capture-block">
+        <div class="cb-label">Governance & Trust</div>
+        <div class="cb-lines">
+          <div class="cb-line"><span class="cb-q">What the trust center shows and who can access it</span><textarea class="cb-input" data-k="governance.1" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Customer permission model (what they can configure)</span><textarea class="cb-input" data-k="governance.2" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Hard limits — what no external agent can ever do</span><textarea class="cb-input" data-k="governance.3" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Compliance requirements already accounted for</span><textarea class="cb-input" data-k="governance.4" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="capture-block">
+        <div class="cb-label">The Portal Brief</div>
+        <div class="cb-lines">
+          <div class="cb-line"><span class="cb-q">Primary audience: who is it designed for first</span><textarea class="cb-input" data-k="portal.1" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">The one message it must land in 30 seconds</span><textarea class="cb-input" data-k="portal.2" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">What "working example" means to him (format)</span><textarea class="cb-input" data-k="portal.3" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">MVP definition — minimum state to show externally</span><textarea class="cb-input" data-k="portal.4" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="capture-block">
+        <div class="cb-label">Go-to-Market</div>
+        <div class="cb-lines">
+          <div class="cb-line"><span class="cb-q">Launch gate — what must be true first</span><textarea class="cb-input" data-k="gtm.1" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Sales motion (top-down CIO / self-serve developer / other)</span><textarea class="cb-input" data-k="gtm.2" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">Pricing model or direction</span><textarea class="cb-input" data-k="gtm.3" rows="2"></textarea></div>
+          <div class="cb-line"><span class="cb-q">18-month success definition in his words</span><textarea class="cb-input" data-k="gtm.4" rows="2"></textarea></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="capture-actions">
+      <button class="ca-btn go" onclick="copyMd()">Copy as Markdown</button>
+      <button class="ca-btn" onclick="downloadJson()">Download JSON</button>
+      <button class="ca-btn" onclick="importJson()">Import JSON</button>
+      <button class="ca-btn" onclick="clearAll()">Clear</button>
+      <input type="file" id="caimp" accept="application/json" hidden>
+      <span class="ca-status" id="castat">Answers save in this browser as you type — export before switching devices.</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Donna · FourthOS · June 2026 · Use to orient — not to interrogate</span>
+    <span>Source: June 4 meeting transcript · Governed AI Access deck · Connector Ecosystem plan</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var LS_KEY='fourthos-pik:guide:v1', t;
+  function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+  function stat(m){var el=document.getElementById('castat');if(el)el.textContent=m;}
+  function collect(){
+    var fields={};
+    $$('.cb-input').forEach(function(i){if(i.value.trim())fields[i.dataset.k]=i.value;});
+    return fields;
+  }
+  function save(){clearTimeout(t);t=setTimeout(function(){
+    try{localStorage.setItem(LS_KEY,JSON.stringify({v:1,at:new Date().toISOString(),fields:collect()}));
+      stat('Saved locally · '+new Date().toTimeString().slice(0,5));}
+    catch(e){stat('Could not save (private browsing?) — export before closing!');}
+  },350);}
+  function applyFields(fields){$$('.cb-input').forEach(function(i){i.value=fields[i.dataset.k]||'';});}
+  function restore(){
+    try{var p=JSON.parse(localStorage.getItem(LS_KEY)||'null');
+      if(p&&p.fields&&Object.keys(p.fields).length){applyFields(p.fields);stat('Restored your previous answers ✓');}}
+    catch(e){}
+  }
+  function buildMd(){
+    var md='# FourthOS Platform Intelligence — Interview Capture\n_Exported '+new Date().toISOString().slice(0,10)+'_\n';
+    $$('.capture-block').forEach(function(b){
+      var label=b.querySelector('.cb-label').textContent;
+      var lines=[];
+      b.querySelectorAll('.cb-line').forEach(function(l){
+        var q=l.querySelector('.cb-q').textContent;
+        var a=l.querySelector('.cb-input').value.trim();
+        if(a)lines.push('- **'+q+'**: '+a);
+      });
+      if(lines.length)md+='\n## '+label+'\n'+lines.join('\n')+'\n';
+    });
+    return md;
+  }
+  window.copyMd=function(){
+    var md=buildMd();
+    function fb(txt){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();stat('Copied as Markdown ✓ paste into Notion');}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(md).then(function(){stat('Copied as Markdown ✓ paste into Notion');},function(){fb(md);});}
+    else fb(md);
+  };
+  window.downloadJson=function(){
+    var blob=new Blob([JSON.stringify({v:1,at:new Date().toISOString(),fields:collect()},null,2)],{type:'application/json'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='fourthos-interview-capture-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();a.remove();stat('Downloaded ✓');
+  };
+  window.importJson=function(){document.getElementById('caimp').click();};
+  document.getElementById('caimp').addEventListener('change',function(){
+    var f=this.files[0],self=this;if(!f)return;
+    var r=new FileReader();
+    r.onload=function(){try{var p=JSON.parse(r.result);if(!p.fields)throw 0;applyFields(p.fields);save();stat('Imported ✓');}catch(e){stat('Import failed — check JSON');}self.value='';};
+    r.readAsText(f);
+  });
+  window.clearAll=function(){
+    if(!confirm('Clear all captured answers?'))return;
+    applyFields({});try{localStorage.removeItem(LS_KEY);}catch(e){}stat('Cleared');
+  };
+  $$('.cb-input').forEach(function(i){i.addEventListener('input',save);});
+  restore();
+})();
+</script>
+</body>
+</html>

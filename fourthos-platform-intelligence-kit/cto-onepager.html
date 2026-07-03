@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fourth Platform Intelligence — CTO Briefing</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230E5A4A'/%3E%3Ctext x='8' y='12' font-size='11' font-family='Georgia,serif' fill='%23F6F3EE' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+
+:root {
+  --ink:   #0b1220;
+  --navy:  #0f1e3d;
+  --mid:   #3d4f6e;
+  --muted: #6b7a94;
+  --rule:  #dde1ea;
+  --bg:    #f4f5f8;
+  --card:  #ffffff;
+  --teal:  #0b7a6e;
+  --teal-l:#e3f4f2;
+  --gold:  #c47c0a;
+  --gold-l:#fef3de;
+  --rose:  #a63030;
+  --rose-l:#fceaea;
+  --disp:  'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --body:  'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── FRAME ── */
+.frame {
+  max-width: 1020px;
+  margin: 28px auto;
+  background: var(--card);
+  border: 1px solid #c8cdd8;
+  border-radius: 3px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  background: var(--navy);
+  padding: 18px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mast-brand {
+  font-family: var(--disp);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.mast-brand span {
+  color: #4fc3b8;
+  margin-left: 2px;
+}
+
+.mast-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .05em;
+  text-align: right;
+  line-height: 1.5;
+}
+
+/* ── THESIS STRIPE ── */
+.thesis {
+  background: var(--ink);
+  padding: 28px 44px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 36px;
+  align-items: center;
+  border-bottom: 3px solid var(--teal);
+}
+
+.thesis-headline {
+  font-family: var(--disp);
+  font-size: 52px;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: .96;
+  letter-spacing: -.5px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.thesis-headline em {
+  font-style: normal;
+  color: #4fc3b8;
+}
+
+.thesis-right {
+  border-left: 1px solid rgba(255,255,255,.12);
+  padding-left: 36px;
+}
+
+.thesis-statement {
+  font-size: 15px;
+  color: rgba(255,255,255,.75);
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+.thesis-statement strong {
+  color: #fff;
+}
+
+/* ── BODY PAD ── */
+.body { padding: 0 44px; }
+
+/* ── SITUATION STRIP ── */
+.situation {
+  padding: 24px 0 20px;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.sit-label {
+  font-family: var(--disp);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding-top: 3px;
+}
+
+.sit-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.sit-card {
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+
+.sit-icon { font-size: 18px; margin-bottom: 6px; }
+
+.sit-card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.sit-card-body {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ── THE VISION ── */
+.vision {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.section-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.vision-grid {
+  display: grid;
+  grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.vis-node {
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 16px 18px;
+  position: relative;
+}
+
+.vis-node.hero {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+
+.vis-node-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.ey-teal { color: #4fc3b8; }
+.ey-gold { color: var(--gold); }
+.ey-muted { color: var(--muted); }
+
+.vis-node-title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.vis-node.hero .vis-node-title { color: #fff; }
+.vis-node.hero .vis-node-body { color: rgba(255,255,255,.65); }
+
+.vis-node-body {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.vis-node-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-top: 8px;
+}
+
+.tag-live { background: var(--teal-l); color: var(--teal); }
+.tag-next { background: var(--gold-l); color: var(--gold); }
+.tag-vision { background: rgba(255,255,255,.1); color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.15); }
+
+.vis-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rule);
+  font-size: 16px;
+}
+
+/* ── HOW CUSTOMERS CONNECT ── */
+.connect {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.connect-left {}
+.connect-right {}
+
+.connect-flow {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cf-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,.05);
+}
+
+.cf-step:last-child { border-bottom: none; }
+
+.cf-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.cf-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.cf-text strong { color: var(--ink); }
+
+.connect-right-box {
+  background: var(--navy);
+  border-radius: 5px;
+  padding: 20px 22px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.crb-title {
+  font-family: var(--disp);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #4fc3b8;
+  letter-spacing: .05em;
+  margin-bottom: 12px;
+}
+
+.crb-example {
+  font-size: 13.5px;
+  font-style: italic;
+  color: rgba(255,255,255,.75);
+  line-height: 1.65;
+  padding: 12px 16px;
+  border-left: 2px solid #4fc3b8;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,.04);
+  border-radius: 0 4px 4px 0;
+}
+
+.crb-caption {
+  font-size: 11.5px;
+  color: rgba(255,255,255,.4);
+  line-height: 1.55;
+}
+
+.crb-caption strong { color: rgba(255,255,255,.65); }
+
+/* ── WHY IT MATTERS ── */
+.why {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.why-card {
+  border-top: 2px solid var(--rule);
+  padding-top: 14px;
+}
+
+.why-card.accent-teal { border-top-color: var(--teal); }
+.why-card.accent-gold { border-top-color: var(--gold); }
+.why-card.accent-navy { border-top-color: var(--navy); }
+
+.why-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.why-card-body {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.why-card-body strong { color: var(--ink); }
+
+/* ── BUILD NOW ── */
+.buildnow {
+  padding: 22px 0 26px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.bn-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.bn-item {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 14px 15px;
+}
+
+.bn-phase {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.ph-1 { color: var(--teal); }
+.ph-2 { color: var(--gold); }
+.ph-3 { color: var(--mid); }
+
+.bn-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.bn-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--bg);
+  border-top: 1px solid var(--rule);
+  padding: 14px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-left {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.footer-right {
+  display: flex;
+  gap: 24px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-n {
+  font-family: var(--disp);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.stat-l {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Kit site chrome (shared nav) */
+nav.kitnav { background: #18140F; padding: 0 32px; display: flex; align-items: center; height: 48px; gap: 0; border-bottom: 1px solid rgba(255,255,255,.08); font-family: 'Inter', sans-serif; }
+nav.kitnav .nav-brand { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #fff; margin-right: 28px; text-decoration: none; }
+nav.kitnav .nav-brand span { color: #6ECFC4; }
+nav.kitnav .nav-links { display: flex; gap: 2px; }
+nav.kitnav .nav-link { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.5); padding: 6px 14px; border-radius: 3px; text-decoration: none; transition: all .15s; }
+nav.kitnav .nav-link:hover { color: rgba(255,255,255,.85); background: rgba(255,255,255,.06); }
+nav.kitnav .nav-link.active { color: #fff; background: rgba(255,255,255,.1); }
+nav.kitnav .nav-tag { margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); }
+
+@media print {
+  body { background: white; }
+  .frame { margin: 0; box-shadow: none; border: none; border-radius: 0; }
+  nav.kitnav { display: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (max-width: 800px) {
+  .thesis { grid-template-columns: 1fr; }
+  .thesis-headline { font-size: 36px; white-space: normal; }
+  .thesis-right { border-left: none; border-top: 1px solid rgba(255,255,255,.12); padding-left: 0; padding-top: 20px; }
+  .sit-content { grid-template-columns: 1fr; }
+  .vision-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .vis-arrow { display: none; }
+  .connect { grid-template-columns: 1fr; }
+  .why { grid-template-columns: 1fr; }
+  .bn-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="kitnav">
+  <a class="nav-brand" href="index.html">Fourth<span>iQ</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Overview</a>
+    <a class="nav-link" href="christian-architecture-canvas.html">Architecture canvas</a>
+    <a class="nav-link" href="christian-interview-guide.html">Interview guide</a>
+    <a class="nav-link active" href="cto-onepager.html">CTO one-pager</a>
+  </div>
+  <span class="nav-tag">Platform Intelligence Kit · June 2026</span>
+</nav>
+
+<div class="frame">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="mast-brand">Fourth<span>iQ</span> · Platform Intelligence</div>
+    <div class="mast-meta">
+      Prepared for Christian Berthelsen · CTO<br>
+      FourthOS · David Hayes · June 2026
+    </div>
+  </div>
+
+  <!-- THESIS STRIPE -->
+  <div class="thesis">
+    <div class="thesis-headline">
+      Every AI<br>
+      in a restaurant<br>
+      runs through<br>
+      <em>Fourth.</em>
+    </div>
+    <div class="thesis-right">
+      <p class="thesis-statement">
+        Fourth is building a <strong>governed intelligence platform</strong> that lets customers connect their own AI tools — and any AI vendor in their restaurant — directly to Fourth's systems. Scheduling data, labour signals, inventory, back-office. All of it. Through one secure front door that <strong>Fourth controls, audits, and charges for.</strong>
+      </p>
+      <p class="thesis-statement" style="margin-top:12px;">
+        This is the Salesforce model. A platform other AI systems are built <em>on</em> — not a scheduling app competing with scheduling apps.
+      </p>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- SITUATION -->
+    <div class="situation">
+      <div class="sit-label">The problem worth solving</div>
+      <div class="sit-content">
+        <div class="sit-card">
+          <div class="sit-icon">🤖</div>
+          <div class="sit-card-title">10+ AI agents, no one in charge</div>
+          <div class="sit-card-body">A restaurant chain will soon have AI from a dozen vendors — bookings, drive-through, kitchen, scheduling, inventory — each operating independently, none sharing context.</div>
+        </div>
+        <div class="sit-card">
+          <div class="sit-icon">🏢</div>
+          <div class="sit-card-title">Head office has lost the loop</div>
+          <div class="sit-card-body">Store-level AI is already making decisions 50x faster than a head office cycle can process. CIOs managing 75+ disconnected tools across 25 locations haven't realised it yet — but they will.</div>
+        </div>
+        <div class="sit-card">
+          <div class="sit-icon">🗄️</div>
+          <div class="sit-card-title">25 years of data with no access layer</div>
+          <div class="sit-card-body">Fourth holds more hospitality intelligence than any other vendor. But customers, their AI tools, and partner systems can't access it in any governed, useful way today.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE VISION -->
+    <div class="vision">
+      <div class="section-eyebrow">What we're building — the governed front door</div>
+      <div class="vision-grid">
+
+        <div class="vis-node">
+          <div class="vis-node-eyebrow ey-muted">Customer</div>
+          <div class="vis-node-title">Their AI tool or agent</div>
+          <div class="vis-node-body">Claude, Copilot, ChatGPT, a bespoke restaurant agent, a third-party scheduling AI — any AI the customer or their vendors are using.</div>
+        </div>
+
+        <div class="vis-arrow">→</div>
+
+        <div class="vis-node hero">
+          <div class="vis-node-eyebrow ey-teal">Fourth's Platform</div>
+          <div class="vis-node-title">One governed front door</div>
+          <div class="vis-node-body">~300 tools. Per-user identity. Audit trail. Rate limits. The playbook and context for every location. Every AI that connects here gets governed access — nothing more, nothing less.</div>
+          <span class="vis-node-tag tag-vision">The moat</span>
+        </div>
+
+        <div class="vis-arrow">→</div>
+
+        <div class="vis-node">
+          <div class="vis-node-eyebrow ey-teal">Fourth's Systems</div>
+          <div class="vis-node-title">Scheduling · Labour · Inventory · Back-office</div>
+          <div class="vis-node-body">All of Fourth's data, exposed as usable AI tools — not raw API endpoints but curated, governed operations tied to real user permissions.</div>
+          <span class="vis-node-tag tag-live">Salesforce live</span>
+        </div>
+
+        <div class="vis-arrow">→</div>
+
+        <div class="vis-node">
+          <div class="vis-node-eyebrow ey-gold">Output</div>
+          <div class="vis-node-title">Answers, dashboards, actions</div>
+          <div class="vis-node-body">Not just data — curated decisions. Live dashboards built in the conversation. Guided workflows. The same intelligence platform available whether the customer uses Fourth's UI or their own.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HOW CUSTOMERS CONNECT -->
+    <div class="connect">
+      <div class="connect-left">
+        <div class="section-eyebrow">How a customer connects their AI to Fourth</div>
+        <div class="connect-flow">
+          <div class="cf-step">
+            <div class="cf-num">1</div>
+            <div class="cf-text"><strong>Customer brings their AI tool.</strong> Could be Claude, Copilot, a bespoke scheduling agent, a restaurant analytics product — anything that supports standard AI connections (MCP).</div>
+          </div>
+          <div class="cf-step">
+            <div class="cf-num">2</div>
+            <div class="cf-text"><strong>They sign in with their own identity.</strong> Every request runs under the real user's credentials — not a shared service account. What they can see is what they're permitted to see.</div>
+          </div>
+          <div class="cf-step">
+            <div class="cf-num">3</div>
+            <div class="cf-text"><strong>The request hits Fourth's governance layer.</strong> Fourth controls which tools are available, enforces limits, logs every action, and injects the right location-level context and playbook data.</div>
+          </div>
+          <div class="cf-step">
+            <div class="cf-num">4</div>
+            <div class="cf-text"><strong>The AI gets a governed, curated answer.</strong> Not a data dump — a scoped, contextualised response. If the customer's AI is asking about labour costs, it gets labour cost intelligence shaped by 25 years of Fourth's hospitality-specific knowledge.</div>
+          </div>
+          <div class="cf-step">
+            <div class="cf-num">5</div>
+            <div class="cf-text"><strong>Fourth has a signed receipt.</strong> Every cross-system action is auditable. Customers, IT teams, and head office can prove what their AI did, when, and under whose authority.</div>
+          </div>
+        </div>
+      </div>
+      <div class="connect-right">
+        <div class="connect-right-box">
+          <div class="crb-title">What this looks like in practice</div>
+          <div class="crb-example">
+            "Show me which of my Tier-1 locations are at risk right now — labour trending over budget, support tickets up, and renewal coming in 90 days."
+          </div>
+          <div class="crb-caption">
+            One question from the customer's own AI tool. Fourth's platform pulls scheduling data, support signals, and contract state — <strong>each under the right user's permissions, in one audited workflow.</strong> The answer arrives as a live, filterable dashboard. Not a spreadsheet. Not a three-day analysis.
+          </div>
+          <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.1);">
+            <div class="crb-caption">
+              <strong>Restaurant consultants</strong> can use this to track performance across all their client sites. <strong>CIOs</strong> can use it to get a governance view across 200 locations in a single session. <strong>Partner vendors</strong> building AI tools for the hospitality space connect to Fourth's intelligence layer rather than building their own.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHY IT MATTERS -->
+    <div class="why">
+      <div class="why-card accent-teal">
+        <div class="why-card-title">Fourth stays relevant even when customers use competitors</div>
+        <div class="why-card-body">If a restaurant chain switches scheduling vendors, they still need Fourth's intelligence layer to give that new vendor the right context. <strong>Fourth charges for the platform even when it's not the scheduler.</strong> The data asset outlasts the application.</div>
+      </div>
+      <div class="why-card accent-gold">
+        <div class="why-card-title">The governance layer is the product other vendors can't clone</div>
+        <div class="why-card-body">Any vendor can build an MCP connection. No competitor has 25 years of hospitality-specific operational data, playbooks, and location context. <strong>That intelligence, governed and queryable, is what makes Fourth's front door worth connecting to.</strong></div>
+      </div>
+      <div class="why-card accent-navy">
+        <div class="why-card-title">CMA is what makes the customer's AI agent actually work</div>
+        <div class="why-card-body">Claude Managed Agents is the runtime that lets a customer's AI tool run a long, multi-step query across Fourth's systems without them building the infrastructure. <strong>CMA + Fourth's governance layer = a customer's AI that's actually useful in production.</strong></div>
+      </div>
+    </div>
+
+    <!-- BUILD NOW -->
+    <div class="buildnow">
+      <div class="section-eyebrow">What gets built, in order</div>
+      <div class="bn-grid">
+        <div class="bn-item">
+          <div class="bn-phase ph-1">Now · Live</div>
+          <div class="bn-title">Salesforce governance proxy</div>
+          <div class="bn-desc">The first governed connection is live. Proves the architecture. Per-user identity, audit trail, curated tools, read-only safety — the full pattern established.</div>
+        </div>
+        <div class="bn-item">
+          <div class="bn-phase ph-1">Now · Building</div>
+          <div class="bn-title">First customer-facing prototypes</div>
+          <div class="bn-desc">CSM intelligence agent (internal) and the developer portal structure. Internal usage validates the governance model before any customer connection is opened.</div>
+        </div>
+        <div class="bn-item">
+          <div class="bn-phase ph-2">Next</div>
+          <div class="bn-title">Zendesk + template extraction</div>
+          <div class="bn-desc">Second connector proves the repeatable pattern. After two connectors, the shared template is extracted. Every connector after that inherits governance for free.</div>
+        </div>
+        <div class="bn-item">
+          <div class="bn-phase ph-3">Vision</div>
+          <div class="bn-title">~300 tools · any AI · any vendor</div>
+          <div class="bn-desc">Full Fourth platform exposed as a governed intelligence layer. Restaurant AI from any vendor connects through Fourth to get location context, playbooks, and operational intelligence.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end body -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      FourthOS · Principal AI Research & Enablement Lead · David Hayes<br>
+      Stack: Claude Managed Agents · Azure ACA · Microsoft Entra · FastMCP v3
+    </div>
+    <div class="footer-right">
+      <div class="stat">
+        <div class="stat-n">~300</div>
+        <div class="stat-l">Planned tools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">25yr</div>
+        <div class="stat-l">Data advantage</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">1</div>
+        <div class="stat-l">Connector live</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

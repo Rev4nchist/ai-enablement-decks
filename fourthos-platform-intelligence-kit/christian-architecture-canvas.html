@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture Canvas — Fourth Platform Intelligence Kit</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230E5A4A'/%3E%3Ctext x='8' y='12' font-size='11' font-family='Georgia,serif' fill='%23F6F3EE' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+:root {
+  --paper: #F6F3EE; --paper2: #EDE9E1; --ink: #18140F; --ink2: #3A332A;
+  --muted: #7A7269; --dim: #ADA69D; --rule: #D8D2C8; --rule2: #EDE9E2;
+  --accent: #1B5E52; --accent-l: #EAF3F1;
+  --card: #FDFCF9;
+  --c: #1B5E52; --cl: #EAF3F1; --cb: #9FCCC7;
+  --i: #8C5000; --il: #FEF4E2; --ib: #E8BA77;
+  --u: #7A2323; --ul: #FCE9E9; --ub: #E8A0A0;
+  --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --sans: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); font-size: 13px; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
+
+/* NAV */
+nav { background: var(--ink); padding: 0 24px; display: flex; align-items: center; height: 44px; flex-shrink: 0; }
+.nav-brand { font-family: var(--cond); font-size: 15px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #fff; margin-right: 24px; text-decoration: none; }
+.nav-brand span { color: #6ECFC4; }
+.nav-links { display: flex; gap: 2px; }
+.nav-link { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.45); padding: 5px 12px; border-radius: 3px; text-decoration: none; transition: all .15s; }
+.nav-link:hover { color: rgba(255,255,255,.8); }
+.nav-link.active { color: #fff; background: rgba(255,255,255,.1); }
+.nav-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.nbtn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.7); padding: 4px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+.nbtn:hover { background: rgba(255,255,255,.15); }
+.nbtn.go { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* TOOLBAR */
+.toolbar { background: var(--card); border-bottom: 1px solid var(--rule); padding: 8px 20px; display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+.tb-legend { display: flex; gap: 14px; align-items: center; }
+.tb-lbl { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.tbl-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
+.tbl-line { width: 22px; height: 0; }
+.tbl-line.c { border-top: 3px solid var(--c); }
+.tbl-line.i { border-top: 2px dashed var(--i); }
+.tbl-line.u { border-top: 2px dotted var(--u); }
+.tb-stats { display: flex; gap: 12px; font-size: 11px; color: var(--dim); }
+.tb-stats strong { color: var(--ink); }
+.pbar-wrap { flex: 1; max-width: 140px; height: 3px; background: var(--rule2); border-radius: 2px; overflow: hidden; }
+.pbar { height: 100%; background: var(--accent); transition: width .3s; border-radius: 2px; }
+
+/* CANVAS */
+.canvas-outer { flex: 1; overflow: auto; padding: 18px 20px 28px; }
+.canvas { display: grid; grid-template-columns: 80px 1fr; gap: 0; min-width: 900px; }
+
+/* ROW LABELS */
+.rl { display: flex; align-items: center; justify-content: flex-end; padding-right: 14px; }
+.rl span { font-family: var(--cond); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); text-align: right; line-height: 1.3; }
+
+/* SWIMLANES */
+.lane { border: 1px solid var(--rule); background: var(--card); margin-bottom: 10px; }
+.lane-inner { display: grid; gap: 10px; padding: 12px; }
+.l1 .lane-inner { grid-template-columns: 1fr; justify-items: center; }
+.l3 .lane-inner { grid-template-columns: repeat(3, 1fr); }
+.l2 .lane-inner { grid-template-columns: 1fr 1fr; }
+.l2c .lane-inner { grid-template-columns: 1fr; justify-items: center; }
+.l4 .lane-inner { grid-template-columns: repeat(4, 1fr); }
+.cnode { max-width: 280px; width: 100%; }
+
+/* CONNECTOR */
+.arr-row { display: flex; align-items: center; justify-content: center; height: 20px; }
+.arr-v { display: flex; flex-direction: column; align-items: center; }
+.arr-v-line { width: 0; height: 14px; border-left: 1px dashed var(--rule); }
+.arr-v-tip { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--rule); }
+
+/* SECTION DIVIDER */
+.sdiv { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; margin: 4px 0 8px; }
+.sdiv-line { flex: 1; height: 1px; background: var(--rule); }
+.sdiv-lbl { font-family: var(--cond); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); white-space: nowrap; }
+
+/* NODE CARDS */
+.node {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  background: var(--card);
+  padding: 11px 13px 11px 12px;
+  cursor: pointer;
+  transition: all .12s;
+  width: 100%;
+  position: relative;
+}
+.node:hover { background: var(--paper2); border-color: var(--rule); border-left-color: var(--ink); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(24,20,15,.07); }
+.node.confirmed { border-left: 3px solid var(--c); background: var(--cl); border-color: var(--cb); }
+.node.confirmed:hover { border-left-color: var(--c); background: #DFF0EE; }
+.node.inferred  { border-left: 3px dashed var(--i); background: var(--il); border-color: var(--ib); }
+.node.inferred:hover  { background: #F9EDD8; }
+.node.unknown   { border-left: 3px dotted var(--u); background: var(--ul); border-color: var(--ub); }
+.node.unknown:hover   { background: #F8DADA; }
+.node.has-notes::after { content: ''; position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+.nt { font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 3px; }
+.nd { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.node.confirmed .nt { color: #0D3D36; }
+.node.confirmed .nd { color: #2A7A6E; }
+.node.inferred .nt  { color: #4A2800; }
+.node.inferred .nd  { color: #8C5000; }
+.node.unknown .nt   { color: #4A1010; }
+.node.unknown .nd   { color: #7A2323; }
+
+/* PANEL */
+.ov { position: fixed; inset: 0; background: rgba(24,20,15,.3); z-index: 100; display: none; }
+.ov.open { display: block; }
+.panel { position: fixed; top: 0; right: 0; width: 400px; height: 100%; background: var(--card); display: flex; flex-direction: column; z-index: 101; transform: translateX(100%); transition: transform .2s ease; box-shadow: -4px 0 20px rgba(24,20,15,.12); border-left: 1px solid var(--rule); }
+.panel.open { transform: translateX(0); }
+.ph { padding: 18px 20px 14px; border-bottom: 1px solid var(--rule); flex-shrink: 0; }
+.ph-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 7px; }
+.ph-title { font-family: var(--cond); font-size: 20px; font-weight: 700; text-transform: uppercase; color: var(--ink); line-height: 1.15; letter-spacing: .02em; flex: 1; }
+.ph-x { background: none; border: none; font-size: 18px; color: var(--dim); cursor: pointer; padding: 2px; flex-shrink: 0; line-height: 1; }
+.ph-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+.spills { display: flex; gap: 4px; margin-top: 12px; }
+.spill { flex: 1; text-align: center; font-size: 11px; font-weight: 600; padding: 6px 0; cursor: pointer; border: 1px solid var(--rule); background: var(--paper); color: var(--muted); transition: all .12s; }
+.spill:hover { color: var(--ink); }
+.spill.on[data-s="confirmed"] { background: var(--cl); color: var(--c); border-color: var(--c); }
+.spill.on[data-s="inferred"]  { background: var(--il); color: var(--i); border-color: var(--i); }
+.spill.on[data-s="unknown"]   { background: var(--ul); color: var(--u); border-color: var(--u); }
+.pb { flex: 1; overflow-y: auto; padding: 16px 20px; }
+.ps { margin-bottom: 18px; }
+.ps-lbl { font-family: var(--cond); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 7px; }
+.ctx { background: var(--paper); border-left: 2px solid var(--rule); padding: 9px 12px; font-size: 11.5px; color: var(--muted); line-height: 1.6; }
+textarea.ni { width: 100%; min-height: 100px; border: 1px solid var(--rule); background: var(--paper); padding: 10px 12px; font-family: var(--sans); font-size: 12.5px; color: var(--ink); resize: vertical; outline: none; }
+textarea.ni:focus { border-color: var(--accent); }
+.ne { background: var(--paper); border: 1px solid var(--rule2); padding: 9px 11px; margin-bottom: 7px; font-size: 12px; color: var(--ink2); }
+.ne-meta { font-size: 10px; color: var(--dim); margin-bottom: 3px; display: flex; justify-content: space-between; }
+.ndel { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 13px; }
+.ndel:hover { color: var(--u); }
+.pf { padding: 12px 20px; border-top: 1px solid var(--rule); flex-shrink: 0; }
+.save-btn { width: 100%; background: var(--ink); color: #fff; border: none; padding: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: var(--sans); letter-spacing: .02em; }
+.save-btn:hover { background: var(--accent); }
+
+/* MODAL */
+.modal-bg { position: fixed; inset: 0; background: rgba(24,20,15,.45); z-index: 200; display: none; align-items: center; justify-content: center; }
+.modal-bg.open { display: flex; }
+.modal { width: 540px; max-height: 78vh; background: var(--card); border: 1px solid var(--rule); display: flex; flex-direction: column; }
+.mh { padding: 16px 20px 14px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; }
+.mh-t { font-family: var(--cond); font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--ink); letter-spacing: .03em; }
+.mb { padding: 14px 20px; overflow-y: auto; }
+.mb p { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.6; }
+textarea.ea { width: 100%; height: 240px; font-family: var(--mono); font-size: 11px; border: 1px solid var(--rule); background: var(--paper); padding: 10px; color: var(--muted); resize: none; outline: none; }
+.mf { padding: 12px 20px; border-top: 1px solid var(--rule); display: flex; justify-content: flex-end; gap: 7px; }
+.mbtn { font-size: 12px; font-weight: 600; padding: 7px 14px; cursor: pointer; border: 1px solid var(--rule); background: var(--card); color: var(--muted); font-family: var(--sans); }
+.mbtn.go { background: var(--ink); color: #fff; border-color: var(--ink); }
+.mbtn.go:hover { background: var(--accent); border-color: var(--accent); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(14px); background: var(--ink); color: #fff; padding: 8px 16px; font-size: 12px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .2s; z-index: 400; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">Fourth<span>iQ</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Overview</a>
+    <a class="nav-link active" href="christian-architecture-canvas.html">Architecture canvas</a>
+    <a class="nav-link" href="christian-interview-guide.html">Interview guide</a>
+    <a class="nav-link" href="cto-onepager.html">CTO one-pager</a>
+  </div>
+  <div class="nav-right">
+    <span id="savecue" style="font-size:10px;color:rgba(255,255,255,.35);margin-right:10px;letter-spacing:.04em;"></span>
+    <button class="nbtn" onclick="resetAll()">↺ Reset</button>
+    <button class="nbtn" onclick="openExport()">↑ Export</button>
+    <button class="nbtn" onclick="openImport()">↓ Import</button>
+    <button class="nbtn go" onclick="window.print()">Print</button>
+  </div>
+</nav>
+
+<div class="toolbar">
+  <div class="tb-legend">
+    <span class="tb-lbl">Confidence</span>
+    <div class="tbl-item"><span class="tbl-line c"></span>Confirmed</div>
+    <div class="tbl-item"><span class="tbl-line i"></span>Inferred</div>
+    <div class="tbl-item"><span class="tbl-line u"></span>Unknown</div>
+  </div>
+  <div class="tb-stats">
+    <span><strong id="sc">0</strong> confirmed</span>
+    <span><strong id="si">0</strong> inferred</span>
+    <span><strong id="su">0</strong> unknown</span>
+    <span><strong id="sn">0</strong> notes</span>
+  </div>
+  <div class="pbar-wrap"><div class="pbar" id="pbar" style="width:0%"></div></div>
+</div>
+
+<div class="canvas-outer">
+<div class="canvas">
+
+  <div class="rl" style="margin-bottom:10px"><span>Customer<br>side</span></div>
+  <div class="lane l1" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="cnode"><div class="node inferred" data-id="customer-ai" onclick="open_('customer-ai')">
+        <div class="nt">Customer's AI tool</div>
+        <div class="nd">Claude, Copilot, a bespoke agent, or any third-party product the customer already uses</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div></div>
+  <div class="arr-row"><div class="arr-v"><div class="arr-v-line"></div><div class="arr-v-tip"></div></div></div>
+
+  <div class="rl" style="margin-bottom:10px"><span>Auth &<br>governance</span></div>
+  <div class="lane l3" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="node unknown" data-id="auth-model" onclick="open_('auth-model')">
+        <div class="nt">Authentication</div>
+        <div class="nd">Per-user identity like internal users — or a different external model?</div>
+      </div>
+      <div class="node confirmed" data-id="governance-proxy" onclick="open_('governance-proxy')">
+        <div class="nt">Governance proxy</div>
+        <div class="nd">Every request brokered, audited, rate-limited — live with Salesforce</div>
+      </div>
+      <div class="node unknown" data-id="trust-center" onclick="open_('trust-center')">
+        <div class="nt">Trust center</div>
+        <div class="nd">Customer-facing issue reporting — built, but interface not yet described</div>
+      </div>
+    </div>
+  </div>
+
+  <div></div>
+  <div class="arr-row"><div class="arr-v"><div class="arr-v-line"></div><div class="arr-v-tip"></div></div></div>
+
+  <div class="rl" style="margin-bottom:10px"><span>~300<br>tools</span></div>
+  <div class="lane l2c" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="cnode"><div class="node confirmed" data-id="tool-catalog" onclick="open_('tool-catalog')">
+        <div class="nt">Tool catalogue — all Fourth systems exposed</div>
+        <div class="nd">~300 planned MCP tools: scheduling, labour, inventory, payroll, back-office. Salesforce live. Zendesk, NetSuite, Jira next.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div></div>
+  <div class="arr-row"><div class="arr-v"><div class="arr-v-line"></div><div class="arr-v-tip"></div></div></div>
+
+  <div class="rl" style="margin-bottom:10px"><span>Intelligence<br>layer</span></div>
+  <div class="lane l2" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="node inferred" data-id="middleware" onclick="open_('middleware')">
+        <div class="nt">Middleware</div>
+        <div class="nd">Transforms vague prompts into precise governed actions — packaged inside the connector</div>
+      </div>
+      <div class="node unknown" data-id="playbook" onclick="open_('playbook')">
+        <div class="nt">The playbook</div>
+        <div class="nd">Per-location operating context every AI agent needs — structure and ownership unknown</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rl" style="margin-bottom:10px"><span>Data<br>asset</span></div>
+  <div class="lane l2" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="node inferred" data-id="data-asset" onclick="open_('data-asset')">
+        <div class="nt">25-year data asset</div>
+        <div class="nd">Operational history no competitor holds — but how is it made queryable?</div>
+      </div>
+      <div class="node unknown" data-id="competitor-ingest" onclick="open_('competitor-ingest')">
+        <div class="nt">Competitor data ingestion</div>
+        <div class="nd">"Fourth will ingest competitor data" — mechanism entirely unknown</div>
+      </div>
+    </div>
+  </div>
+
+  <div></div>
+  <div class="arr-row"><div class="arr-v"><div class="arr-v-line"></div><div class="arr-v-tip"></div></div></div>
+
+  <div class="rl" style="margin-bottom:10px"><span>Output</span></div>
+  <div class="lane l2c" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="cnode"><div class="node confirmed" data-id="outputs" onclick="open_('outputs')">
+        <div class="nt">Apps · live dashboards · generative UI</div>
+        <div class="nd">Not text — guided forms, filterable charts, tailored dashboards built on demand from a single query</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="sdiv"><div class="sdiv-line"></div><div class="sdiv-lbl">Who connects & go-to-market</div><div class="sdiv-line"></div></div>
+
+  <div class="rl" style="margin-bottom:10px"><span>Audiences</span></div>
+  <div class="lane l3" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="node confirmed" data-id="aud-cio" onclick="open_('aud-cio')">
+        <div class="nt">CIOs / IT departments</div>
+        <div class="nd">Evaluates connection — governance, audit trail, data residency</div>
+      </div>
+      <div class="node confirmed" data-id="aud-dev" onclick="open_('aud-dev')">
+        <div class="nt">Developers / engineers</div>
+        <div class="nd">Builds the integration — wants working examples, not documentation</div>
+      </div>
+      <div class="node confirmed" data-id="aud-consultant" onclick="open_('aud-consultant')">
+        <div class="nt">Restaurant consultants</div>
+        <div class="nd">"Tailor made" — tracks and tunes agents across multiple client sites</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rl" style="margin-bottom:10px"><span>Go-to-<br>market</span></div>
+  <div class="lane l4" style="margin-bottom:10px">
+    <div class="lane-inner">
+      <div class="node unknown" data-id="gtm-pilot" onclick="open_('gtm-pilot')">
+        <div class="nt">First pilot</div>
+        <div class="nd">Named customer or a profile? This anchors everything.</div>
+      </div>
+      <div class="node unknown" data-id="gtm-motion" onclick="open_('gtm-motion')">
+        <div class="nt">Sales motion</div>
+        <div class="nd">Top-down CIO sale, self-serve dev, or product-led?</div>
+      </div>
+      <div class="node inferred" data-id="gtm-pricing" onclick="open_('gtm-pricing')">
+        <div class="nt">Pricing model</div>
+        <div class="nd">Platform charges separately — even vs competitors. Mechanism TBD.</div>
+      </div>
+      <div class="node unknown" data-id="gtm-gate" onclick="open_('gtm-gate')">
+        <div class="nt">Launch gate</div>
+        <div class="nd">What must be true before a real customer connects?</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="ov" id="ov" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="ph">
+    <div class="ph-row">
+      <div class="ph-title" id="ptitle"></div>
+      <button class="ph-x" onclick="closePanel()">✕</button>
+    </div>
+    <div class="ph-desc" id="pdesc"></div>
+    <div class="spills">
+      <div class="spill" data-s="confirmed" onclick="setS('confirmed')">Confirmed</div>
+      <div class="spill" data-s="inferred" onclick="setS('inferred')">Inferred</div>
+      <div class="spill" data-s="unknown" onclick="setS('unknown')">Unknown</div>
+    </div>
+  </div>
+  <div class="pb">
+    <div class="ps" id="ctx-sec" style="display:none">
+      <div class="ps-lbl">What we already know</div>
+      <div class="ctx" id="pctx"></div>
+    </div>
+    <div class="ps">
+      <div class="ps-lbl">Capture live — type what he says</div>
+      <textarea class="ni" id="ni" placeholder="Christian said: ..."></textarea>
+    </div>
+    <div class="ps">
+      <div class="ps-lbl">Note history</div>
+      <div id="nhist"></div>
+    </div>
+  </div>
+  <div class="pf"><button class="save-btn" onclick="saveNote()">Save note</button></div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="mh"><span class="mh-t" id="mt"></span><button class="ph-x" onclick="closeModal()">✕</button></div>
+    <div class="mb"><p id="md"></p><textarea class="ea" id="ea"></textarea></div>
+    <div class="mf" id="mf"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CTX={
+  'customer-ai':'From the governed AI access deck: "We let Claude work inside our business systems — under each person\'s own login, read-only, fully audited — through a governance layer we own."',
+  'auth-model':'Internal model uses per-user Microsoft sign-in. Whether this extends to external customers or requires a separate credential system is unknown.',
+  'governance-proxy':'Confirmed live. From deck: "Every request brokered & logged. Audited and rate-limited. Read-only, scoped per role. Sign-in & rules live in our code."',
+  'trust-center':'From June 4 transcript: "Christian has built a trust center where customers can report AI issues, data concerns, and problems. Issues route to both the customer\'s central trust center and Fourth\'s." Interface not described.',
+  'tool-catalog':'Confirmed: "~300 tools planned for the MCP server... allow customers to run their own UI over all Fourth systems." Salesforce live; Zendesk, NetSuite, Jira queued.',
+  'middleware':'From June 4 transcript: "Middleware can transform vague prompts into actionable requests using Salesforce navigation knowledge. Multiple middleware layers can transform requests in different ways." Location and ownership unclear.',
+  'playbook':'From June 4 transcript: "AI agents need specific context about how each location operates... the intelligence platform provides this crucial context layer." Structure and ownership undefined.',
+  'data-asset':'From June 4 transcript: "The real value lies in the intelligence layer built on top of 25 years of data. Raw transactional data alone has limited value — distilling it into proper context and actionable skills."',
+  'competitor-ingest':'From June 4 transcript: "Fourth will be able to ingest data from competitors\' systems and still provide the intelligence layer." Mechanism not described anywhere.',
+  'outputs':'From the governed AI access deck: "Apps — guided forms inside Claude. Live dashboards — charts and tables, filter sales by region. Generative UI — ask, a tailored dashboard builds instantly."',
+  'aud-cio':'Named directly as a target audience in the June 4 transcript.',
+  'aud-dev':'Named directly: "Developers, engineers, AI engineers, and agent builders."',
+  'aud-consultant':'From June 4 transcript: "Restaurant consultants — the platform is tailor made for them to track performance and fine-tune agents."',
+  'gtm-pilot':'Not named anywhere. Highest-value unknown in the whole canvas.',
+  'gtm-motion':'Not addressed. Determines who the portal is actually designed to convert.',
+  'gtm-pricing':'From June 4 transcript: "Fourth plans to charge for the intelligence platform as a separate offering... even when customers use competitors\' tools." Model unspecified.',
+  'gtm-gate':'Christian is deliberately not rushing. His personal launch bar is not documented.'
+};
+const TITLES={'customer-ai':'Customer\'s AI tool','auth-model':'Authentication model','governance-proxy':'Governance proxy','trust-center':'Trust center','tool-catalog':'Tool catalogue (~300 tools)','middleware':'Middleware layer','playbook':'The playbook','data-asset':'25-year data asset','competitor-ingest':'Competitor data ingestion','outputs':'Outputs','aud-cio':'CIOs / IT departments','aud-dev':'Developers / engineers','aud-consultant':'Restaurant consultants','gtm-pilot':'First pilot customer','gtm-motion':'Sales motion','gtm-pricing':'Pricing model','gtm-gate':'Launch gate'};
+const DESCS={'customer-ai':'Any AI tool the customer or their vendor brings.','auth-model':'How a customer\'s AI proves identity when calling Fourth\'s systems.','governance-proxy':'The single governed entry point — live with Salesforce.','trust-center':'Customer-facing surface for reporting AI issues.','tool-catalog':'The curated set of operations exposed across all Fourth systems.','middleware':'Translates loose prompts into precise, governed actions.','playbook':'Per-location operating context that makes AI advice useful.','data-asset':'25 years of operational history — the thing no competitor can replicate.','competitor-ingest':'How Fourth stays relevant when customers use rival tools.','outputs':'What the customer receives back from a governed query.','aud-cio':'Evaluates whether and how to connect their org to Fourth.','aud-dev':'Writes the integration code against Fourth\'s connectors.','aud-consultant':'Uses the platform across multiple client accounts.','gtm-pilot':'Who tries this first — named account or customer profile.','gtm-motion':'How this gets sold or adopted once ready.','gtm-pricing':'How the intelligence layer is actually charged for.','gtm-gate':'Christian\'s personal bar for "ready to show externally."'};
+const INIT={'customer-ai':'inferred','auth-model':'unknown','governance-proxy':'confirmed','trust-center':'unknown','tool-catalog':'confirmed','middleware':'inferred','playbook':'unknown','data-asset':'inferred','competitor-ingest':'unknown','outputs':'confirmed','aud-cio':'confirmed','aud-dev':'confirmed','aud-consultant':'confirmed','gtm-pilot':'unknown','gtm-motion':'unknown','gtm-pricing':'inferred','gtm-gate':'unknown'};
+let STATE={},CUR=null;
+function initState(){Object.keys(INIT).forEach(id=>{STATE[id]={status:INIT[id],notes:[]};})}
+initState();
+const LS_KEY='fourthos-pik:canvas:v1';
+let _ps;
+function persist(){clearTimeout(_ps);_ps=setTimeout(()=>{
+  try{localStorage.setItem(LS_KEY,JSON.stringify({v:1,at:new Date().toISOString(),state:STATE}));savedCue();}catch(e){}
+},350);}
+function savedCue(){const el=document.getElementById('savecue');if(el)el.textContent='Saved locally · '+new Date().toTimeString().slice(0,5);}
+function migrateState(){Object.keys(INIT).forEach(id=>{if(!STATE[id])STATE[id]={status:INIT[id],notes:[]};});}
+function restore(){
+  try{const p=JSON.parse(localStorage.getItem(LS_KEY)||'null');
+    if(p&&p.state){STATE=p.state;migrateState();Object.keys(STATE).forEach(id=>upNode(id));savedCue();}
+  }catch(e){}
+}
+function open_(id){
+  CUR=id;
+  document.getElementById('ptitle').textContent=TITLES[id];
+  document.getElementById('pdesc').textContent=DESCS[id];
+  const c=CTX[id];
+  if(c){document.getElementById('ctx-sec').style.display='block';document.getElementById('pctx').textContent=c;}
+  else{document.getElementById('ctx-sec').style.display='none';}
+  upSpills(STATE[id].status);
+  document.getElementById('ni').value='';
+  renderH();
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){document.getElementById('ov').classList.remove('open');document.getElementById('panel').classList.remove('open');CUR=null;}
+function upSpills(s){document.querySelectorAll('.spill').forEach(p=>p.classList.toggle('on',p.dataset.s===s));}
+function setS(s){if(!CUR)return;STATE[CUR].status=s;upSpills(s);upNode(CUR);upStats();persist();toast('Status: '+s);}
+function upNode(id){
+  const n=document.querySelector('[data-id="'+id+'"]');
+  if(!n)return;
+  n.classList.remove('confirmed','inferred','unknown');
+  n.classList.add(STATE[id].status);
+  n.classList.toggle('has-notes',STATE[id].notes.length>0);
+}
+function saveNote(){
+  if(!CUR)return;
+  const t=document.getElementById('ni').value.trim();
+  if(!t){toast('Write a note first');return;}
+  const ts=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  STATE[CUR].notes.push({text:t,timestamp:ts});
+  document.getElementById('ni').value='';
+  renderH();upNode(CUR);upStats();persist();toast('Saved');
+}
+function renderH(){
+  const el=document.getElementById('nhist');
+  const notes=STATE[CUR].notes;
+  if(!notes.length){el.innerHTML='<div style="font-size:11px;color:var(--dim);font-style:italic">No notes yet.</div>';return;}
+  el.innerHTML=[...notes].reverse().map((n,ri)=>{
+    const i=notes.length-1-ri;
+    return '<div class="ne"><div class="ne-meta"><span>'+n.timestamp+'</span><button class="ndel" onclick="delN('+i+')">✕</button></div><div>'+esc(n.text)+'</div></div>';
+  }).join('');
+}
+function delN(i){STATE[CUR].notes.splice(i,1);renderH();upNode(CUR);upStats();persist();}
+function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+function upStats(){
+  let c=0,inf=0,u=0,n=0;
+  Object.values(STATE).forEach(s=>{
+    if(s.status==='confirmed')c++;else if(s.status==='inferred')inf++;else u++;
+    n+=s.notes.length;
+  });
+  document.getElementById('sc').textContent=c;
+  document.getElementById('si').textContent=inf;
+  document.getElementById('su').textContent=u;
+  document.getElementById('sn').textContent=n;
+  const tot=c+inf+u;
+  document.getElementById('pbar').style.width=(tot?Math.round(c/tot*100):0)+'%';
+}
+function openExport(){
+  document.getElementById('mt').textContent='Export';
+  document.getElementById('md').textContent='Copy and paste into a Notion code block. Import next session to restore exactly.';
+  document.getElementById('ea').value=JSON.stringify({at:new Date().toISOString(),state:STATE},null,2);
+  document.getElementById('ea').readOnly=true;
+  document.getElementById('mf').innerHTML='<button class="mbtn" onclick="closeModal()">Close</button><button class="mbtn" onclick="downloadE()">Download JSON</button><button class="mbtn go" onclick="copyE()">Copy</button>';
+  document.getElementById('modal').classList.add('open');
+}
+function openImport(){
+  document.getElementById('mt').textContent='Import';
+  document.getElementById('md').textContent='Paste exported JSON. Replaces all current statuses and notes.';
+  document.getElementById('ea').value='';document.getElementById('ea').readOnly=false;document.getElementById('ea').placeholder='Paste JSON here...';
+  document.getElementById('mf').innerHTML='<button class="mbtn" onclick="closeModal()">Cancel</button><button class="mbtn go" onclick="doImport()">Import</button>';
+  document.getElementById('modal').classList.add('open');
+}
+function doImport(){
+  try{const p=JSON.parse(document.getElementById('ea').value);if(!p.state)throw 0;STATE=p.state;migrateState();Object.keys(STATE).forEach(id=>upNode(id));upStats();persist();closeModal();toast('Imported');}
+  catch(e){toast('Import failed — check JSON');}
+}
+function copyE(){const v=document.getElementById('ea').value;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(()=>toast('Copied'),()=>fallbackCopy());}
+  else{fallbackCopy();}
+}
+function fallbackCopy(){document.getElementById('ea').select();document.execCommand('copy');toast('Copied');}
+function downloadE(){const blob=new Blob([document.getElementById('ea').value],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='fourthos-canvas-state-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();toast('Downloaded');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function resetAll(){if(!confirm('Reset all?'))return;initState();Object.keys(STATE).forEach(id=>upNode(id));upStats();persist();toast('Reset');}
+let _tt;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2000);}
+restore();
+upStats();
+</script>
+</body>
+</html>
