@@ -204,10 +204,10 @@
       "section": "claude-code-ccv3",
       "tag": "System Doc",
       "title": "FourthOS Reporting System",
-      "description": "How work in Claude Code / Cowork / Claude.ai becomes Notion records and flows to the team dashboard + sponsor site — full map, the Tracker spine, and the 'one spine, two cuts' improvement plan.",
+      "description": "How every scheduled FourthOS report now records one run to a shared Notion Report Runs registry — the append-all-attempts spine keyed by a unique Run ID, the emit → upsert flow across six wired pipelines, what it resolved, and what is still open.",
       "href": "./reporting-system/",
       "meta": "System Doc",
-      "date": "2026-06-26",
+      "date": "2026-07-06",
       "status": "shipped"
     },
     {

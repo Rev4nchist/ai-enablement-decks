@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FourthOS Reporting System</title>
-  <meta name="description" content="How work in Claude Code / Cowork / Claude.ai becomes Notion records and flows to the team dashboard and the sponsor site — the full map, the Weekly Work Tracker spine, the current gaps, and the 'one spine, two cuts' improvement plan.">
+  <meta name="description" content="How every scheduled FourthOS report now records one run to a shared Notion Report Runs registry (append-all-attempts, keyed by a unique Run ID) — the emit → upsert flow, the Notion Reports home, what the registry resolved, and what's still open. As of 2026-07-06.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -153,6 +153,15 @@
     .gaps li b { color:var(--text-primary); }
     .gaps li .mono { color:var(--accent); }
 
+    /* resolved-gap variant (additive) — shows the arc from old gap to fix */
+    .gaps.resolved { counter-reset:none; }
+    .gaps li.done { border-left-color:var(--teal); }
+    .gaps li.done::before { content:'\2713'; background:rgba(0,182,159,0.16); color:#5fe6cf; }
+    .gaps li.done .was { text-decoration:line-through; color:var(--text-muted); }
+    .gaps li.done .was b { color:var(--text-muted); }
+    .gaps li.done .fix { display:block; margin-top:0.35rem; color:var(--text-secondary); }
+    .gaps li.done .fix b { color:var(--teal); }
+
     /* proposal steps */
     .steps { list-style:none; counter-reset:s; display:grid; gap:0.9rem; margin-top:0.5rem; }
     .steps li {
@@ -239,19 +248,19 @@
       <div class="wrap">
         <div class="eyebrow">System Documentation</div>
         <h1>FourthOS Reporting System</h1>
-        <p class="sub">How work becomes Notion records and flows to two reporting outputs.</p>
-        <p class="thesis"><b>Capture once</b>, at the moment of work, into one tagged spine &mdash; then <b>report many</b> cuts from it.</p>
+        <p class="sub">How every scheduled report now records one run to one shared Notion registry &mdash; and what still isn&rsquo;t wired.</p>
+        <p class="thesis"><b>Emit once</b> per run, <b>upsert one row</b> &mdash; every scheduled report lands in one registry, keyed by a unique Run&nbsp;ID.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="/ai-enablement-decks/reporting-system/reporting-system.excalidraw" download>Open the Excalidraw diagram &darr;</a>
           <a class="btn btn-ghost" href="#diagram">Jump to the system diagram</a>
         </div>
         <nav class="toc" aria-label="On this page">
           <a href="#diagram">System diagram</a>
-          <a href="#stages">The four stages</a>
-          <a href="#spine">The Tracker spine</a>
-          <a href="#gaps">The gaps</a>
-          <a href="#proposal">One spine, two cuts</a>
-          <a href="#report">How to report</a>
+          <a href="#stages">Registry anatomy</a>
+          <a href="#spine">The registry spine</a>
+          <a href="#gaps">What it resolved</a>
+          <a href="#proposal">What remains</a>
+          <a href="#report">How to read it</a>
         </nav>
       </div>
     </header>
@@ -262,13 +271,13 @@
         <div class="sec-head">
           <span class="sec-num">01 &middot; The map</span>
           <h2>The system diagram &mdash; current state</h2>
-          <p class="lead">Work happens on four surfaces &rarr; it&rsquo;s captured into Notion &rarr; two reporting outputs pull from Notion to produce an internal team dashboard and an external sponsor briefing. The red dashed edges are the connections that <b>do not exist yet</b> &mdash; they are the point of this doc.</p>
+          <p class="lead">As of <b>2026-07-06</b>, reporting has <b>one shared spine</b>. Six scheduled pipelines each emit a flat <span class="mono">report-run.json</span> and upsert a single row into one Notion database &mdash; the <b>Report Runs registry</b> &mdash; keyed by a unique <span class="mono">Run&nbsp;ID</span> (append-all-attempts). Humans browse it through Notion views under the Reports hub; the AI narrator queries it with one <span class="mono">ntn datasources query</span>. The fragmentation this doc used to describe is gone.</p>
         </div>
 
         <p class="scroll-hint">Scroll the diagram horizontally &rarr;</p>
         <div class="diagram-scroll">
           <figure class="diagram">
-            <svg viewBox="0 0 1200 800" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Current-state reporting flow: four work surfaces are captured into Notion mostly by manual paths; the Weekly Work Tracker is the spine but the team dashboard pipeline is broken because the ai-reporting MCP is unregistered, the sponsor site reads the Cockpit instead of the Tracker, and Eve, Donna and the scheduled FourthOS run have no path into the Tracker.">
+            <svg viewBox="0 0 1200 800" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Current-state reporting flow: six scheduled pipelines each emit a report-run.json and call upsert.mjs, which upserts one row into the Report Runs registry keyed by a unique Run ID. Humans read the registry through Notion views, the AI narrator reads it via ntn query or the ai-reporting MCP, and a drift detector watches it for silently-dead reports.">
               <defs>
                 <marker id="ah-teal" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#00B69F"/></marker>
                 <marker id="ah-sky" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#6FB4E3"/></marker>
@@ -279,299 +288,226 @@
               </defs>
 
               <!-- layer bands -->
-              <rect x="16"  y="44" width="184" height="640" rx="14" fill="#9678B6" opacity="0.05"/>
-              <rect x="248" y="44" width="184" height="640" rx="14" fill="#6FB4E3" opacity="0.05"/>
-              <rect x="492" y="44" width="206" height="640" rx="14" fill="#00B69F" opacity="0.05"/>
-              <rect x="752" y="44" width="186" height="640" rx="14" fill="#0C4A7D" opacity="0.10"/>
-              <rect x="996" y="44" width="196" height="640" rx="14" fill="#8DA8C4" opacity="0.05"/>
+              <rect x="16"  y="44" width="190" height="600" rx="14" fill="#6FB4E3" opacity="0.05"/>
+              <rect x="230" y="44" width="170" height="600" rx="14" fill="#00B69F" opacity="0.05"/>
+              <rect x="424" y="44" width="170" height="600" rx="14" fill="#00B69F" opacity="0.05"/>
+              <rect x="620" y="44" width="210" height="600" rx="14" fill="#00B69F" opacity="0.09"/>
+              <rect x="854" y="44" width="330" height="600" rx="14" fill="#8DA8C4" opacity="0.05"/>
 
               <!-- column headers -->
-              <text class="hdr" x="108"  y="32" text-anchor="middle">1 &middot; WORK SURFACES</text>
-              <text class="hdr" x="340"  y="32" text-anchor="middle">2 &middot; CAPTURE</text>
-              <text class="hdr" x="595"  y="32" text-anchor="middle">3 &middot; NOTION</text>
-              <text class="hdr" x="845"  y="32" text-anchor="middle">4 &middot; REPORTING OUTPUTS</text>
-              <text class="hdr" x="1094" y="32" text-anchor="middle">5 &middot; AUDIENCE</text>
+              <text class="hdr" x="111"  y="32" text-anchor="middle">1 &middot; PIPELINES</text>
+              <text class="hdr" x="315"  y="32" text-anchor="middle">2 &middot; EMIT</text>
+              <text class="hdr" x="509"  y="32" text-anchor="middle">3 &middot; UPSERT</text>
+              <text class="hdr" x="725"  y="32" text-anchor="middle">4 &middot; REGISTRY</text>
+              <text class="hdr" x="1019" y="32" text-anchor="middle">5 &middot; CONSUMERS</text>
 
               <!-- ===== EDGES (drawn before nodes) ===== -->
-              <!-- MANUAL capture -->
-              <path class="e-man" marker-end="url(#ah-amber)" d="M192,125 L252,139"/>
-              <path class="e-man" marker-end="url(#ah-amber)" d="M192,125 L252,265"/>
-              <path class="e-man" marker-end="url(#ah-amber)" d="M192,481 L252,481"/>
-              <path class="e-man" marker-end="url(#ah-amber)" d="M192,589 L252,498"/>
-              <path class="e-man" marker-end="url(#ah-amber)" d="M192,140 C150,300 150,455 252,468"/>
-              <text class="el" x="214" y="118" fill="#FAA51A">MANUAL</text>
+              <!-- SCHEDULED pipelines fan into EMIT -->
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M198,99  C214,180 216,300 228,320"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M198,191 C214,240 218,300 228,328"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M198,283 C214,300 220,320 228,332"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M198,375 C214,350 220,340 228,336"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M198,467 C214,400 218,360 228,342"/>
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M198,559 C214,470 216,380 228,350"/>
+              <text class="el" x="210" y="66" fill="#6FB4E3">each scheduled run</text>
 
-              <!-- AUTO into Tracker -->
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M424,139 L488,124"/>
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M424,265 L488,158"/>
-              <text class="el" x="430" y="118" fill="#00B69F">AUTO</text>
+              <!-- EMIT -> UPSERT (auto) -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M400,333 L422,333"/>
+              <!-- UPSERT -> REGISTRY (auto) -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M594,333 L616,333"/>
+              <text class="el" x="600" y="322" fill="#00B69F">upsert 1 row</text>
 
-              <!-- SCHEDULED generation -->
-              <path class="e-sched" marker-end="url(#ah-sky)" d="M690,383 L756,376"/>
-              <path class="e-sched" marker-end="url(#ah-sky)" d="M690,479 L756,392"/>
-              <path class="e-sched" marker-end="url(#ah-sky)" d="M845,402 L845,436"/>
-              <text class="el" x="700" y="356" fill="#6FB4E3">SCHEDULED</text>
-
-              <!-- SERVES audience -->
-              <path class="e-serve" marker-end="url(#ah-grey)" d="M930,181 L1000,181"/>
-              <path class="e-serve" marker-end="url(#ah-grey)" d="M930,471 L1000,471"/>
-
-              <!-- GAP edges (red) -->
-              <path class="e-gap" marker-end="url(#ah-red)" d="M698,128 L756,176"/>
-              <text class="el" x="704" y="108" fill="#ff8a98">GAP: ai-reporting MCP</text>
-              <text class="el" x="704" y="120" fill="#ff8a98">unregistered &mdash; broken</text>
-
-              <path class="e-gap" marker-end="url(#ah-red)" d="M192,470 C330,460 470,300 488,180"/>
-              <text class="el" x="300" y="352" fill="#ff8a98">&#10007; no path</text>
-
-              <path class="e-gap" marker-end="url(#ah-red)" d="M192,575 C360,580 478,330 488,190"/>
-              <text class="el" x="392" y="430" fill="#ff8a98">&#10007; no path</text>
-
-              <path class="e-gap" marker-end="url(#ah-red)" d="M760,372 C716,300 706,230 700,160"/>
-              <text class="el" x="708" y="300" fill="#ff8a98">&#10007; never logs</text>
+              <!-- REGISTRY -> consumers (read) -->
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M830,318 C846,260 850,210 858,182"/>
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M830,340 L858,322"/>
+              <path class="e-serve" marker-end="url(#ah-grey)" d="M830,356 C846,400 850,430 858,455"/>
+              <text class="el" x="836" y="418" fill="#8DA8C4">48h watch</text>
 
               <!-- ===== NODES ===== -->
-              <!-- C1 surfaces (purple) -->
-              <g><rect x="24" y="96"  width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
-                <text class="nt" x="108" y="122" text-anchor="middle">Claude Code</text>
-                <text class="ns" x="108" y="140" text-anchor="middle">CCv3 &middot; execution</text></g>
-              <g><rect x="24" y="200" width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
-                <text class="nt" x="108" y="226" text-anchor="middle">Cowork</text>
-                <text class="ns" x="108" y="244" text-anchor="middle">team + editorial</text></g>
-              <g><rect x="24" y="452" width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
-                <text class="nt" x="108" y="478" text-anchor="middle">Eve</text>
-                <text class="ns" x="108" y="496" text-anchor="middle">Claude.ai &middot; strategy</text></g>
-              <g><rect x="24" y="560" width="168" height="58" rx="10" fill="#0E2334" stroke="#9678B6" stroke-width="1.8"/>
-                <text class="nt" x="108" y="586" text-anchor="middle">Donna</text>
-                <text class="ns" x="108" y="604" text-anchor="middle">Claude.ai &middot; Fourth biz</text></g>
+              <!-- C1 pipelines (scheduled) -->
+              <g><rect x="24" y="76"  width="174" height="46" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="111" y="95"  text-anchor="middle">Project-Cards</text>
+                <text class="ns" x="111" y="112" text-anchor="middle">Project Portfolio</text></g>
+              <g><rect x="24" y="168" width="174" height="46" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="111" y="187" text-anchor="middle">AIWeeklyReport</text>
+                <text class="ns" x="111" y="204" text-anchor="middle">VP Weekly</text></g>
+              <g><rect x="24" y="260" width="174" height="46" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="111" y="279" text-anchor="middle">FourthOS-Weekly</text>
+                <text class="ns" x="111" y="296" text-anchor="middle">FourthOS Sponsor</text></g>
+              <g><rect x="24" y="352" width="174" height="46" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="111" y="371" text-anchor="middle">Dashboard-Sync</text>
+                <text class="ns" x="111" y="388" text-anchor="middle">Team Dashboard</text></g>
+              <g><rect x="24" y="444" width="174" height="46" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="111" y="463" text-anchor="middle">Health-Check</text>
+                <text class="ns" x="111" y="480" text-anchor="middle">System Health</text></g>
+              <g><rect x="24" y="536" width="174" height="46" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="111" y="555" text-anchor="middle">Self-Improvement</text>
+                <text class="ns" x="111" y="572" text-anchor="middle">Self-Improvement</text></g>
 
-              <!-- C2 capture (sky) -->
-              <g><rect x="256" y="112" width="168" height="54" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
-                <text class="nt" x="340" y="137" text-anchor="middle">/log-work skill</text>
-                <text class="ns" x="340" y="155" text-anchor="middle">manual invocation</text></g>
-              <g><rect x="256" y="236" width="168" height="58" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
-                <text class="nt" x="340" y="262" text-anchor="middle">Bridge auto-mirror</text>
-                <text class="ns" x="340" y="280" text-anchor="middle">step 3b &middot; model-followed</text></g>
-              <g><rect x="256" y="452" width="168" height="58" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
-                <text class="nt" x="340" y="478" text-anchor="middle">Bridge HQ</text>
-                <text class="ns" x="340" y="496" text-anchor="middle">queues + Impl. Log</text></g>
+              <!-- C2 emit -->
+              <g><rect x="230" y="290" width="170" height="86" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
+                <text class="nt" x="315" y="320" text-anchor="middle">make-run.mjs</text>
+                <text class="ns" x="315" y="340" text-anchor="middle">buildRun + validate &rarr;</text>
+                <text class="ns" x="315" y="356" text-anchor="middle">report-run.json ($TEMP)</text></g>
 
-              <!-- C3 notion (teal) — SPINE -->
-              <rect x="492" y="92" width="206" height="96" rx="12" fill="rgba(0,182,159,0.10)" stroke="#00B69F" stroke-width="2.6" filter="url(#spine-glow)"/>
-              <rect x="592" y="78" width="96" height="22" rx="11" fill="#00B69F"/>
-              <text class="badge-t" x="640" y="93" text-anchor="middle">SPINE</text>
-              <text class="nt-spine" x="595" y="132" text-anchor="middle">Weekly Work Tracker</text>
-              <text class="ns" x="595" y="152" text-anchor="middle">DB 3d7f2afd &middot; the reporting spine</text>
-              <text class="ns" x="595" y="168" text-anchor="middle">one row per unit of work</text>
+              <!-- C3 upsert -->
+              <g><rect x="424" y="290" width="170" height="86" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
+                <text class="nt" x="509" y="320" text-anchor="middle">upsert.mjs</text>
+                <text class="ns" x="509" y="340" text-anchor="middle">query by Run ID &rarr;</text>
+                <text class="ns" x="509" y="356" text-anchor="middle">update or append</text></g>
 
-              <g><rect x="500" y="356" width="190" height="54" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
-                <text class="nt" x="595" y="381" text-anchor="middle">FourthOS Cockpit</text>
-                <text class="ns" x="595" y="399" text-anchor="middle">34076fd7</text></g>
-              <g><rect x="500" y="452" width="190" height="54" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
-                <text class="nt" x="595" y="477" text-anchor="middle">Leadership Dashboard</text>
-                <text class="ns" x="595" y="495" text-anchor="middle">e29dd1c4 &middot; 5 live DBs</text></g>
+              <!-- C4 registry — SPINE -->
+              <rect x="620" y="284" width="210" height="100" rx="12" fill="rgba(0,182,159,0.10)" stroke="#00B69F" stroke-width="2.6" filter="url(#spine-glow)"/>
+              <rect x="677" y="270" width="96" height="22" rx="11" fill="#00B69F"/>
+              <text class="badge-t" x="725" y="285" text-anchor="middle">SPINE</text>
+              <text class="nt-spine" x="725" y="318" text-anchor="middle">Report Runs registry</text>
+              <text class="ns" x="725" y="340" text-anchor="middle">DB 4e4c9460 &middot; ds c7d2d9e3</text>
+              <text class="ns" x="725" y="356" text-anchor="middle">append-all-attempts</text>
+              <text class="ns" x="725" y="372" text-anchor="middle">keyed by unique Run ID</text>
 
-              <!-- C4 outputs (deep-blue) -->
-              <g><rect x="760" y="150" width="170" height="62" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
-                <text class="nt" x="845" y="178" text-anchor="middle">Team dashboard</text>
-                <text class="ns" x="845" y="196" text-anchor="middle">Railway &middot; Next.js</text></g>
-              <g><rect x="760" y="356" width="170" height="46" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8" stroke-dasharray="3 3"/>
-                <text class="nt" x="845" y="376" text-anchor="middle">FourthOS run</text>
-                <text class="ns" x="845" y="393" text-anchor="middle">Fri 07:00 scheduled</text></g>
-              <g><rect x="760" y="440" width="170" height="62" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
-                <text class="nt" x="845" y="468" text-anchor="middle">Sponsor site</text>
-                <text class="ns" x="845" y="486" text-anchor="middle">GitHub Pages &middot; 3 tiers</text></g>
-
-              <!-- C5 audience (grey) -->
-              <g><rect x="1004" y="152" width="180" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
-                <text class="nt" x="1094" y="178" text-anchor="middle">AI Enablement Team</text>
-                <text class="ns" x="1094" y="196" text-anchor="middle">internal</text></g>
-              <g><rect x="1004" y="442" width="180" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
-                <text class="nt" x="1094" y="468" text-anchor="middle">Carly + Christian</text>
-                <text class="ns" x="1094" y="486" text-anchor="middle">VP / CTO</text></g>
+              <!-- C5 consumers -->
+              <g><rect x="860" y="150" width="314" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1017" y="176" text-anchor="middle">Humans</text>
+                <text class="ns" x="1017" y="194" text-anchor="middle">Notion views &middot; Reports hub</text></g>
+              <g><rect x="860" y="290" width="314" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1017" y="316" text-anchor="middle">AI narrator</text>
+                <text class="ns" x="1017" y="334" text-anchor="middle">ntn query &middot; ai-reporting MCP</text></g>
+              <g><rect x="860" y="430" width="314" height="58" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
+                <text class="nt" x="1017" y="456" text-anchor="middle">Drift detector</text>
+                <text class="ns" x="1017" y="474" text-anchor="middle">check-drift.mjs &middot; 48h stale gate</text></g>
 
               <!-- ===== LEGEND ===== -->
-              <g transform="translate(0,724)">
-                <rect x="16" y="0" width="1176" height="60" rx="12" fill="#0A1929" stroke="rgba(111,180,227,0.16)"/>
+              <g transform="translate(0,704)">
+                <rect x="16" y="0" width="1168" height="60" rx="12" fill="#0A1929" stroke="rgba(111,180,227,0.16)"/>
                 <text class="hdr" x="40" y="24">EDGES</text>
-                <!-- AUTO -->
-                <line x1="110" y1="20" x2="150" y2="20" class="e-auto" marker-end="url(#ah-teal)"/>
-                <text class="el" x="158" y="24" fill="#CFD1D1">AUTO</text>
                 <!-- SCHEDULED -->
-                <line x1="230" y1="20" x2="270" y2="20" class="e-sched" marker-end="url(#ah-sky)"/>
-                <text class="el" x="278" y="24" fill="#CFD1D1">SCHEDULED</text>
-                <!-- MANUAL -->
-                <line x1="392" y1="20" x2="432" y2="20" class="e-man" marker-end="url(#ah-amber)"/>
-                <text class="el" x="440" y="24" fill="#CFD1D1">MANUAL</text>
-                <!-- GAP -->
-                <line x1="528" y1="20" x2="568" y2="20" class="e-gap" marker-end="url(#ah-red)"/>
-                <text class="el" x="576" y="24" fill="#CFD1D1">GAP / MISSING (no path)</text>
-                <!-- SERVES -->
-                <line x1="800" y1="20" x2="840" y2="20" class="e-serve" marker-end="url(#ah-grey)"/>
-                <text class="el" x="848" y="24" fill="#CFD1D1">serves audience</text>
-                <!-- LAYER swatches -->
-                <text class="hdr" x="40" y="48">LAYERS</text>
-                <rect x="110" y="40" width="12" height="12" rx="3" fill="#9678B6"/><text class="el" x="128" y="50" fill="#CFD1D1">surface</text>
-                <rect x="196" y="40" width="12" height="12" rx="3" fill="#6FB4E3"/><text class="el" x="214" y="50" fill="#CFD1D1">capture</text>
-                <rect x="282" y="40" width="12" height="12" rx="3" fill="#00B69F"/><text class="el" x="300" y="50" fill="#CFD1D1">notion</text>
-                <rect x="362" y="40" width="12" height="12" rx="3" fill="#0C4A7D"/><text class="el" x="380" y="50" fill="#CFD1D1">output</text>
-                <rect x="446" y="40" width="12" height="12" rx="3" fill="#8DA8C4"/><text class="el" x="464" y="50" fill="#CFD1D1">audience</text>
-                <rect x="538" y="40" width="12" height="12" rx="3" fill="rgba(0,182,159,0.20)" stroke="#00B69F" stroke-width="1.6"/><text class="el" x="556" y="50" fill="#CFD1D1">SPINE node (highlighted)</text>
+                <line x1="110" y1="20" x2="150" y2="20" class="e-sched" marker-end="url(#ah-sky)"/>
+                <text class="el" x="158" y="24" fill="#CFD1D1">SCHEDULED &mdash; pipeline fires</text>
+                <!-- AUTO -->
+                <line x1="400" y1="20" x2="440" y2="20" class="e-auto" marker-end="url(#ah-teal)"/>
+                <text class="el" x="448" y="24" fill="#CFD1D1">AUTO &mdash; emit + upsert</text>
+                <!-- READ -->
+                <line x1="660" y1="20" x2="700" y2="20" class="e-serve" marker-end="url(#ah-grey)"/>
+                <text class="el" x="708" y="24" fill="#CFD1D1">READ &mdash; consumers query</text>
+                <!-- SPINE swatch -->
+                <text class="hdr" x="40" y="48">NODE</text>
+                <rect x="110" y="40" width="12" height="12" rx="3" fill="rgba(0,182,159,0.20)" stroke="#00B69F" stroke-width="1.6"/>
+                <text class="el" x="128" y="50" fill="#CFD1D1">SPINE &mdash; the Report Runs registry (single writer: upsert.mjs)</text>
               </g>
             </svg>
           </figure>
         </div>
-        <figcaption><b>Current state.</b> Capture is overwhelmingly <b>manual</b> (amber). Only the two paths into the Weekly Work Tracker are automatic. The team-dashboard pipeline is <b>broken</b>: the <span class="mono">ai-reporting</span> MCP that powers <span class="mono">collect_weekly_work_tracker</span> is <b>unregistered</b>, so <span class="mono">/weekly-report</span> Phase&nbsp;1 fails. The sponsor site reads the Cockpit + Leadership Dashboard, <b>not</b> the Tracker. Three red edges are connections that simply do not exist: Eve and Donna have no Tracker path, and the scheduled FourthOS run never logs back to the Tracker.</figcaption>
+        <figcaption><b>Current state.</b> Six scheduled pipelines (Task Scheduler) each end by emitting <span class="mono">report-run.json</span> and calling <span class="mono">upsert.mjs</span>, which queries the data source for a row whose <span class="mono">Run&nbsp;ID</span> matches and does <b>update-in-place</b> or <b>append</b>. One registry, one row per run. <span class="mono">upsert.mjs</span> is <b>non-fatal-but-loud</b> &mdash; a Notion hiccup degrades to a missing row (caught later by the drift detector), never a failed report.</figcaption>
 
-        <h3>Target &mdash; one spine, two cuts</h3>
+        <h3>The Notion Reports home</h3>
         <p class="scroll-hint">Scroll the diagram horizontally &rarr;</p>
         <div class="diagram-scroll">
           <figure class="diagram compact">
-            <svg viewBox="0 0 1200 440" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Target state: every surface logs exactly one tagged row into the Weekly Work Tracker spine, which feeds two cuts — a full internal team cut and a filtered status-grade sponsor cut — each serving its own audience, with the Cockpit feeding only portfolio framing into the sponsor cut.">
+            <svg viewBox="0 0 1200 440" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="The Notion Reports home: the Reports hub page holds the Report Runs database, six report-type child pages, and seven linked views. backfill.mjs seeded about forty-six real history rows from existing artifacts with deterministic Run IDs.">
               <defs>
                 <filter id="spine-glow2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
               </defs>
 
-              <text class="hdr" x="120"  y="28" text-anchor="middle">EVERY SURFACE</text>
-              <text class="hdr" x="495"  y="28" text-anchor="middle">ONE SPINE</text>
-              <text class="hdr" x="800"  y="28" text-anchor="middle">TWO CUTS</text>
-              <text class="hdr" x="1090" y="28" text-anchor="middle">AUDIENCE</text>
+              <text class="hdr" x="138"  y="28" text-anchor="middle">HOME</text>
+              <text class="hdr" x="480"  y="28" text-anchor="middle">REGISTRY DB</text>
+              <text class="hdr" x="855"  y="28" text-anchor="middle">SURFACED AS</text>
 
-              <!-- edges: sources -> spine (auto teal) -->
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,72  C330,80 360,150 392,196"/>
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,138 C330,150 360,180 392,206"/>
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,204 L392,214"/>
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,270 C330,262 360,240 392,224"/>
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M220,336 C330,330 360,260 392,234"/>
-              <text class="el" x="250" y="120" fill="#00B69F">1 tagged row each</text>
+              <!-- hub -> DB (auto) -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M228,214 C300,214 330,216 370,216"/>
+              <text class="el" x="246" y="204" fill="#00B69F">contains</text>
 
-              <!-- spine -> cuts -->
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M598,196 C660,170 690,150 736,138"/>
-              <text class="el" x="612" y="150" fill="#00B69F">full</text>
-              <path class="e-auto" marker-end="url(#ah-teal)" d="M598,234 C660,260 690,280 736,296"/>
-              <text class="el" x="600" y="286" fill="#00B69F">filtered &middot; status-grade</text>
+              <!-- DB -> child pages (sched) -->
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M588,192 C660,140 700,110 758,102"/>
+              <!-- DB -> views (sched) -->
+              <path class="e-sched" marker-end="url(#ah-sky)" d="M588,216 C660,216 700,218 758,219"/>
+              <!-- DB -> backfill (auto) -->
+              <path class="e-auto" marker-end="url(#ah-teal)" d="M588,240 C660,290 700,320 758,336"/>
+              <text class="el" x="600" y="298" fill="#00B69F">backfill.mjs</text>
 
-              <!-- cockpit -> sponsor cut (sched) -->
-              <path class="e-sched" marker-end="url(#ah-sky)" d="M598,372 C660,360 700,330 736,312"/>
-              <text class="el" x="600" y="392" fill="#6FB4E3">portfolio framing only</text>
+              <!-- hub node -->
+              <g><rect x="48" y="176" width="180" height="76" rx="10" fill="#0E2334" stroke="#6FB4E3" stroke-width="1.8"/>
+                <text class="nt" x="138" y="206" text-anchor="middle">Reports hub</text>
+                <text class="ns" x="138" y="226" text-anchor="middle">38f76fd7</text></g>
 
-              <!-- cuts -> audience -->
-              <path class="e-serve" marker-end="url(#ah-grey)" d="M906,128 L992,128"/>
-              <path class="e-serve" marker-end="url(#ah-grey)" d="M906,300 L992,300"/>
+              <!-- DB spine -->
+              <rect x="372" y="168" width="216" height="96" rx="12" fill="rgba(0,182,159,0.10)" stroke="#00B69F" stroke-width="2.6" filter="url(#spine-glow2)"/>
+              <rect x="432" y="154" width="96" height="22" rx="11" fill="#00B69F"/>
+              <text class="badge-t" x="480" y="169" text-anchor="middle">SPINE</text>
+              <text class="nt-spine" x="480" y="202" text-anchor="middle">Report Runs DB</text>
+              <text class="ns" x="480" y="224" text-anchor="middle">4e4c9460 &middot; ds c7d2d9e3</text>
+              <text class="ns" x="480" y="240" text-anchor="middle">~46 rows backfilled</text>
 
-              <!-- source nodes -->
-              <g><rect x="60" y="50"  width="160" height="44" rx="9" fill="#0E2334" stroke="#9678B6" stroke-width="1.6"/><text class="ns" x="140" y="77" text-anchor="middle" style="font-size:11px;fill:#fff">Code &middot; reporting skill</text></g>
-              <g><rect x="60" y="116" width="160" height="44" rx="9" fill="#0E2334" stroke="#9678B6" stroke-width="1.6"/><text class="ns" x="140" y="143" text-anchor="middle" style="font-size:11px;fill:#fff">Donna &middot; addendum</text></g>
-              <g><rect x="60" y="182" width="160" height="44" rx="9" fill="#0E2334" stroke="#9678B6" stroke-width="1.6"/><text class="ns" x="140" y="209" text-anchor="middle" style="font-size:11px;fill:#fff">Eve</text></g>
-              <g><rect x="60" y="248" width="160" height="44" rx="9" fill="#0E2334" stroke="#2E78B0" stroke-width="1.6"/><text class="ns" x="140" y="275" text-anchor="middle" style="font-size:11px;fill:#fff">FourthOS run</text></g>
-              <g><rect x="60" y="314" width="160" height="44" rx="9" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.6"/><text class="ns" x="140" y="341" text-anchor="middle" style="font-size:11px;fill:#fff">Dave / Team</text></g>
-
-              <!-- spine -->
-              <rect x="392" y="172" width="206" height="86" rx="12" fill="rgba(0,182,159,0.10)" stroke="#00B69F" stroke-width="2.6" filter="url(#spine-glow2)"/>
-              <rect x="492" y="158" width="96" height="22" rx="11" fill="#00B69F"/>
-              <text class="badge-t" x="540" y="173" text-anchor="middle">SPINE</text>
-              <text class="nt-spine" x="495" y="208" text-anchor="middle">Weekly Work Tracker</text>
-              <text class="ns" x="495" y="228" text-anchor="middle">one canonical, Source-tagged row</text>
-              <text class="ns" x="495" y="244" text-anchor="middle">per reportable unit of work</text>
-
-              <!-- cut nodes -->
-              <g><rect x="736" y="100" width="170" height="56" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
-                <text class="nt" x="821" y="125" text-anchor="middle">Team cut</text>
-                <text class="ns" x="821" y="143" text-anchor="middle">full internal detail</text></g>
-              <g><rect x="736" y="272" width="170" height="56" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
-                <text class="nt" x="821" y="297" text-anchor="middle">Sponsor cut</text>
-                <text class="ns" x="821" y="315" text-anchor="middle">filtered status-grade</text></g>
-
-              <!-- cockpit (framing source) -->
-              <g><rect x="438" y="350" width="160" height="44" rx="9" fill="#0E2334" stroke="#00B69F" stroke-width="1.6"/><text class="ns" x="518" y="377" text-anchor="middle" style="font-size:11px;fill:#fff">FourthOS Cockpit</text></g>
-
-              <!-- audience -->
-              <g><rect x="992" y="100" width="170" height="56" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
-                <text class="nt" x="1077" y="125" text-anchor="middle">AI Enablement Team</text>
-                <text class="ns" x="1077" y="143" text-anchor="middle">internal</text></g>
-              <g><rect x="992" y="272" width="170" height="56" rx="10" fill="#0E2334" stroke="#8DA8C4" stroke-width="1.8"/>
-                <text class="nt" x="1077" y="297" text-anchor="middle">Carly + Christian</text>
-                <text class="ns" x="1077" y="315" text-anchor="middle">VP / CTO</text></g>
+              <!-- surfaced nodes -->
+              <g><rect x="760" y="70"  width="190" height="58" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
+                <text class="nt" x="855" y="96"  text-anchor="middle">6 report-type pages</text>
+                <text class="ns" x="855" y="114" text-anchor="middle">one child page per type</text></g>
+              <g><rect x="760" y="190" width="190" height="58" rx="10" fill="#0E2334" stroke="#2E78B0" stroke-width="1.8"/>
+                <text class="nt" x="855" y="216" text-anchor="middle">7 linked views</text>
+                <text class="ns" x="855" y="234" text-anchor="middle">6 History + 1 hub</text></g>
+              <g><rect x="760" y="310" width="190" height="58" rx="10" fill="#0E2334" stroke="#00B69F" stroke-width="1.8"/>
+                <text class="nt" x="855" y="336" text-anchor="middle">Backfilled history</text>
+                <text class="ns" x="855" y="354" text-anchor="middle">4 of 6 types &middot; ~46 rows</text></g>
             </svg>
           </figure>
         </div>
-        <figcaption><b>Target state.</b> Keep two distinct <b>output cuts</b> &mdash; internal team vs VP/CTO sponsor (the audiences and content bar are intentionally different) &mdash; but make the Weekly Work Tracker the single canonical capture spine that both cuts draw from. The Cockpit stays only for portfolio framing on the sponsor cut.</figcaption>
+        <figcaption><b>The Reports home.</b> Hub page <span class="mono">38f76fd7</span> holds the Report Runs DB (<span class="mono">4e4c9460</span>, data source <span class="mono">c7d2d9e3</span>), six report-type child pages, and seven linked views (six per-type <b>History</b> views + one &ldquo;All Report Runs &mdash; by Type&rdquo;). <span class="mono">backfill.mjs</span> seeded <b>~46</b> real history rows from existing artifacts with deterministic Run&nbsp;IDs, so the registry has retroactive depth, not just go-forward rows.</figcaption>
 
         <div class="state-key">
-          <span class="chip auto">AUTO &mdash; hook/skill writes it</span>
-          <span class="chip sched">SCHEDULED &mdash; runs on a clock</span>
-          <span class="chip man">MANUAL &mdash; model/Dave must remember</span>
-          <span class="chip gap">GAP &mdash; no path / broken today</span>
+          <span class="chip auto">AUTO &mdash; emit + upsert on every run</span>
+          <span class="chip sched">SCHEDULED &mdash; pipeline fires on Task Scheduler</span>
+          <span class="chip man">MANUAL &mdash; human still in loop (promote, hub launcher)</span>
+          <span class="chip gap">GAP &mdash; honestly still open (see &sect;05)</span>
         </div>
       </div>
     </section>
 
-    <!-- ===================== 2. THE FOUR STAGES ===================== -->
+    <!-- ===================== 2. THE ANATOMY ===================== -->
     <section class="block" id="stages">
       <div class="wrap">
         <div class="sec-head">
           <span class="sec-num">02 &middot; Anatomy</span>
-          <h2>The four stages</h2>
-          <p class="lead">Two audiences, one body of work. Here is what sits in each column of the map.</p>
+          <h2>The registry, stage by stage</h2>
+          <p class="lead">Uniform by design. Every pipeline follows the same <b>emit &rarr; upsert</b> path, and the registry has a single writer &mdash; <span class="mono">upsert.mjs</span>. All of it is ESM with no external deps, living in <span class="mono">scripts/report-registry/</span> and reusing <span class="mono">scripts/project-cards/lib/notion.mjs</span>.</p>
         </div>
 
-        <h3>Stage 1 &mdash; Work surfaces</h3>
-        <div class="tbl-scroll">
-          <table>
-            <thead><tr><th>Surface</th><th>Role</th><th>Owner</th></tr></thead>
-            <tbody>
-              <tr><td><b>Claude Code</b> (CCv3, here)</td><td>Execution &mdash; builds, fixes, ships</td><td>autonomous + Dave</td></tr>
-              <tr><td><b>Cowork</b></td><td>Fourth team work + the report editorial half</td><td>Dave + team</td></tr>
-              <tr><td><b>Claude.ai &mdash; Eve</b></td><td>Personal strategic layer (ideas, direction)</td><td>Dave</td></tr>
-              <tr><td><b>Claude.ai &mdash; Donna</b></td><td>Fourth-business strategic layer (SPARK, RFP, MS&nbsp;AI, competitive intel)</td><td>Dave</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <h3>Stage 1 &mdash; Emit: the report-run.json contract</h3>
+        <p class="note"><span class="mono">make-run.mjs</span> (or <span class="mono">buildRun + writeRun</span> imported directly, node-native) builds a flat, validated <span class="mono">report-run.json</span> and writes it to <span class="mono">$TEMP/report-run-&lt;source&gt;.json</span>. <span class="mono">config.mjs</span> is the single source of truth &mdash; it loads the canonical Notion IDs and enums from <span class="mono">report-runs.ids.json</span>. Contract keys: <span class="mono">runId, type, period, runDate, status, artifactUrl, docxUrl, summary, source, commit</span>.</p>
 
-        <h3>Stage 2 &mdash; Capture into Notion</h3>
-        <div class="tbl-scroll">
-          <table>
-            <thead><tr><th>Path</th><th>What it does</th><th>Automation</th></tr></thead>
-            <tbody>
-              <tr><td><code>/log-work</code> skill</td><td>Creates one Weekly Work Tracker row</td><td><span class="chip man">MANUAL</span> explicit invocation</td></tr>
-              <tr><td>Bridge <b>auto-mirror</b> (notion-bridge step&nbsp;3b)</td><td>Every Code&rarr;Eve/Donna writeback also creates a Tracker row</td><td><span class="chip man">MANUAL</span> model-followed &mdash; not hook-enforced</td></tr>
-              <tr><td>Bridge HQ handoff queues + Implementation Log</td><td>Eve/Donna/Code coordination + shipped log</td><td><span class="chip man">MANUAL</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="note">No hook enforces capture. The two paths into the Tracker run their <em>writes</em> automatically once invoked &mdash; but invoking them is manual, so unreported work is invisible to reporting.</p>
+        <h3>Stage 2 &mdash; Upsert: the shared spine</h3>
+        <p class="note"><span class="mono">upsert.mjs</span> is the spine writer. It queries the data source for a row whose <span class="mono">Run&nbsp;ID</span> equals <span class="mono">runId</span>, then does <b>update-in-place</b> (same runId) or <b>create/append</b> (distinct runId). <span class="mono">runId = &lt;type&gt;|&lt;period&gt;|&lt;ISO-timestamp&gt;</span>, where the timestamp <em>is</em> the run date &mdash; so re-emitting with the same run date re-targets the same row (idempotent retry), and a fresh run date appends. On any failure it logs <span class="mono">[report-registry] ERROR:</span> and exits nonzero; every pipeline <b>wraps</b> the call so a registry outage can never redden the parent report.</p>
 
-        <h3>Stage 3 &mdash; The Notion data layer</h3>
+        <h3>Stage 3 &mdash; The Notion Reports home</h3>
         <div class="cards">
           <div class="card spine">
-            <h4><span class="dot teal"></span> Weekly Work Tracker <span class="id">3d7f2afd</span></h4>
-            <p>The reporting <b>spine</b>. One row per reportable unit of work, Source-tagged. Full field reference below.</p>
+            <h4><span class="dot teal"></span> Report Runs DB <span class="id">4e4c9460</span></h4>
+            <p>The run <b>registry</b> &mdash; append-all-attempts, one row per run, keyed by unique <span class="mono">Run&nbsp;ID</span>. Data source <span class="id">c7d2d9e3</span>.</p>
           </div>
           <div class="card">
-            <h4><span class="dot teal"></span> FourthOS Daily Cockpit <span class="id">34076fd7</span></h4>
-            <p>Operational cockpit. Read by the sponsor-site generator for portfolio framing.</p>
+            <h4><span class="dot sky"></span> Reports hub <span class="id">38f76fd7</span></h4>
+            <p>Home page. Holds the Report Runs DB and 6 report-type child pages, one per type.</p>
           </div>
           <div class="card">
-            <h4><span class="dot teal"></span> Leadership Portfolio Dashboard <span class="id">e29dd1c4</span></h4>
-            <p>5 live DBs. Plus the Update Package prompt <span class="id">82c202b8</span> and Connector master plan <span class="id">38776fd7</span>.</p>
+            <h4><span class="dot blue"></span> 7 linked views</h4>
+            <p>6 per-type <b>History</b> views + 1 &ldquo;All Report Runs &mdash; by Type (hub)&rdquo; <span class="id">39576fd7&hellip;794</span>.</p>
           </div>
           <div class="card">
-            <h4><span class="dot sky"></span> Bridge HQ <span class="id">30e76fd7</span></h4>
-            <p>Eve/Donna/Code queues, Key Decisions, Implementation Log, and the <span class="mono">bridge sync</span> archive.</p>
+            <h4><span class="dot teal"></span> Backfilled history</h4>
+            <p>~46 rows seeded by <span class="mono">backfill.mjs</span> from 4 on-disk sources (VP archives, sponsor decks, Self-Improvement INDEX, Health-Check JSONs), deterministic Run&nbsp;IDs.</p>
           </div>
         </div>
+        <p class="note"><b>The registry is not the content.</b> It records that a report <em>ran</em> &mdash; not the work itself. Reports still read their own sources: the team dashboard reads the <b>Weekly Work Tracker</b> (<span class="mono">3d7f2afd</span>, still the work-capture spine); the sponsor site reads the <b>FourthOS Cockpit</b> (<span class="mono">34076fd7</span>) + <b>Leadership Dashboard</b> (<span class="mono">e29dd1c4</span>); coordination lives in <b>Bridge HQ</b> (<span class="mono">30e76fd7</span>).</p>
 
-        <h3>Stage 4 &mdash; Reporting outputs (two)</h3>
+        <h3>Stage 4 &mdash; The six wired pipelines</h3>
         <div class="tbl-scroll">
-          <table class="col-vs">
-            <thead><tr><th></th><th>Team dashboard</th><th>Sponsor site</th></tr></thead>
+          <table>
+            <thead><tr><th>Pipeline (scheduled job)</th><th>Records as</th><th>How it lands the row</th></tr></thead>
             <tbody>
-              <tr><td><b>Skill</b></td><td><code>/weekly-report</code></td><td><code>fourthos-weekly</code></td></tr>
-              <tr><td><b>Reads</b></td><td>Weekly Work Tracker (via <span class="mono">ai-reporting</span> MCP <span class="mono">collect_weekly_work_tracker</span>)</td><td>FourthOS Cockpit + Leadership Dashboard (<b>not</b> the Tracker)</td></tr>
-              <tr><td><b>Output</b></td><td>Railway / NeonDB Next.js dashboard</td><td>3 self-contained HTML tiers &rarr; GitHub Pages</td></tr>
-              <tr><td><b>Cadence</b></td><td><span class="chip man">MANUAL</span> 2 sessions/wk (Code data half + Cowork/Desktop editorial half)</td><td><span class="chip sched">SCHEDULED</span> generate (Fri 07:00 <span class="mono">CCv3-FourthOS-Weekly</span>) + <span class="chip man">MANUAL</span> promote</td></tr>
-              <tr><td><b>Audience</b></td><td>AI Enablement <b>team</b> (internal)</td><td><b>Carly + Christian</b> (VP / CTO)</td></tr>
-              <tr><td><b>Content bar</b></td><td>Full operational detail</td><td>Status-grade only &mdash; honesty / badge system</td></tr>
+              <tr><td><b>Project-Cards</b></td><td>Project Portfolio</td><td><span class="mono">sweep.mjs</span> imports <span class="mono">buildRun/writeRun</span> (node-native); <span class="mono">run-sweep.ps1</span> upserts. Skips when no emit (dry-run).</td></tr>
+              <tr><td><b>AIWeeklyReport</b></td><td>VP Weekly</td><td><span class="mono">weekly_run.py</span> emits after deploy; <span class="mono">run-ai-weekly-report.bat</span> upserts via absolute node &mdash; and synthesizes a <b>Failed</b> row if python crashes without emitting.</td></tr>
+              <tr><td><b>FourthOS-Weekly</b></td><td>FourthOS Sponsor</td><td><span class="mono">scheduled-fourthos-weekly.bat</span> calls <span class="mono">make-run.mjs</span> then <span class="mono">upsert.mjs</span>.</td></tr>
+              <tr><td><b>Dashboard-Sync</b></td><td>Team Dashboard</td><td><span class="mono">sync-tasks-dashboard.ps1</span> captures <span class="mono">$LASTEXITCODE</span>, emits OK/Warn, upserts, and now ends with <span class="mono">exit&nbsp;$LASTEXITCODE</span> (previously swallowed).</td></tr>
+              <tr><td><b>Health-Check</b></td><td>System Health</td><td><span class="mono">scheduled-health-check.bat</span> maps exit 0/1/else &rarr; OK/Warn/Failed, emits, upserts, then runs <span class="mono">check-drift.mjs</span> as a final non-fatal step.</td></tr>
+              <tr><td><b>Self-Improvement</b></td><td>Self-Improvement</td><td><span class="mono">run-research.ps1</span> upserts in the parent PowerShell after <span class="mono">claude -p</span> exits (keychain auth survives the NOTION_* scrub).</td></tr>
             </tbody>
           </table>
         </div>
@@ -583,95 +519,99 @@
       <div class="wrap">
         <div class="sec-head">
           <span class="sec-num">03 &middot; The spine</span>
-          <h2>The Weekly Work Tracker</h2>
-          <p class="lead">The single canonical capture surface. <code>DB 3d7f2afd</code>. Every reportable unit of work is exactly one row &mdash; <span class="mono">Source</span>-tagged &mdash; and <span class="mono">Dashboard Section</span> decides which report section it surfaces in.</p>
+          <h2>The Report Runs registry</h2>
+          <p class="lead">One row per report run. <span class="mono">DB 4e4c9460</span> (data source <span class="mono">c7d2d9e3</span>). The <span class="mono">Run&nbsp;ID</span> is the unique idempotency key; everything else is metadata about that run.</p>
         </div>
         <div class="tbl-scroll">
           <table>
-            <thead><tr><th>Field</th><th>Values / meaning</th></tr></thead>
+            <thead><tr><th>Property</th><th>Type &middot; meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>Title</code></td><td>Verb-led, one line</td></tr>
-              <tr><td><code>Date</code></td><td>When the work happened</td></tr>
-              <tr><td><code>Type</code></td><td>Ship / Fix / Feature / Integration / Deploy / Decision / Research / Design / Meeting</td></tr>
-              <tr><td><code>Source</code></td><td><b>Code / Donna / Eve / Dave / Team</b> &mdash; which surface produced it</td></tr>
-              <tr><td><code>Impact</code></td><td>High / Mid / Low</td></tr>
-              <tr><td><code>Dashboard Section</code></td><td>Deep Dive / Integration / Metric / Adoption / Roadmap / Decision / Highlight / None &mdash; drives which report section it surfaces in</td></tr>
-              <tr><td><code>Project</code></td><td>Relation &rarr; FourthOS Projects</td></tr>
-              <tr><td><code>Commits</code></td><td>Linked commit references</td></tr>
-              <tr><td><code>Writeback URL</code></td><td>Link back to the Bridge writeback / artifact</td></tr>
-              <tr><td><code>Published in Report</code></td><td>Checkbox &mdash; leave unchecked; the collector sets it</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== 4. THE GAPS ===================== -->
-    <section class="block" id="gaps">
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="sec-num">04 &middot; Current state, honestly</span>
-          <h2>The gaps &mdash; why it doesn&rsquo;t flow yet</h2>
-          <p class="lead">These are the present-day failures, stated as ground truth. They are the reason this document exists; the proposal below is the fix.</p>
-        </div>
-        <ol class="gaps">
-          <li><b>No shared spine.</b> The team dashboard reads the Tracker; the sponsor site reads the Cockpit instead &mdash; and the scheduled FourthOS run never logs to the Tracker. The two outputs don&rsquo;t feed each other or share an upstream.</li>
-          <li><b>Eve &amp; Donna can&rsquo;t reach the Tracker.</b> <span class="mono">Source = Eve</span> / <span class="mono">Source = Donna</span> exist in the schema, but neither surface has a path that writes a Tracker row. Their work lands in Bridge queues only.</li>
-          <li><b>Capture is manual / un-enforced.</b> <code>/log-work</code> and the Bridge auto-mirror both depend on the model remembering to run them; no hook enforces capture. Unreported work is invisible to reporting.</li>
-          <li><b>The team-dashboard pipeline is currently broken.</b> The <span class="mono">ai-reporting</span> MCP server (which powers <span class="mono">collect_weekly_work_tracker</span>) is <b>unregistered</b> in <span class="mono">settings.json</span> / <span class="mono">.mcp.json</span> &mdash; the repo exists at <span class="mono">C:/Users/david.hayes/ai-reporting-mcp/</span> but isn&rsquo;t wired in, so <span class="mono">/weekly-report</span> Phase&nbsp;1 will fail until it&rsquo;s registered.</li>
-          <li><b>The collector lives outside the repo.</b> <span class="mono">tracker_collector.py</span> / the <span class="mono">ai-reporting</span> MCP are a sibling project (<span class="mono">ai-reporting-mcp/</span>), not in continuous-claude &mdash; easy to lose track of.</li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- ===================== 5. THE PROPOSAL ===================== -->
-    <section class="block" id="proposal">
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="sec-num">05 &middot; The fix</span>
-          <h2>One spine, two cuts</h2>
-          <p class="lead">Keep two distinct output cuts (internal team vs VP/CTO sponsor &mdash; the audiences and content bar are intentionally different), but make the Weekly Work Tracker the single canonical capture spine that both cuts draw from. Sequenced, cheapest-first.</p>
-        </div>
-        <ol class="steps">
-          <li><b>Re-wire the team pipeline.</b> Register the <span class="mono">ai-reporting</span> MCP (local stdio or Railway HTTP) and confirm <span class="mono">/weekly-report</span> Phase&nbsp;1 runs. Without this, the team cut is dead. <em>(External repo action.)</em></li>
-          <li><b>Make the Tracker the spine.</b> Every reportable unit of work lands exactly one Tracker row, <span class="mono">Source</span>-tagged, regardless of surface &mdash; the one rule the whole system hangs on.</li>
-          <li><b>Close the capture gaps:</b>
-            <ul>
-              <li><b>Code</b> &rarr; the new <span class="mono">reporting</span> discipline skill (when/what/how to log; one-spine rule).</li>
-              <li><b>Donna</b> &rarr; the Donna addendum (logs her Fourth work as <span class="mono">Source=Donna</span> rows).</li>
-              <li><b>FourthOS scheduled run</b> &rarr; add a step that logs a Tracker row (<span class="mono">Source=Code</span>, <span class="mono">Dashboard Section=Highlight</span>) so the sponsor work is also visible to the team report.</li>
-            </ul>
-          </li>
-          <li><b>Two cuts read one spine.</b> Team dashboard = full internal cut (unchanged). Sponsor site = filtered status-grade cut; optionally also read the Tracker for the cross-surface &ldquo;what shipped&rdquo; signal while keeping the Cockpit for portfolio framing.</li>
-          <li><b>(Optional) light enforcement.</b> A session-end nudge reminding Code to log unreported shippable work &mdash; a reminder, not a block &mdash; mirroring existing CCv3 hook patterns.</li>
-        </ol>
-        <div class="principle">
-          <p><b>The principle:</b> capture once, at the moment of work, into one tagged spine; render many cuts from it. Reporting quality is a <em>capture</em> problem, not a <em>rendering</em> problem &mdash; the renderers are already good.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== 6. HOW TO REPORT ===================== -->
-    <section class="block" id="report">
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="sec-num">06 &middot; Quick reference</span>
-          <h2>How to report</h2>
-          <p class="lead">Who logs what, and when. The one rule: one tagged Tracker row per reportable unit of work.</p>
-        </div>
-        <div class="tbl-scroll">
-          <table>
-            <thead><tr><th>You are&hellip;</th><th>When</th><th>Do this</th></tr></thead>
-            <tbody>
-              <tr><td><b>Claude Code</b></td><td>After any Ship/Fix/Feature/Integration/Deploy/Decision/Research/Design unit</td><td>Log a Tracker row (<span class="mono">Source=Code</span>) via the <span class="mono">reporting</span> skill / <code>/log-work</code>; on Eve/Donna handoffs the Bridge auto-mirror covers it</td></tr>
-              <tr><td><b>Donna</b></td><td>After significant Fourth-business work or a decision</td><td>Write a Tracker row (<span class="mono">Source=Donna</span>) per the addendum, in addition to the Bridge handoff</td></tr>
-              <tr><td><b>Eve</b></td><td>After a strategic decision worth reporting</td><td>(Optional) a Tracker row <span class="mono">Source=Eve</span>, or rely on the Code writeback auto-mirror</td></tr>
-              <tr><td><b>Dave</b></td><td>Anytime</td><td><code>/log-work</code> for anything not auto-captured; <span class="mono">bridge sync</span> to sweep</td></tr>
+              <tr><td><code>Report Run</code></td><td>title</td></tr>
+              <tr><td><code>Run ID</code></td><td>rich_text &mdash; the <b>unique</b> idempotency key</td></tr>
+              <tr><td><code>Report Type</code></td><td>select &mdash; one of the 6 report types</td></tr>
+              <tr><td><code>Run Date</code></td><td>date &mdash; the run&rsquo;s timestamp (== the runId timestamp)</td></tr>
+              <tr><td><code>Period</code></td><td>rich_text &mdash; a grouping field, <b>not</b> unique</td></tr>
+              <tr><td><code>Attempt</code></td><td>number</td></tr>
+              <tr><td><code>Status</code></td><td>select &mdash; OK / Warn / Failed / Skipped</td></tr>
+              <tr><td><code>Artifact URL</code></td><td>url</td></tr>
+              <tr><td><code>Docx/Deck</code></td><td>url</td></tr>
+              <tr><td><code>Summary</code></td><td>rich_text</td></tr>
+              <tr><td><code>Source</code></td><td>select &mdash; the scheduled job that produced it</td></tr>
+              <tr><td><code>Commit</code></td><td>rich_text</td></tr>
             </tbody>
           </table>
         </div>
         <div class="field-note">
-          <b>Field discipline (every row):</b> <span class="mono">Title</span> (verb-led) &middot; <span class="mono">Type</span> &middot; <span class="mono">Impact</span> &middot; <span class="mono">Date</span> &middot; <span class="mono">Source</span> &middot; <span class="mono">Dashboard Section</span> (drives which report section it surfaces in) &middot; <span class="mono">Project</span> (relation) &middot; <span class="mono">Commits</span> &middot; <span class="mono">Writeback URL</span> &middot; leave <span class="mono">Published in Report</span> unchecked (the collector sets it).
+          <b>Model &mdash; append-all-attempts:</b> every attempt (including failures) is its own row, keyed by <span class="mono">Run&nbsp;ID</span>. <b>Source</b> maps type &rarr; scheduled job: VP&nbsp;Weekly&rarr;<span class="mono">AIWeeklyReport</span> &middot; FourthOS&nbsp;Sponsor&rarr;<span class="mono">FourthOS-Weekly</span> &middot; Team&nbsp;Dashboard&rarr;<span class="mono">Dashboard-Sync</span> &middot; System&nbsp;Health&rarr;<span class="mono">Health-Check</span> &middot; Project&nbsp;Portfolio&rarr;<span class="mono">Project-Cards</span> &middot; Self-Improvement&rarr;<span class="mono">Self-Improvement</span>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 4. WHAT IT RESOLVED ===================== -->
+    <section class="block" id="gaps">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">04 &middot; The arc</span>
+          <h2>What the registry resolved</h2>
+          <p class="lead">This document used to be a list of failures. Here is that same list &mdash; struck through &mdash; with what the Report Runs registry now does instead. The value is in the arc.</p>
+        </div>
+        <ul class="gaps resolved">
+          <li class="done"><span class="was"><b>No shared spine.</b> The two outputs didn&rsquo;t feed each other or share an upstream; run state was siloed per pipeline.</span><span class="fix">&rarr; <b>Resolved.</b> All six pipelines now land one row in a single <b>Report Runs</b> DB (<span class="mono">4e4c9460</span>, ds <span class="mono">c7d2d9e3</span>), keyed by a unique <span class="mono">Run&nbsp;ID</span> &mdash; what ran, when, and whether it landed is queryable in one place.</span></li>
+          <li class="done"><span class="was"><b>The team-dashboard pipeline was broken.</b> The <span class="mono">ai-reporting</span> MCP that powers <span class="mono">collect_weekly_work_tracker</span> was <b>unregistered</b>, so <span class="mono">/weekly-report</span> Phase&nbsp;1 failed.</span><span class="fix">&rarr; <b>Resolved.</b> The <span class="mono">ai-reporting</span> MCP is registered in <span class="mono">~/.mcp.json</span> (stdio, <span class="mono">uv run &hellip; server.py</span>, <span class="mono">NOTION_TOKEN</span>) &mdash; its collector + report tools are live.</span></li>
+          <li class="done"><span class="was"><b>The AI narrator had no history to read.</b> There was no single place to answer &ldquo;what ran last week / did it land?&rdquo;</span><span class="fix">&rarr; <b>Resolved.</b> History is one deterministic query: <span class="mono">ntn datasources query c7d2d9e3&hellip;</span> filtered by <b>Report Type</b> &mdash; and append-all-attempts means every attempt, including failures, is its own row.</span></li>
+          <li class="done"><span class="was"><b>Historical backlog was lost.</b> Past reports lived only as scattered on-disk artifacts.</span><span class="fix">&rarr; <b>Resolved.</b> <span class="mono">backfill.mjs</span> seeded <b>~46</b> real permanent history rows from VP archives, sponsor decks, the Self-Improvement INDEX, and Health-Check JSONs &mdash; deterministic Run&nbsp;IDs, so re-runs update in place and never duplicate.</span></li>
+          <li class="done"><span class="was"><b>Silent scheduled-report death.</b> A pipeline could stop landing rows and no one would notice.</span><span class="fix">&rarr; <b>Resolved.</b> <span class="mono">check-drift.mjs</span> (read-only; exits nonzero on any type stale beyond 48h or with zero rows) is wired into the weekly Health-Check.</span></li>
+          <li class="done"><span class="was"><b>Retry-duplication &amp; outcome-fidelity holes;</b> Dashboard-Sync also swallowed its exit code.</span><span class="fix">&rarr; <b>Resolved</b> in the review pass (commit <span class="mono">9f689a4</span>): idempotent create-or-adopt on transient failure, chronological (not lexicographic) newest-row selection, URL-typed-property guard, Health-Check worse-state default, Source-enum validation, orphan-duplicate cleanup, and <span class="mono">exit&nbsp;$LASTEXITCODE</span>.</span></li>
+          <li class="done"><span class="was"><b>A registry outage could block a report.</b></span><span class="fix">&rarr; <b>Resolved.</b> <span class="mono">upsert.mjs</span> is non-fatal-but-loud and every caller wraps it &mdash; a Notion hiccup degrades to a missing row (caught by drift), never a failed parent run.</span></li>
+        </ul>
+        <div class="principle">
+          <p><b>The principle held:</b> capture once at the moment of the run, into one tagged spine; render many cuts from it. Reporting observability was a <em>capture</em> problem, not a rendering problem &mdash; and capture is now uniform across all six pipelines.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 5. WHAT REMAINS ===================== -->
+    <section class="block" id="proposal">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">05 &middot; Current state, honestly</span>
+          <h2>What still isn&rsquo;t wired</h2>
+          <p class="lead">The spine is real and live, but it is not finished. These are the present-day open items, stated as ground truth &mdash; several are deliberate deferrals (see <span class="mono">tasks/tasks-report-registry.md</span> &ldquo;Not in scope&rdquo;).</p>
+        </div>
+        <ol class="gaps">
+          <li><b>No live per-run preview embeds.</b> The Phase&nbsp;3 hybrid &ldquo;Current run&rdquo; preview cards are explicitly <b>deferred</b> (MCP-only, size-gated). The registry today is history rows + linked views, not live per-run preview cards.</li>
+          <li><b>The consumers live out-of-repo.</b> The <span class="mono">ai-reporting</span> MCP server (<span class="mono">C:/Users/david.hayes/ai-reporting-mcp</span>) and the dashboard (<span class="mono">Projects/ai-reporting-dashboard</span>) are <b>not</b> version-controlled inside continuous-claude. The spine&rsquo;s contract (<span class="mono">README.md</span> schema) is the only in-repo coupling &mdash; the consumers can drift independently.</li>
+          <li><b>Two report types start with empty history.</b> Backfill seeds only 4 of 6 types; <b>Team Dashboard</b> and <b>Project Portfolio</b> have no historical on-disk artifacts, so they fill only from the next live run &mdash; and may show as <b>drift</b> (zero rows) in <span class="mono">check-drift</span> until then.</li>
+          <li><b>The hub launcher isn&rsquo;t wired.</b> The hub &ldquo;&#128229; Latest reports&rdquo; launcher rewrite is additive-only and <b>deferred</b> &mdash; flagged as human-territory, not machine-owned. The hub&rsquo;s top section is not yet bound to the registry.</li>
+          <li><b>The 7 views have a cosmetic placement bug.</b> <span class="mono">notion-create-view</span> appended each linked view at page-bottom rather than nested under its <span class="mono">## History</span> heading. Filter and sort are correct &mdash; only the visual placement is off.</li>
+          <li><b>Accepted (unguarded) races.</b> Two overlapping runs of the same source share the canonical <span class="mono">$TEMP/report-run-&lt;source&gt;.json</span> emit path and can create/create-race on the same runId. Only Task Scheduler&rsquo;s no-overlap (<span class="mono">MultipleInstances=IgnoreNew</span>) prevents it; the &gt;1-match orphan-cleanup is the self-heal if it ever fires.</li>
+          <li><b>A registry row is best-effort.</b> Because upsert is non-fatal, a transient Notion failure that even the create-or-adopt retry can&rsquo;t recover silently drops that run&rsquo;s row until the drift detector notices &mdash; there is no synchronous guarantee every run is recorded.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== 6. HOW TO READ IT ===================== -->
+    <section class="block" id="report">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="sec-num">06 &middot; Quick reference</span>
+          <h2>How to read it &mdash; and how to log work</h2>
+          <p class="lead">Where the registry lives and how each audience touches it. The one rule for pipelines: one upserted <span class="mono">Run&nbsp;ID</span> row per run.</p>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>You want to&hellip;</th><th>Do this</th></tr></thead>
+            <tbody>
+              <tr><td><b>Browse report history</b> (human)</td><td>Open the Notion <a class="mono" href="https://app.notion.com/p/4e4c946088184352a05688badbaa94ce">Reports hub</a> &rarr; pick a per-type <b>History</b> view.</td></tr>
+              <tr><td><b>Read history programmatically</b> (AI)</td><td><span class="mono">ntn datasources query c7d2d9e3-d388-4640-a66e-88f7dd50f854</span> filtered by <b>Report Type</b>; or the <span class="mono">ai-reporting</span> MCP tools.</td></tr>
+              <tr><td><b>Catch a silently-dead report</b> (ops)</td><td><span class="mono">node check-drift.mjs</span> &mdash; exits nonzero on any type stale &gt;48h or with zero rows; already wired into the weekly Health-Check.</td></tr>
+              <tr><td><b>Record a run from a new pipeline</b></td><td>Emit <span class="mono">report-run.json</span> (<span class="mono">make-run.mjs</span> / <span class="mono">buildRun + writeRun</span>), then call <span class="mono">upsert.mjs</span> &mdash; and <b>wrap it</b> so a registry outage can&rsquo;t fail your report.</td></tr>
+              <tr><td><b>Log a unit of work</b></td><td><code>/log-work</code> &rarr; the Weekly Work Tracker (<span class="mono">3d7f2afd</span>) &mdash; still the work-capture spine the team dashboard reads.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field-note">
+          <b>Run ID contract:</b> <span class="mono">&lt;type&gt;|&lt;period&gt;|&lt;ISO-timestamp&gt;</span> &mdash; the timestamp is the run date; same run date = idempotent retry (update in place), fresh run date = append. <b>Period</b> is a grouping field, not unique. Six types: <span class="mono">VP&nbsp;Weekly &middot; FourthOS&nbsp;Sponsor &middot; Team&nbsp;Dashboard &middot; System&nbsp;Health &middot; Project&nbsp;Portfolio &middot; Self-Improvement</span>. Four statuses: <span class="mono">OK &middot; Warn &middot; Failed &middot; Skipped</span>. Code lives at <span class="mono">scripts/report-registry/</span> (config &middot; make-run &middot; upsert &middot; backfill &middot; check-drift &middot; README &middot; test/).
         </div>
       </div>
     </section>
@@ -681,7 +621,7 @@
     <div class="wrap foot-grid">
       <span class="pwr">Powered by <span class="iq">iQ</span></span>
       <span class="mid">FourthOS &middot; Principal AI Mandate</span>
-      <span class="gen">Generated 2026-06-26</span>
+      <span class="gen">Generated 2026-07-06</span>
     </div>
   </footer>
 </body>
