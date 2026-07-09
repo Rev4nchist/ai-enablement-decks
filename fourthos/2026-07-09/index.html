@@ -56,7 +56,7 @@
     .tab-menu .mh { font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); padding:0.3rem 0.7rem 0.2rem; }
     .tab-menu a { display:block; font-size:0.82rem; font-weight:500; color:var(--text-secondary); padding:0.4rem 0.7rem; border-radius:8px; white-space:nowrap; transition:color .15s, background .15s; }
     .tab-menu a:hover { color:var(--text-primary); background:rgba(111,180,227,0.10); }
-    #glance, #next, #seeds { scroll-margin-top:80px; }
+    #glance, #next, #seeds, #pillars { scroll-margin-top:80px; }
     @media (max-width:720px) { .tab-menu { display:none !important; } }
 
     .hero { position:relative; overflow:hidden; background:linear-gradient(160deg,#051526 0%,#0A1929 55%,#0F2A3F 100%); padding:clamp(3rem,7vw,5rem) 0 clamp(2.5rem,5vw,4rem); border-bottom:1px solid var(--border); }
@@ -134,9 +134,54 @@
     .foot-grid .pwr .iq { color:var(--teal); }
     .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
 
+    .pillars-sec { margin-top:clamp(2.5rem,5vw,3.5rem); }
+    .pillars-sec h2 { font-family:var(--font-display); font-weight:600; font-size:clamp(1.3rem,2.6vw,1.7rem); line-height:1.25; max-width:32ch; margin-top:0; }
+    .pillars-sec .sec-dek { color:var(--text-secondary); font-size:0.98rem; max-width:64ch; margin-top:0.7rem; }
+    .pillars-sec .sec-source { font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem; }
+    .pillars-sec .sec-source a { color:var(--accent); border-bottom:1px solid rgba(111,180,227,0.35); }
+
+    .balance { margin-top:1.75rem; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:14px; padding:1.35rem 1.5rem; backdrop-filter:blur(8px); display:flex; flex-wrap:wrap; align-items:center; gap:1.5rem 2.25rem; }
+    .balance .bl-item { display:flex; align-items:baseline; gap:0.55rem; }
+    .balance .bl-n { font-family:var(--font-mono); font-size:1.6rem; font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-primary); }
+    .balance .bl-n.zero { color:var(--sunrise); }
+    .balance .bl-label { font-size:0.82rem; color:var(--text-secondary); }
+    .balance .bl-bar { flex:1 1 100%; height:6px; border-radius:999px; background:var(--bg-tertiary); overflow:hidden; display:flex; margin-top:0.25rem; }
+    .balance .bl-bar span { display:block; height:100%; }
+    .balance .bl-bar .seg-1 { background:var(--accent); width:37.5%; }
+    .balance .bl-bar .seg-2 { background:var(--teal); width:37.5%; }
+    .balance .bl-bar .seg-3 { background:repeating-linear-gradient(135deg,rgba(250,165,26,0.35),rgba(250,165,26,0.35) 4px,transparent 4px,transparent 8px); width:25%; }
+    .balance .bl-note { flex:1 1 100%; font-size:0.86rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:0.9rem; margin-top:0.15rem; }
+    .balance .bl-note strong { color:var(--sunrise); font-weight:600; }
+
+    .pillar-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-top:1.75rem; align-items:stretch; }
+    .pillar-card { position:relative; overflow:hidden; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:1.6rem 1.5rem 1.5rem; backdrop-filter:blur(10px); display:flex; flex-direction:column; }
+    .pillar-card::before { content:''; position:absolute; left:0; top:0; right:0; height:3px; background:var(--vignette); }
+    .pillar-card.thin::before { background:none; border-top:3px dashed rgba(250,165,26,0.5); }
+    .pc-num { font-family:var(--font-mono); font-size:0.7rem; font-weight:600; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:0.55rem; }
+    .pillar-card h3 { font-family:var(--font-display); font-size:1.15rem; font-weight:600; line-height:1.3; margin-bottom:0.65rem; }
+    .pc-mandate { font-size:0.85rem; color:var(--text-muted); font-style:italic; line-height:1.5; margin-bottom:1.1rem; padding-bottom:1.1rem; border-bottom:1px solid var(--border); }
+    .pc-projects { display:flex; flex-direction:column; gap:0.9rem; flex:1; }
+    .pc-proj .pp-head { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.3rem; }
+    .pc-proj .pp-name { font-size:0.92rem; font-weight:600; color:var(--text-primary); }
+    .rag-pip { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.66rem; font-weight:600; padding:0.14rem 0.5rem; border-radius:999px; border:1px solid; }
+    .rag-pip .d { width:6px; height:6px; border-radius:50%; }
+    .rag-pip.green { color:var(--teal); border-color:rgba(0,182,159,0.4); background:rgba(0,182,159,0.1); }
+    .rag-pip.green .d { background:var(--teal); }
+    .rag-pip.yellow { color:var(--sunrise); border-color:rgba(250,165,26,0.4); background:rgba(250,165,26,0.1); }
+    .rag-pip.yellow .d { background:var(--sunrise); }
+    .pc-proj .pp-why { font-size:0.86rem; color:var(--text-secondary); line-height:1.5; }
+    .pc-empty { flex:1; display:flex; flex-direction:column; justify-content:center; gap:0.6rem; padding:0.75rem 0; }
+    .pc-empty .pe-label { font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--sunrise); }
+    .pc-empty p { font-size:0.86rem; color:var(--text-secondary); line-height:1.55; }
+    .pc-indirect { margin-top:0.9rem; padding-top:0.9rem; border-top:1px dashed var(--border); }
+    .pc-indirect .pi-label { font-size:0.66rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; }
+    .pc-indirect .pi-item { font-size:0.83rem; color:var(--text-muted); margin-bottom:0.3rem; }
+    .pc-indirect .pi-item b { color:var(--text-secondary); font-weight:500; }
+
+    @media (max-width:980px) { .pillar-grid { grid-template-columns:1fr; } }
     @media (max-width:860px) { .nav-cards { grid-template-columns:1fr; } .lens-grid { grid-template-columns:1fr; } }
     @media (max-width:720px) { .crumbs { width:100%; order:3; } .topbar-right { width:100%; justify-content:space-between; } .foot-grid { flex-direction:column; align-items:flex-start; } }
-    @media (max-width:560px) { html { font-size:16px; } }
+    @media (max-width:560px) { html { font-size:16px; } .balance { flex-direction:column; align-items:flex-start; } }
   </style>
 </head>
 <body data-tier="hub">
@@ -169,6 +214,7 @@
               <a href="/ai-enablement-decks/fourthos/2026-07-09/#glance">This week, for you</a>
               <a href="/ai-enablement-decks/fourthos/2026-07-09/#next">Where to next</a>
               <a href="/ai-enablement-decks/fourthos/2026-07-09/#seeds">What this seeds</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#pillars">How this connects</a>
             </div>
           </div>
           <div class="tab-wrap">
@@ -218,7 +264,7 @@
               Salesforce: semantic layer — 1,144 tests green <span class="badge built">Built In-Repo</span> <span class="go" aria-hidden="true">&rarr;</span>
             </a>
             <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio">
-              Fourth Fabric + everyday-AI alignment opened <span class="badge next">Shape</span> <span class="go" aria-hidden="true">&rarr;</span>
+              AI Platform Architecture + everyday-AI alignment opened <span class="badge next">Shape</span> <span class="go" aria-hidden="true">&rarr;</span>
             </a>
             <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio">
               AI governance: two-track cadence + decision-record backend live <span class="badge next">Shape</span> <span class="go" aria-hidden="true">&rarr;</span>
@@ -239,14 +285,14 @@
               <ul>
                 <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-01"><span class="num">1</span> Approve where the stakeholder reports will live <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
                 <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-02"><span class="num">2</span> Choose Zendesk (#2) or NetSuite (moving faster) as the next connector <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-03"><span class="num">3</span> Schedule the Fourth Fabric architecture review with Christian <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-03"><span class="num">3</span> Schedule the AI Platform Architecture review with Christian <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
             <div class="lens moved">
               <div class="lens-head"><span class="ic" aria-hidden="true"></span> What moved</div>
               <ul>
                 <li><a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#concept"><span class="tick" aria-hidden="true">&#10003;</span> Salesforce: semantic layer shipped — 1,144 tests green <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio"><span class="badge next">Shape</span> Fourth Fabric + everyday-AI alignment opened <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio"><span class="badge next">Shape</span> AI Platform Architecture + everyday-AI alignment opened <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
                 <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio"><span class="badge next">Shape</span> AI governance: two-track cadence, decision-record backend live <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
@@ -254,7 +300,7 @@
               <div class="lens-head"><span class="ic" aria-hidden="true"></span> Watch</div>
               <ul>
                 <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> IT access-group bottleneck <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Building ahead of a confirmed Fourth Fabric architecture <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Building ahead of a confirmed AI Platform Architecture <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
           </div>
@@ -295,6 +341,80 @@
             </div>
           </div>
           <p class="seeds-cap">Build the mold once. Every future connector inherits the governance — not just the data. Jira and future systems follow. The #2-vs-#3 order is this week's open call — see <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-02" style="color:var(--accent);">For Your Decision</a>.</p>
+        </div>
+
+        <div class="pillars-sec" id="pillars">
+          <p class="section-label">How This Connects</p>
+          <h2>Where the work sits against the mandate</h2>
+          <p class="sec-dek">The role is built on three pillars of equal strategic weight. This is where this week's active work actually lands against them — not a scorecard, a map.</p>
+          <p class="sec-source">Source: <a href="https://app.notion.com/p/34076fd7ac82805dac89dd26476e2c47" target="_blank" rel="noopener">FourthOS — Principal AI Mandate</a>, Carly's formal role proposal.</p>
+
+          <div class="balance">
+            <div class="bl-item"><span class="bl-n">3</span><span class="bl-label">Research initiatives</span></div>
+            <div class="bl-item"><span class="bl-n">3</span><span class="bl-label">Prototyping initiatives</span></div>
+            <div class="bl-item"><span class="bl-n zero">0</span><span class="bl-label">Portal initiatives (direct)</span></div>
+            <div class="bl-bar" aria-hidden="true"><span class="seg-1"></span><span class="seg-2"></span><span class="seg-3"></span></div>
+            <p class="bl-note">Research and Prototyping are carrying equal weight this week. <strong>No initiative is building the Portal directly</strong> — but that's sequencing, not neglect: the connector ecosystem is building the Portal's internal analog first. Every governance, identity, reporting, and feedback pattern proven there — the exact things an external developer surface would need — is already directly transferable. The gap is a dedicated Portal <em>build</em>, not the groundwork.</p>
+          </div>
+
+          <div class="pillar-grid">
+            <article class="pillar-card">
+              <div class="pc-num">PILLAR 1 OF 3</div>
+              <h3>AI Research &amp; Strategic Intelligence</h3>
+              <p class="pc-mandate">&ldquo;An opinionated point of view on what Fourth should adopt, pilot, or set aside — and why.&rdquo;</p>
+              <div class="pc-projects">
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">AI Governance &amp; Research Cadence</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Shape</span></div>
+                  <p class="pp-why">Reshapes the forum itself — alternating Governance/Research tracks turn ad-hoc AI chatter into a decision-generating cadence, with a living record replacing ad-hoc slides.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Semantic grounding (this week)</span><span class="rag-pip green"><span class="d" aria-hidden="true"></span>Shipped</span></div>
+                  <p class="pp-why">The business-term-dictionary fix is a generalizable finding, not a one-off patch — it's the pattern every future connector inherits.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Everyday Business AI Model Platform</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Shape</span></div>
+                  <p class="pp-why">A model-routing point of view: when to use Copilot vs. RAG vs. specialized models vs. frontier, chosen by workflow economics — not habit.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="pillar-card">
+              <div class="pc-num">PILLAR 2 OF 3</div>
+              <h3>Prototyping &amp; POC Development</h3>
+              <p class="pc-mandate">&ldquo;Success criteria set before work begins; an explicit scale, stop, redesign, or defer decision at the end.&rdquo;</p>
+              <div class="pc-projects">
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Salesforce Connector</span><span class="rag-pip green"><span class="d" aria-hidden="true"></span>Green</span></div>
+                  <p class="pp-why">Connector #1 graduated from POC to the live proof point — hardened, boundary-tested 16/16, now taught Fourth's business language.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Connector Ecosystem</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Yellow</span></div>
+                  <p class="pp-why">The POC pipeline itself — Zendesk queued as #2, NetSuite in discovery as #3, each stamped from the same governed mold.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">NetSuite Connector</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Yellow</span></div>
+                  <p class="pp-why">A Phase-0 discovery spike, exactly per mandate: verify the hard assumption (sign-in model) before any build commitment.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="pillar-card thin">
+              <div class="pc-num">PILLAR 3 OF 3</div>
+              <h3>External Developer Experience Portal</h3>
+              <p class="pc-mandate">&ldquo;Not documentation wallpaper — a strategic product surface external developers and partners want to build on.&rdquo;</p>
+              <div class="pc-empty">
+                <span class="pe-label">No direct initiative this week</span>
+                <p>Nothing is being built <em>as</em> the Portal yet. But the connector ecosystem is building its internal analog — a governed, self-service surface for identity, audit, reporting, and feedback — proven internally first, on purpose, before it's exposed externally.</p>
+              </div>
+              <div class="pc-indirect">
+                <div class="pi-label">Directly transferable, once it externalizes</div>
+                <div class="pi-item"><b>Governance proxy pattern</b> — identity, audit, and default-deny access, already proven across two connectors — the exact substrate an external sign-in model would reuse.</div>
+                <div class="pi-item"><b>3-tier reporting + feedback loop</b> — the same tiered-visibility and in-product feedback pattern an external developer surface needs, already built in-repo.</div>
+                <div class="pi-item"><b>AI Platform Architecture Alignment</b> — validates the connection layer external AI tooling would build against, before more connectors ship on an unconfirmed pattern.</div>
+                <div class="pi-item"><b>Connector Ecosystem's guides/playbooks workstream</b> — the literal on-ramp content, designed but not started.</div>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     </section>
