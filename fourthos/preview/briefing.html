@@ -30,7 +30,6 @@
     .wrap { max-width:1180px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
     :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
 
-    /* ===================== TOP BAR (shared shell) ===================== */
     .topbar {
       position:sticky; top:0; z-index:50;
       background:rgba(5,21,38,0.82); backdrop-filter:blur(14px);
@@ -40,21 +39,17 @@
       display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap;
       padding:0.7rem 0;
     }
-    /* brand mark */
     .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; letter-spacing:0.01em; }
     .brand svg { width:26px; height:26px; flex-shrink:0; display:block; }
     .brand .wordmark { font-size:1.02rem; }
     .brand .wordmark b { font-weight:700; }
     .brand .wordmark .os { color:var(--teal); font-weight:700; }
-    /* breadcrumb */
     .crumbs { display:flex; align-items:center; gap:0.45rem; font-size:0.82rem; color:var(--text-muted); flex-wrap:wrap; }
     .crumbs a { color:var(--text-secondary); transition:color .2s; }
     .crumbs a:hover { color:var(--accent); }
     .crumbs .sep { color:var(--text-muted); opacity:0.6; }
     .crumbs .current { color:var(--text-primary); font-weight:500; }
-    /* right cluster */
     .topbar-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem 1.25rem; flex-wrap:wrap; }
-    /* tier tabs */
     .tabs { display:flex; align-items:center; gap:0.25rem; }
     .tabs a {
       font-size:0.82rem; font-weight:500; color:var(--text-secondary);
@@ -66,7 +61,6 @@
     body[data-tier="deep-dive"]  .tab-deepdive {
       color:var(--teal); background:rgba(0,182,159,0.12);
     }
-    /* week switcher */
     .wkswitch { position:relative; display:inline-flex; align-items:center; }
     .wkswitch select {
       appearance:none; -webkit-appearance:none;
@@ -80,7 +74,6 @@
       pointer-events:none; color:var(--accent); font-size:0.7rem;
     }
 
-    /* ===== hover section nav (tab ToC) ===== */
     .tab-wrap { position:relative; display:inline-flex; }
     .tab-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%); min-width:225px; display:none; flex-direction:column; gap:0.1rem; z-index:60; background:rgba(5,21,38,0.97); backdrop-filter:blur(14px); border:1px solid var(--border-accent); border-radius:12px; padding:0.55rem; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
     .tab-wrap:hover .tab-menu, .tab-wrap:focus-within .tab-menu { display:flex; }
@@ -89,7 +82,6 @@
     .tab-menu a:hover { color:var(--text-primary); background:rgba(111,180,227,0.10); }
     @media (max-width:720px) { .tab-menu { display:none !important; } }
 
-    /* ===================== TIER PAGER ===================== */
     .pager { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
     .pager a {
       display:inline-flex; align-items:center; gap:0.5rem; font-size:0.9rem; font-weight:500;
@@ -98,7 +90,6 @@
     }
     .pager a:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); background:rgba(0,182,159,0.06); }
 
-    /* ---------- RAG pill ---------- */
     .rag {
       display:inline-flex; align-items:center; gap:0.55rem;
       padding:0.4rem 0.9rem; border-radius:999px; font-size:0.82rem; font-weight:600;
@@ -113,7 +104,6 @@
     .rag-red .pip { background:var(--danger); box-shadow:0 0 8px rgba(216,22,50,0.55); }
     .rag-sm { padding:0.28rem 0.7rem; font-size:0.74rem; }
 
-    /* ---------- pulse hero ---------- */
     .pulse {
       position:relative; overflow:hidden;
       background:linear-gradient(160deg,#051526 0%,#0A1929 60%,#0F2A3F 100%);
@@ -149,14 +139,12 @@
     .tile.wide li { display:flex; gap:0.6rem; align-items:flex-start; font-size:0.93rem; color:var(--text-primary); font-weight:500; line-height:1.45; }
     .tile.wide li .tick { color:var(--teal); font-weight:700; flex-shrink:0; }
 
-    /* ---------- generic section ---------- */
     section.block { padding:clamp(2.75rem,5vw,4rem) 0; border-bottom:1px solid var(--border); }
     .sec-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:0.75rem 1rem; margin-bottom:1.75rem; }
     .sec-label { font-size:0.72rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); }
     .sec-head h2 { font-family:var(--font-display); font-weight:600; font-size:clamp(1.5rem,3vw,2rem); line-height:1.2; }
     .sec-sub { color:var(--text-secondary); font-size:0.95rem; max-width:680px; margin-top:-0.75rem; margin-bottom:1.75rem; }
 
-    /* ---------- sponsor actions (prominent) ---------- */
     .action-block { background:linear-gradient(135deg,rgba(250,165,26,0.07) 0%,transparent 55%); border:1px solid rgba(250,165,26,0.22); border-radius:16px; padding:clamp(1.5rem,3vw,2rem); }
     .action-block .ab-head { display:flex; align-items:center; gap:0.7rem; margin-bottom:1.5rem; }
     .action-block .ab-head .ico {
@@ -184,7 +172,6 @@
     .action-card.fyi { border-style:dashed; background:var(--bg-secondary); }
     .action-card .row .v a:hover { color:var(--text-primary); }
 
-    /* ---------- active portfolio ---------- */
     .proj-card { background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:clamp(1.5rem,3vw,2rem); backdrop-filter:blur(10px); position:relative; overflow:hidden; }
     .proj-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--vignette); }
     .proj-head { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.25rem; }
@@ -206,7 +193,6 @@
     }
     .decision-flag svg { width:16px; height:16px; }
 
-    /* ---------- risk radar ---------- */
     .risk-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
     .risk-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1.5rem; border-left:3px solid var(--sunrise); }
     .risk-card.red { border-left-color:var(--danger); }
@@ -216,7 +202,6 @@
     .risk-card .r-row .k { color:var(--accent); font-weight:600; display:block; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.2rem; }
     .risk-card .r-row .v { color:var(--text-secondary); }
 
-    /* ---------- outcomes empty state ---------- */
     .empty {
       text-align:center; background:var(--bg-card); border:1px dashed var(--border-accent);
       border-radius:16px; padding:clamp(2.5rem,5vw,3.5rem) clamp(1.5rem,4vw,3rem); backdrop-filter:blur(8px);
@@ -232,14 +217,12 @@
     .empty-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem; }
     .empty-tags .chip { background:var(--bg-tertiary); }
 
-    /* ===== shared badge component (LIVE · ALPHA / BUILT IN-REPO / NEXT) ===== */
     .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; }
     .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
     .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
     .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
     .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
 
-    /* ===== outcomes (populated) ===== */
     .outcome-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
     .outcome-card { position:relative; overflow:hidden; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:14px; padding:1.6rem; backdrop-filter:blur(8px); }
     .outcome-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--vignette); }
@@ -248,17 +231,14 @@
     .outcome-card p { font-size:0.92rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.55; }
     .outcome-card .oc-type { display:inline-block; font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted); letter-spacing:0.04em; border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.6rem; }
 
-    /* ---------- footer ---------- */
     footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
     .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
     .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
     .foot-grid .pwr .iq { color:var(--teal); }
     .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
 
-    /* ---------- deep-link anchor offset (sticky top bar) ---------- */
     #sponsor-actions, #portfolio, #risk-radar, #outcomes, #action-01, #action-02, #action-03 { scroll-margin-top:80px; }
 
-    /* ---------- reveal ---------- */
     .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
     .reveal.visible { opacity:1; transform:none; }
 
@@ -287,10 +267,9 @@
   </style>
 </head>
 <body data-tier="briefing">
-  <!-- ===================== SHARED TOP BAR ===================== -->
   <div class="topbar">
     <div class="wrap topbar-inner">
-      <a class="brand" href="/ai-enablement-decks/fourthos/2026-07-01/" aria-label="FourthOS Sponsor Update home">
+      <a class="brand" href="/ai-enablement-decks/fourthos/2026-07-09/" aria-label="FourthOS Sponsor Update home">
         <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <defs><linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse"><stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/></linearGradient></defs>
           <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
@@ -304,49 +283,46 @@
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href="/ai-enablement-decks/#sponsor-updates">Sponsor Updates</a>
         <span class="sep" aria-hidden="true">&rsaquo;</span>
-        <a href="/ai-enablement-decks/fourthos/2026-07-01/">1 July 2026</a>
+        <a href="/ai-enablement-decks/fourthos/2026-07-09/">9 July 2026</a>
         <span class="sep" aria-hidden="true">&rsaquo;</span>
         <span class="current">The Briefing</span>
       </nav>
       <div class="topbar-right">
         <nav class="tabs" aria-label="Sections">
           <div class="tab-wrap">
-            <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
+            <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-09/">Hub</a>
             <div class="tab-menu" aria-label="Hub sections">
               <span class="mh">Hub</span>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/#glance">This week, for you</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/#next">Where to next</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/#seeds">What this seeds</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#glance">This week, for you</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#next">Where to next</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#seeds">What this seeds</a>
             </div>
           </div>
           <div class="tab-wrap">
-            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
+            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html">The Briefing</a>
             <div class="tab-menu" aria-label="Briefing sections">
               <span class="mh">The Briefing</span>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#sponsor-actions">For your decision</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio">Active portfolio</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#risk-radar">Risk radar</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#outcomes">Outcomes &amp; evidence</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#sponsor-actions">For your decision</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio">Active portfolio</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar">Risk radar</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#outcomes">Outcomes &amp; evidence</a>
             </div>
           </div>
           <div class="tab-wrap">
-            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html">Deep Dive</a>
             <div class="tab-menu" aria-label="Deep Dive sections">
               <span class="mh">Deep Dive</span>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#thesis">The thesis</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#architecture">Architecture</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#concept">Concept spotlight</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#reporting">Governed reporting</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#feedback">Feedback loop</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#outputs">Workstreams</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#payoff">The payoff</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#thesis">The thesis</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#concept">Concept spotlight</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#outputs">Outputs</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#payoff">The payoff</a>
             </div>
           </div>
         </nav>
         <label class="wkswitch">
           <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
           <select id="weekSwitch" aria-label="Switch to another week's update">
-            <option value="2026-07-01" selected>1 July 2026</option>
+            <option value="2026-07-09" selected>9 July 2026</option>
           </select>
         </label>
       </div>
@@ -361,12 +337,12 @@
         <a class="rag rag-yellow" href="#sponsor-actions" role="status" aria-label="Overall portfolio health: Yellow — see the decisions below">
           <span class="pip" aria-hidden="true"></span> Overall health: Yellow
         </a>
-        <span class="updated">Yellow because the engineering is green and the bottleneck is the decisions below — reporting is built but unshipped pending the hosting call. &middot; Updated 1 July 2026, for Carly &amp; Christian</span>
+        <span class="updated">Yellow because the flagship connector itself is green — the open items are the ecosystem's reporting decision and a Fourth Fabric architecture check-in. &middot; Updated 9 July 2026, for Carly &amp; Christian</span>
       </div>
       <div class="stat-tiles">
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Flagship</div>
-          <div class="t-val">Salesforce Connector — the live proof point</div>
+          <div class="t-val">Salesforce Connector — now teaching itself Fourth's business language</div>
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Biggest decision</div>
@@ -378,16 +354,15 @@
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Next proof point</div>
-          <div class="t-val">Widen the Marketing alpha; stand up the access-gated report site + scheduled report job; verify NetSuite sign-in hands-on</div>
+          <div class="t-val">Deploy the semantic layer and expand the pilot (~16 testers) to a beta group</div>
         </div>
         <div class="tile wide">
           <div class="t-label"><span class="b" aria-hidden="true"></span> What changed this week</div>
           <ul>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Adversarial security test passed 16/16 — zero data leakage</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Hardening from real alpha use — fixed, redeployed, and re-validated within the week</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> NetSuite entered discovery as connector #3 after admin alignment</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Portfolio split: connector product (Green) vs ecosystem program (Yellow)</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Data-dictionary intake form shipped — the Salesforce administrator maps priority objects, guiding what the connector covers next</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Semantic layer shipped — the connector now uses a verified business-term dictionary, not guesses</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> 1,144 automated tests green on the new semantic-layer code</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> The Salesforce administrator delivered his interim data dictionary same-day</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Two new alignment items opened: Fourth Fabric architecture review, everyday-AI cost strategy</li>
           </ul>
         </div>
       </div>
@@ -410,10 +385,8 @@
               <div class="num">DECISION 01</div>
               <h3>Approve where the stakeholder reports will live</h3>
               <div class="row"><span class="k">Recommendation</span><span class="v">One shared, access-gated report site — one section per connector, each audience admitted by its own security group. A secret web address is not real access control.</span></div>
-              <div class="row"><span class="k">Why it scales</span><span class="v">Every connector is built on the same architecture, so its governance, IT, admin, and feedback reports all land here — one location on Azure to centrally manage, view, and trigger reporting for the whole connector family. Approve it once; every current and future connector inherits it.</span></div>
-              <div class="row"><span class="k">Decide by</span><span class="v">The 7 July review</span></div>
+              <div class="row"><span class="k">Decide by</span><span class="v">The next sponsor review</span></div>
               <div class="row"><span class="k">Cost of waiting</span><span class="v">Every week undecided is a week the already-built reporting engine reaches no stakeholders.</span></div>
-              <div class="row"><span class="k">See it working</span><span class="v"><a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#reporting" style="color:var(--accent);border-bottom:1px solid rgba(111,180,227,0.4);">The governed report demo &rarr;</a></span></div>
               <div class="row"><span class="k">Owner</span>
                 <span class="owners"><span class="chip chip-owner">Carly</span><span class="chip chip-owner">Christian</span><span class="chip chip-owner">IT</span></span>
               </div>
@@ -421,22 +394,20 @@
             <div class="action-card" id="action-02">
               <div class="num">DECISION 02</div>
               <h3>Choose which connector proves the reusable pattern next — Zendesk (#2 as planned) or NetSuite (moving faster)?</h3>
-              <div class="row"><span class="k">Recommendation</span><span class="v">Keep Zendesk as connector #2 — NetSuite's sign-in approach is unproven until its Phase-0 check lands. Revisit after the week-of-6-July admin follow-up.</span></div>
+              <div class="row"><span class="k">Recommendation</span><span class="v">Keep Zendesk as connector #2 — NetSuite's sign-in approach is unproven until its Phase-0 check lands.</span></div>
               <div class="row"><span class="k">First step</span><span class="v">Agree what &ldquo;ready to start&rdquo; means for connector #2 — then confirm which connector it is.</span></div>
-              <div class="row"><span class="k">Decide by</span><span class="v">The 7 July review</span></div>
               <div class="row"><span class="k">Cost of waiting</span><span class="v">The shared connector template stays blocked until connector #2 exists — every future connector inherits from that comparison.</span></div>
               <div class="row"><span class="k">Owner</span>
                 <span class="owners"><span class="chip chip-owner">Carly</span><span class="chip chip-owner">Christian</span></span>
               </div>
             </div>
-            <div class="action-card fyi" id="action-03">
-              <div class="num">ENDORSE &middot; FYI</div>
-              <h3>Endorse the NetSuite discovery direction</h3>
-              <div class="row"><span class="k">Where it stands</span><span class="v">NetSuite's administrators aligned (1 July): each person signs in as themselves — no shared service accounts; standard tools read-only; writes only later via narrowly-scoped custom tools. A deliberately limited test account is in hand for hands-on verification.</span></div>
-              <div class="row"><span class="k">Respond by</span><span class="v">Friday 3 July, ahead of the week-of-6-July admin follow-up</span></div>
-              <div class="row"><span class="k">If we don't hear</span><span class="v">Discovery continues as described — this is an endorsement, not a blocker.</span></div>
+            <div class="action-card" id="action-03">
+              <div class="num">DECISION 03</div>
+              <h3>Schedule the Fourth Fabric architecture review with Christian</h3>
+              <div class="row"><span class="k">Recommendation</span><span class="v">Validate the current architecture canvas against Christian's latest master-MCP / Fourth Fabric thinking before more connectors are built on it.</span></div>
+              <div class="row"><span class="k">Why now</span><span class="v">Two more connectors (Zendesk, NetSuite) are queued to inherit this pattern — better to confirm the mold before it's cast twice more.</span></div>
               <div class="row"><span class="k">Owner</span>
-                <span class="owners"><span class="chip chip-owner">Program lead</span><span class="chip chip-owner">NetSuite admins</span></span>
+                <span class="owners"><span class="chip chip-owner">Christian</span><span class="chip chip-owner">Carly</span><span class="chip chip-owner">Program lead</span></span>
               </div>
             </div>
           </div>
@@ -454,10 +425,10 @@
         <div class="proj-card reveal">
           <div class="proj-head">
             <h3>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Salesforce Connector</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html">Salesforce Connector</a>
             </h3>
             <div class="proj-badges">
-              <span class="badge-status">Active</span>
+              <span class="badge-status">Operationalized</span>
               <span class="rag rag-green rag-sm" aria-label="Project health: Green"><span class="pip" aria-hidden="true"></span> Green</span>
               <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span>
             </div>
@@ -473,19 +444,19 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Alpha-pilot validation + hardening follow-ups</div>
+              <div class="f-val">Semantic layer: teach the connector Fourth's business language so any team gets consistent, correct answers</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Widen the Marketing alpha to more pilot users</div>
+              <div class="f-val">Deploy the semantic layer; expand the pilot (~16 testers) to a beta group</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Hardened + security-validated: real alpha use drove a fix cycle, redeployed and re-validated live within the week; an adversarial security boundary test passed 16/16 with zero data leakage and correct per-user isolation.</div>
+              <div class="f-val">Semantic layer Phase A code-complete and verified — the connector now sees real field values and carries a governed, verification-gated business-term dictionary. 1,144 tests green. The Salesforce administrator delivered his interim data dictionary the same day.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
-              <div class="f-val">7 July 2026</div>
+              <div class="f-val">10 July 2026</div>
             </div>
           </div>
         </div>
@@ -513,23 +484,19 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Ship governed reports to real audiences (access-gated site + scheduled job) + define Zendesk #2 green-light criteria</div>
+              <div class="f-val">Standardize embedded feedback + leadership/governance reporting across every connector; confirm internal connector team ownership</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Stand up the access-gated report site and the scheduled report job</div>
+              <div class="f-val">Confirm connector-team ownership model; schedule the Christian architecture validation</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Connector #1 (Salesforce) split out to its own project. The program is now the reusable framework + governed report distribution: an access-gated report site with per-audience security groups (with IT), then the scheduled report job; Zendesk #2 proves the pattern before the shared template is extracted.</div>
+              <div class="f-val">The Salesforce feedback + reporting pattern is now a candidate reusable connector standard — a decision is pending to extract it as cookie-cutter code for Zendesk, NetSuite, and Jira.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
-              <div class="f-val">Next review week of 6 July — figures current as of 2 July</div>
-            </div>
-            <div class="field" style="grid-column:1/-1;">
-              <div class="f-label"><span class="b" aria-hidden="true"></span> What connectors #2 and #3 inherit automatically</div>
-              <div class="f-val">identity model (per-user, no shared accounts) &middot; audit trail &middot; governance proxy &middot; 3-tier reporting &middot; feedback loop — the next connector writes connector logic, not governance. Because every connector shares this architecture, its governance, IT, admin, and feedback reports land in the same access-gated location on Azure — centrally managed, viewed, and triggered from one place.</div>
+              <div class="f-val">10 July 2026</div>
             </div>
           </div>
           <a class="decision-flag" href="#action-01">
@@ -542,7 +509,7 @@
           <div class="proj-head">
             <h3>NetSuite Connector</h3>
             <div class="proj-badges">
-              <span class="badge-status">Discovery</span>
+              <span class="badge-status">Shape</span>
               <span class="rag rag-yellow rag-sm" aria-label="Project health: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
             </div>
           </div>
@@ -557,24 +524,58 @@
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Discovery sprint: test the native connector on a constrained role, review the vendor's AI materials, verify per-user sign-in hands-on — feeding the Phase-0 architecture decision.</div>
+              <div class="f-val">Apply the same governance-proxy architecture used for Salesforce; verify the NetSuite sign-in path and admin constraints hands-on.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Admin follow-up meeting (week of 6 July) &rarr; Phase-0 architecture decision &rarr; reuse the Salesforce build as the mold</div>
+              <div class="f-val">Admin follow-up meeting confirms the Phase-0 architecture path</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Admin-alignment call held 1 July: a centrally governed connector confirmed as the target; each person signs in as themselves — no shared service accounts; standard tools read-only, writes only later via narrowly-scoped custom tools; a deliberately limited test account granted for hands-on verification.</div>
+              <div class="f-val">Confirmed NetSuite should follow the same governed connector pattern as Salesforce and the planned Zendesk build.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
-              <div class="f-val">7 July 2026</div>
+              <div class="f-val">10 July 2026</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="proj-card reveal" style="margin-top:1.5rem;">
+          <div class="proj-head">
+            <h3>Fourth Fabric Architecture Alignment</h3>
+            <div class="proj-badges">
+              <span class="badge-status">Shape</span>
+              <span class="rag rag-yellow rag-sm" aria-label="Project health: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
+              <span class="badge next">Designed &middot; Next</span>
+            </div>
+          </div>
+          <div class="pillars">
+            <span class="chip">External Developer Experience</span>
+            <span class="chip">Performance Intelligence Platform</span>
+            <span class="chip">Governance &amp; Standards</span>
+          </div>
+          <div class="proj-body">
+            <div class="field">
+              <div class="f-label"><span class="b" aria-hidden="true"></span> Strategic bet</div>
+              <div class="f-val">A single Fourth Fabric / master-MCP wrapper can become the governed connection layer between customer AI tooling and Fourth's systems.</div>
+            </div>
+            <div class="field">
+              <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
+              <div class="f-val">Validate the current architecture canvas against Christian's latest Fourth Fabric thinking.</div>
+            </div>
+            <div class="field">
+              <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
+              <div class="f-val">Schedule the architecture review; publish the current architecture source of truth.</div>
+            </div>
+            <div class="field">
+              <div class="f-label"><span class="b" aria-hidden="true"></span> Review date</div>
+              <div class="f-val">10 July 2026</div>
             </div>
           </div>
           <a class="decision-flag" href="#action-03">
             <svg viewBox="0 0 24 24" fill="none" stroke="#FAA51A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="m6.41 6.41 2.83 2.83"/><path d="M2 12h4"/><circle cx="12" cy="14" r="6"/></svg>
-            Endorsement requested — see For Your Decision above
+            Decision 03 — see For Your Decision above
           </a>
         </div>
       </div>
@@ -595,7 +596,6 @@
             </div>
             <div class="r-row"><span class="k">Why it matters</span><span class="v">Each connector needs IT to create security groups and grant permissions; done one-by-one, that could stall report distribution and scale-out.</span></div>
             <div class="r-row"><span class="k">Mitigation</span><span class="v">Batch the privileged IT requests once for the whole ecosystem and reuse them.</span></div>
-            <div class="r-row"><span class="k">What to watch</span><span class="v">How quickly IT stands up the per-audience access groups.</span></div>
           </div>
           <div class="risk-card reveal">
             <div class="r-top">
@@ -604,16 +604,22 @@
             </div>
             <div class="r-row"><span class="k">Why it matters</span><span class="v">Building the shared template before connector #2 fits the pattern to a sample of one.</span></div>
             <div class="r-row"><span class="k">Mitigation</span><span class="v">Rule of three — extract from the real connector #1-vs-#2 diff (Zendesk).</span></div>
-            <div class="r-row"><span class="k">What to watch</span><span class="v">Resist template extraction until Zendesk is green-lit.</span></div>
           </div>
           <div class="risk-card reveal">
             <div class="r-top">
               <h3>NetSuite auth model unproven</h3>
               <span class="rag rag-yellow rag-sm" aria-label="Risk severity: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
             </div>
-            <div class="r-row"><span class="k">Why it matters</span><span class="v">NetSuite has no equivalent of the delegation flow Salesforce uses; per-user sign-in must be verified hands-on. A wrong auth assumption would invalidate the connector design.</span></div>
-            <div class="r-row"><span class="k">Mitigation</span><span class="v">Phase-0 discovery spike on a constrained test role before any build commitment — this is exactly what the current discovery sprint de-risks.</span></div>
-            <div class="r-row"><span class="k">What to watch</span><span class="v">Outcome of the Phase-0 architecture decision after the week-of-6-July admin follow-up.</span></div>
+            <div class="r-row"><span class="k">Why it matters</span><span class="v">NetSuite has no equivalent of the delegation flow Salesforce uses; per-user sign-in must be verified hands-on.</span></div>
+            <div class="r-row"><span class="k">Mitigation</span><span class="v">Phase-0 discovery spike on a constrained test role before any build commitment.</span></div>
+          </div>
+          <div class="risk-card reveal">
+            <div class="r-top">
+              <h3>Building ahead of a confirmed architecture</h3>
+              <span class="rag rag-yellow rag-sm" aria-label="Risk severity: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
+            </div>
+            <div class="r-row"><span class="k">Why it matters</span><span class="v">Two more connectors are queued to inherit the current pattern before Christian has validated the Fourth Fabric direction against it.</span></div>
+            <div class="r-row"><span class="k">Mitigation</span><span class="v">Schedule the architecture review now, before more connectors ship on the current canvas.</span></div>
           </div>
         </div>
       </div>
@@ -629,27 +635,27 @@
         <div class="outcome-grid">
           <div class="outcome-card reveal">
             <div class="oc-head">
-              <h3>Security boundary validation — 16/16</h3>
-              <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span>
+              <h3>Semantic layer — code-complete and verified</h3>
+              <span class="badge built">Built In-Repo</span>
             </div>
-            <p>An adversarial test made 16 deliberate attempts to make one user's query leak another user's data — every guardrail held: zero leakage, correct per-user scoping. &ldquo;Demonstrated, not assumed&rdquo; is the bar before the pilot widens.</p>
+            <p>The connector now sees Fourth's real field values and carries a governed, verification-gated business-term dictionary — fixing the class of bug where the AI guessed what business terms mean. 1,144 automated tests green; deploys next behind a rollback-safe gate.</p>
             <span class="oc-type">Type: Prototype Outcome · High impact</span>
           </div>
           <div class="outcome-card reveal">
             <div class="oc-head">
-              <h3>Hardening sprint — deployed</h3>
-              <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span>
+              <h3>Connector feedback + reporting: reusable standard</h3>
+              <span class="badge next">Pending Decision</span>
             </div>
-            <p>Real alpha use surfaced the rough edges — related records returning bare IDs, ambiguous data-structure answers, broken counts, name searches missing results. All fixed in one cycle, redeployed, then re-validated live: acceptance re-test 7/8 green (the remaining case is a count-style query edge case — not security-related, fix queued).</p>
-            <span class="oc-type">Type: Prototype Outcome</span>
+            <p>Salesforce's embedded session feedback and Claude-generated reporting are proposed as cookie-cutter code across every future custom connector — avoiding one-off governance and reporting builds for Zendesk, NetSuite, and beyond.</p>
+            <span class="oc-type">Type: Decision · High impact</span>
           </div>
           <div class="outcome-card reveal">
             <div class="oc-head">
-              <h3>NetSuite: architecture decision + admin alignment</h3>
-              <span class="badge next">Discovery</span>
+              <h3>Internal connector team — recommendation drafted</h3>
+              <span class="badge next">Needs Review</span>
             </div>
-            <p>Connector #3's architecture decision record is written, and NetSuite's administrators aligned on the governed model: each person signs in as themselves (no shared service accounts), standard tools are read-only, and writes come later only through narrowly-scoped custom tools.</p>
-            <span class="oc-type">Type: Decision record</span>
+            <p>Without a dedicated owner, the growing connector family (Salesforce, Zendesk, NetSuite, Jira) drifts into bespoke forks and governance becomes manual archaeology across Azure. A charter and decision ask is being drafted for Carly, Christian, Bernard, Danny, and Alistair.</p>
+            <span class="oc-type">Type: Recommendation · High impact</span>
           </div>
         </div>
       </div>
@@ -659,8 +665,8 @@
     <section class="block" style="border-bottom:none; padding-top:0;">
       <div class="wrap">
         <nav class="pager" aria-label="Tier navigation">
-          <a href="/ai-enablement-decks/fourthos/2026-07-01/">&larr; Hub</a>
-          <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive &rarr;</a>
+          <a href="/ai-enablement-decks/fourthos/2026-07-09/">&larr; Hub</a>
+          <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html">Deep Dive &rarr;</a>
         </nav>
       </div>
     </section>
@@ -670,7 +676,7 @@
     <div class="wrap foot-grid">
       <span class="pwr">Powered by <span class="iq">iQ</span></span>
       <span class="mid">FourthOS &middot; Principal AI Mandate</span>
-      <span class="gen">Generated 2026-07-01 &middot; refreshed 2026-07-02</span>
+      <span class="gen">Generated 2026-07-09</span>
     </div>
   </footer>
 
@@ -692,12 +698,11 @@
   </script>
 
   <script>
-    /* Data-driven week switcher (shared shell) */
     (function () {
       var sel = document.getElementById('weekSwitch');
       if (!sel) return;
       var root = location.pathname.split('/fourthos/')[0];
-      var current = "2026-07-01";
+      var current = "2026-07-09";
       fetch(root + '/decks.json', { cache: 'no-cache' })
         .then(function (r) { return r.json(); })
         .then(function (data) {

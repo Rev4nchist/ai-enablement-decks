@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FourthOS — Sponsor Update · 1 July 2026</title>
-  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 1 July 2026. Security boundary test passed 16/16; hardening deployed to the live alpha; NetSuite enters discovery as connector #3.">
+  <title>FourthOS — Sponsor Update · 9 July 2026</title>
+  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 9 July 2026. Semantic layer ships with a governed business-term dictionary; 1,144 tests green.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -28,7 +28,6 @@
     .wrap { max-width:1140px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
     :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
 
-    /* ===== TOP BAR (shared shell) ===== */
     .topbar { position:sticky; top:0; z-index:50; background:rgba(5,21,38,0.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); }
     .topbar-inner { display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap; padding:0.7rem 0; }
     .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; }
@@ -51,7 +50,6 @@
     .wkswitch select:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); }
     .wkswitch::after { content:'▾'; position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--accent); font-size:0.7rem; }
 
-    /* ===== hover section nav (tab ToC) ===== */
     .tab-wrap { position:relative; display:inline-flex; }
     .tab-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%); min-width:225px; display:none; flex-direction:column; gap:0.1rem; z-index:60; background:rgba(5,21,38,0.97); backdrop-filter:blur(14px); border:1px solid var(--border-accent); border-radius:12px; padding:0.55rem; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
     .tab-wrap:hover .tab-menu, .tab-wrap:focus-within .tab-menu { display:flex; }
@@ -61,7 +59,6 @@
     #glance, #next, #seeds { scroll-margin-top:80px; }
     @media (max-width:720px) { .tab-menu { display:none !important; } }
 
-    /* ===== HERO ===== */
     .hero { position:relative; overflow:hidden; background:linear-gradient(160deg,#051526 0%,#0A1929 55%,#0F2A3F 100%); padding:clamp(3rem,7vw,5rem) 0 clamp(2.5rem,5vw,4rem); border-bottom:1px solid var(--border); }
     .hero::before { content:''; position:absolute; inset:0; background:var(--vignette); opacity:0.12; pointer-events:none; }
     .hero::after { content:''; position:absolute; width:540px; height:540px; border-radius:50%; filter:blur(120px); background:rgba(0,182,159,0.12); top:-200px; right:-140px; pointer-events:none; }
@@ -76,7 +73,6 @@
     .hero-cta:hover .arrow { transform:translateX(4px); }
     .updated { font-size:0.85rem; color:var(--text-muted); letter-spacing:0.02em; margin-top:1.5rem; }
 
-    /* ===== shipped row ===== */
     .shipped { margin-top:1.75rem; }
     .shipped .lbl { font-size:0.66rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.7rem; }
     .ship-row { display:flex; flex-wrap:wrap; gap:0.6rem; }
@@ -84,14 +80,12 @@
     .ship-chip:hover { transform:translateY(-2px); background:rgba(111,180,227,0.08); border-color:rgba(0,182,159,0.5); }
     .ship-chip .go { color:var(--text-muted); font-size:0.78rem; }
 
-    /* ===== shared badge component (LIVE · ALPHA / BUILT IN-REPO / NEXT) ===== */
     .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; }
     .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
     .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
     .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
     .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
 
-    /* ===== what this seeds (inheritance strip) ===== */
     .seeds { margin-top:clamp(2.5rem,5vw,3.5rem); }
     .seeds-flow { display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem; }
     .seed-node { flex:1 1 180px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
@@ -104,7 +98,6 @@
     section.body { padding:clamp(2.5rem,5vw,4rem) 0; }
     .section-label { font-size:0.72rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1.25rem; }
 
-    /* ===== nav cards ===== */
     .nav-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
     .nav-card { position:relative; display:flex; flex-direction:column; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:2rem; backdrop-filter:blur(10px); overflow:hidden; transition:transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
     .nav-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--vignette); opacity:0.85; }
@@ -116,7 +109,6 @@
     .nav-card p { color:var(--text-secondary); font-size:1rem; margin-bottom:1.25rem; flex:1; }
     .nav-card .readtime { font-family:var(--font-mono); font-size:0.78rem; color:var(--accent); border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.6rem; align-self:flex-start; }
 
-    /* ===== sponsor-lens glance ===== */
     .glance { margin-top:clamp(2.5rem,5vw,3.5rem); }
     .lens-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:1.25rem; align-items:start; }
     .lens { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.4rem 1.5rem; }
@@ -136,7 +128,6 @@
     .lens.watch li .warn { color:var(--danger); flex-shrink:0; }
     .lens li .arrow { margin-left:auto; color:var(--text-muted); font-size:0.8rem; flex-shrink:0; }
 
-    /* ===== footer ===== */
     footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
     .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
     .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
@@ -149,10 +140,9 @@
   </style>
 </head>
 <body data-tier="hub">
-  <!-- ===== SHARED TOP BAR ===== -->
   <div class="topbar">
     <div class="wrap topbar-inner">
-      <a class="brand" href="/ai-enablement-decks/fourthos/2026-07-01/" aria-label="FourthOS Sponsor Update home">
+      <a class="brand" href="/ai-enablement-decks/fourthos/2026-07-09/" aria-label="FourthOS Sponsor Update home">
         <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <defs><linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse"><stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/></linearGradient></defs>
           <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
@@ -166,49 +156,47 @@
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href="/ai-enablement-decks/#sponsor-updates">Sponsor Updates</a>
         <span class="sep" aria-hidden="true">&rsaquo;</span>
-        <a href="/ai-enablement-decks/fourthos/2026-07-01/">1 July 2026</a>
+        <a href="/ai-enablement-decks/fourthos/2026-07-09/">9 July 2026</a>
         <span class="sep" aria-hidden="true">&rsaquo;</span>
         <span class="current">Hub</span>
       </nav>
       <div class="topbar-right">
         <nav class="tabs" aria-label="Sections">
           <div class="tab-wrap">
-            <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-01/">Hub</a>
+            <a class="tab-hub" href="/ai-enablement-decks/fourthos/2026-07-09/">Hub</a>
             <div class="tab-menu" aria-label="Hub sections">
               <span class="mh">Hub</span>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/#glance">This week, for you</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/#next">Where to next</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/#seeds">What this seeds</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#glance">This week, for you</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#next">Where to next</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/#seeds">What this seeds</a>
             </div>
           </div>
           <div class="tab-wrap">
-            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">The Briefing</a>
+            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html">The Briefing</a>
             <div class="tab-menu" aria-label="Briefing sections">
               <span class="mh">The Briefing</span>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#sponsor-actions">For your decision</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio">Active portfolio</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#risk-radar">Risk radar</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#outcomes">Outcomes &amp; evidence</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#sponsor-actions">For your decision</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio">Active portfolio</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar">Risk radar</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#outcomes">Outcomes &amp; evidence</a>
             </div>
           </div>
           <div class="tab-wrap">
-            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">Deep Dive</a>
+            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html">Deep Dive</a>
             <div class="tab-menu" aria-label="Deep Dive sections">
               <span class="mh">Deep Dive</span>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#thesis">The thesis</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#architecture">Architecture</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#concept">Concept spotlight</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#reporting">Governed reporting</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#feedback">Feedback loop</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#outputs">Workstreams</a>
-              <a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#payoff">The payoff</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#thesis">The thesis</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#architecture">Architecture</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#concept">Concept spotlight</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#outputs">Workstreams</a>
+              <a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#payoff">The payoff</a>
             </div>
           </div>
         </nav>
         <label class="wkswitch">
           <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
           <select id="weekSwitch" aria-label="Switch to another week's update">
-            <option value="2026-07-01" selected>1 July 2026</option>
+            <option value="2026-07-09" selected>9 July 2026</option>
           </select>
         </label>
       </div>
@@ -216,62 +204,57 @@
   </div>
 
   <main>
-    <!-- ===== HERO: headline = the week's biggest news ===== -->
     <header class="hero">
       <div class="wrap">
-        <p class="eyebrow">Weekly Sponsor Update &middot; 1 July 2026</p>
-        <h1>Isolation held 16/16. <span class="grad">NetSuite joins the ecosystem.</span></h1>
-        <p class="subhead">We tried to break the connector's per-user isolation on purpose — <strong style="color:var(--text-primary);font-weight:600;">16 deliberate cross-user leak attempts, all blocked</strong>. The hardening that real alpha use demanded is deployed, and NetSuite entered discovery as connector #3 after its administrators aligned on the same governed, per-user model.</p>
-        <a class="hero-cta" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#sponsor-actions">See what needs you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <p class="eyebrow">Weekly Sponsor Update &middot; 9 July 2026</p>
+        <h1>Semantic layer ships — <span class="grad">the connector finally speaks Fourth.</span></h1>
+        <p class="subhead">A pilot asked for &ldquo;top EMEA inbound opportunities by value&rdquo; and got a confidently wrong answer — not a bug, but the AI guessing what our business terms mean. This week we shipped the fix: <strong style="color:var(--text-primary);font-weight:600;">a governed, verified business-term dictionary</strong>, with 1,144 tests green.</p>
+        <a class="hero-cta" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#sponsor-actions">See what needs you <span class="arrow" aria-hidden="true">&rarr;</span></a>
 
         <div class="shipped">
           <p class="lbl">This week</p>
           <div class="ship-row">
-            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#concept">
-              Security boundary test — 16/16, zero leakage <span class="go" aria-hidden="true">&rarr;</span>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#outputs">
+              Semantic layer — 1,144 tests green <span class="badge built">Built In-Repo</span> <span class="go" aria-hidden="true">&rarr;</span>
             </a>
-            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#outputs">
-              Hardening deployed <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span> <span class="go" aria-hidden="true">&rarr;</span>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#concept">
+              Governed business-term dictionary <span class="go" aria-hidden="true">&rarr;</span>
             </a>
-            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio">
-              NetSuite connector #3 <span class="badge next">Discovery</span> <span class="go" aria-hidden="true">&rarr;</span>
-            </a>
-            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio">
-              Salesforce data-dictionary intake form <span class="go" aria-hidden="true">&rarr;</span>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio">
+              Interim data dictionary delivered <span class="go" aria-hidden="true">&rarr;</span>
             </a>
           </div>
         </div>
-        <p class="updated">Updated 2 July 2026</p>
+        <p class="updated">Updated 9 July 2026</p>
       </div>
     </header>
 
     <section class="body">
       <div class="wrap">
-        <!-- ===== Sponsor-lens glance: Needs you / What moved / Watch (decisions first) ===== -->
         <div class="glance" id="glance" style="margin-top:0;">
           <p class="section-label">This week, for you</p>
           <div class="lens-grid">
             <div class="lens needs">
               <div class="lens-head"><span class="ic" aria-hidden="true"></span> Needs you</div>
               <ul>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#action-01"><span class="num">1</span> Unblock the first sponsor-visible reports — one hosting decision <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#action-02"><span class="num">2</span> Approve Zendesk as connector #2 — or decide NetSuite goes first <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#action-03"><span class="num">3</span> Endorse the NetSuite direction by Friday 3 July <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-01"><span class="num">1</span> Approve where the stakeholder reports will live <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-02"><span class="num">2</span> Choose Zendesk (#2) or NetSuite (moving faster) as the next connector <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-03"><span class="num">3</span> Schedule the Fourth Fabric architecture review with Christian <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
             <div class="lens moved">
               <div class="lens-head"><span class="ic" aria-hidden="true"></span> What moved</div>
               <ul>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#concept"><span class="tick" aria-hidden="true">&#10003;</span> Security boundary test — 16/16 held <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html#outputs"><span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span> Hardening deployed <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#portfolio"><span class="badge next">Discovery</span> NetSuite — connector #3 <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html#concept"><span class="tick" aria-hidden="true">&#10003;</span> Semantic layer shipped — 1,144 tests green <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio"><span class="tick" aria-hidden="true">&#10003;</span> Interim Salesforce data dictionary delivered <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#portfolio"><span class="badge next">Shape</span> Fourth Fabric alignment + everyday-AI strategy opened <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
             <div class="lens watch">
               <div class="lens-head"><span class="ic" aria-hidden="true"></span> Watch</div>
               <ul>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> IT access-group bottleneck <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> NetSuite sign-in model — unproven until Phase-0 <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> IT access-group bottleneck <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Building ahead of a confirmed Fourth Fabric architecture <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </div>
           </div>
@@ -279,32 +262,31 @@
 
         <p class="section-label" id="next" style="margin-top:clamp(2.5rem,5vw,3.5rem);">Where to next</p>
         <div class="nav-cards">
-          <a class="nav-card" href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html">
+          <a class="nav-card" href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html">
             <span class="kicker">Tier 1 · Dashboard</span>
             <h2>The Briefing <span class="arrow" aria-hidden="true">&rarr;</span></h2>
             <p>Portfolio status, sponsor actions, risk radar, and outcomes — the 30-second executive read.</p>
             <span class="readtime">~2 min read</span>
           </a>
-          <a class="nav-card" href="/ai-enablement-decks/fourthos/2026-07-01/deep-dive.html">
+          <a class="nav-card" href="/ai-enablement-decks/fourthos/2026-07-09/deep-dive.html">
             <span class="kicker">Tier 2 · Deep Dive</span>
             <h2>Flagship Deep Dive <span class="arrow" aria-hidden="true">&rarr;</span></h2>
-            <p>Salesforce Connector: the adversarial security test that demonstrates the governance holds, and how the ecosystem grows to a third system.</p>
+            <p>Salesforce Connector: the semantic layer that teaches the AI Fourth's business language, and how the ecosystem grows to a second and third system.</p>
             <span class="readtime">~10 min read</span>
           </a>
         </div>
 
-        <!-- ===== What this seeds: inheritance strip ===== -->
         <div class="seeds" id="seeds">
           <p class="section-label">What this seeds</p>
           <div class="seeds-flow">
             <div class="seed-node">
               <div class="sn-name">Salesforce <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span></div>
-              <div class="sn-inh">the mold — identity &middot; audit &middot; reporting &middot; boundary-tested</div>
+              <div class="sn-inh">the mold — identity &middot; audit &middot; reporting &middot; feedback &middot; semantic layer</div>
             </div>
             <span class="seed-arrow" aria-hidden="true">&rarr;</span>
             <div class="seed-node">
               <div class="sn-name">Zendesk <span class="badge next">Proposed #2</span></div>
-              <div class="sn-inh">inherits: identity &middot; audit &middot; reporting &middot; feedback</div>
+              <div class="sn-inh">inherits: identity &middot; audit &middot; reporting &middot; feedback &middot; semantic layer</div>
             </div>
             <span class="seed-arrow" aria-hidden="true">&rarr;</span>
             <div class="seed-node">
@@ -312,7 +294,7 @@
               <div class="sn-inh">admins aligned &middot; per-user OAuth &middot; Phase-0 spike next</div>
             </div>
           </div>
-          <p class="seeds-cap">Build the mold once. Every future connector inherits the governance — not just the data. And because every connector shares the same architecture, its reports don't scatter: governance, IT, admin, and feedback reporting for the whole connector family lands in a single location on Azure — centrally managed, viewed, and triggered from one place. Jira and future systems follow. The #2-vs-#3 order is this week's open call — see <a href="/ai-enablement-decks/fourthos/2026-07-01/briefing.html#action-02" style="color:var(--accent);">For Your Decision</a>.</p>
+          <p class="seeds-cap">Build the mold once. Every future connector inherits the governance — not just the data. Jira and future systems follow. The #2-vs-#3 order is this week's open call — see <a href="/ai-enablement-decks/fourthos/2026-07-09/briefing.html#action-02" style="color:var(--accent);">For Your Decision</a>.</p>
         </div>
       </div>
     </section>
@@ -322,7 +304,7 @@
     <div class="wrap foot-grid">
       <span class="pwr">Powered by <span class="iq">iQ</span></span>
       <span class="mid">FourthOS &middot; Principal AI Mandate</span>
-      <span class="gen">Generated 2026-07-01 &middot; refreshed 2026-07-02</span>
+      <span class="gen">Generated 2026-07-09</span>
     </div>
   </footer>
 
@@ -331,7 +313,7 @@
       var sel = document.getElementById('weekSwitch');
       if (!sel) return;
       var root = location.pathname.split('/fourthos/')[0];
-      var current = "2026-07-01";
+      var current = "2026-07-09";
       fetch(root + '/decks.json', { cache: 'no-cache' })
         .then(function (r) { return r.json(); })
         .then(function (data) {
