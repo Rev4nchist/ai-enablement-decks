@@ -41,6 +41,18 @@
   ],
   "decks": [
     {
+      "id": "fourthos-2026-07-09",
+      "section": "sponsor-updates",
+      "tag": "Sponsor Update",
+      "title": "FourthOS — 9 July 2026",
+      "description": "Weekly portfolio briefing for Carly and Christian — the connector's semantic layer ships with a governed business-term dictionary, 1,144 tests green, and two new alignment items open (Fourth Fabric architecture, everyday-AI cost strategy).",
+      "href": "./fourthos/2026-07-09/",
+      "meta": "9 July 2026",
+      "date": "2026-07-09",
+      "status": "shipped",
+      "featured": true
+    },
+    {
       "id": "fourthos-2026-07-01",
       "section": "sponsor-updates",
       "tag": "Sponsor Update",
@@ -50,7 +62,7 @@
       "meta": "1 July 2026",
       "date": "2026-07-01",
       "status": "shipped",
-      "featured": true
+      "featured": false
     },
     {
       "id": "fourthos-2026-06-24",
