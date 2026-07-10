@@ -41,6 +41,18 @@
   ],
   "decks": [
     {
+      "id": "research-governance-os",
+      "section": "project-presentations",
+      "tag": "Live Prototype",
+      "title": "Research & Governance Operating System",
+      "description": "Interactive adoption demo of the AI Decision Operating Record — a live prototype on foundation data with a 90-second guided tour, two-track operating model, and a drivable sandbox.",
+      "href": "./research-governance-os/",
+      "meta": "Adoption demo · Jul 2026",
+      "date": "2026-07-10",
+      "status": "briefing",
+      "featured": true
+    },
+    {
       "id": "fourthos-2026-07-09",
       "section": "sponsor-updates",
       "tag": "Sponsor Update",

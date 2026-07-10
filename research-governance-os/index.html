@@ -1,0 +1,3947 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Research & Governance Operating System — Interactive Landing Page</title>
+<!-- Safety + social metadata (Pre-Mortem mitigation #1: treat as fully public from byte one).
+     noindex/nofollow keeps it out of search; the OG block makes any social/link preview read as a
+     prototype, never an official Fourth announcement. Light-only demo -> color-scheme:light. -->
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="description" content="An interactive landing page and live prototype for a Research & Governance Operating System on foundation data." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Research & Governance Operating System — internal working prototype" />
+<meta property="og:description" content="A self-contained interactive landing page for a research and governance operating record on foundation data." />
+<meta name="color-scheme" content="light" />
+<meta name="theme-color" content="#f7fbf8" />
+<!-- Inline SVG favicon (editorial navy monogram) — avoids a favicon.ico 404 and keeps the file self-contained. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2323405e'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' font-weight='700' text-anchor='middle' fill='%23fbfaf7'%3ER%3C/text%3E%3C/svg%3E" />
+<style>
+/* ============ TOKENS ============ */
+  :root {
+    --paper: #fbfaf7;
+    --paper-raise: #ffffff;
+    --ink: #1c1a17;
+    --ink-soft: #5c5751;
+    --ink-faint: #6f6960; /* WCAG AA 5.2:1 on --paper, 5.4:1 on --paper-raise */
+    --hair: rgba(28, 26, 23, 0.14);
+    --hair-strong: rgba(28, 26, 23, 0.72);
+    --ok: #166534;        /* resolved: Decided / Closed */
+    --warn: #92400e;      /* attention: Deferred / Escalated / Parked */
+    --flight: #1e40af;    /* in-flight: Ready / Discussed */
+    --inert: #6d6761;     /* inert: Draft */
+    --danger: #b3261e;    /* overdue dates only */
+    --ok-wash: rgba(22, 101, 52, 0.08);
+    --warn-wash: rgba(146, 64, 14, 0.09);
+    --flight-wash: rgba(30, 64, 175, 0.07);
+    --inert-wash: rgba(109, 103, 97, 0.09);
+    --track-a: #23405e;   /* governance navy */
+    --track-b: #8a4a1f;   /* research copper */
+    --scrim: rgba(24, 22, 19, 0.42);
+    --focus: #1e40af;
+    --serif: "Charter", "Bitstream Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  :root[data-theme="light"] {
+    --paper: #fbfaf7;
+    --paper-raise: #ffffff;
+    --ink: #1c1a17;
+    --ink-soft: #5c5751;
+    --ink-faint: #6f6960; /* WCAG AA 5.2:1 on --paper, 5.4:1 on --paper-raise */
+    --hair: rgba(28, 26, 23, 0.14);
+    --hair-strong: rgba(28, 26, 23, 0.72);
+    --ok: #166534;
+    --warn: #92400e;
+    --flight: #1e40af;
+    --inert: #6d6761;
+    --danger: #b3261e;
+    --ok-wash: rgba(22, 101, 52, 0.08);
+    --warn-wash: rgba(146, 64, 14, 0.09);
+    --flight-wash: rgba(30, 64, 175, 0.07);
+    --inert-wash: rgba(109, 103, 97, 0.09);
+    --track-a: #23405e;
+    --track-b: #8a4a1f;
+    --scrim: rgba(24, 22, 19, 0.42);
+    --focus: #1e40af;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  #brief-app[data-track="A"] { --accent: var(--track-a); }
+  #brief-app[data-track="B"] { --accent: var(--track-b); }
+
+  a { color: inherit; }
+  button { font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; }
+  :is(button, a, [tabindex="0"], input, select, textarea):focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 120px; }
+
+  /* ============ WORDMARK STRIP ============ */
+  .wordmark {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 14px 0 10px;
+    border-bottom: 1px solid var(--hair);
+    font-family: var(--sans);
+  }
+  .wordmark .brand {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .wordmark .edition {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  /* ============ MASTHEAD ============ */
+  .masthead { padding: 26px 0 22px; }
+  .masthead .kicker {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .masthead .kicker .track-glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border: 1.5px solid var(--accent); border-radius: 50%;
+    font-size: 11px; font-weight: 700; letter-spacing: 0;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-size: clamp(27px, 6vw, 38px);
+    line-height: 1.14;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    margin: 0 0 12px;
+  }
+  .masthead .deck {
+    font-family: var(--serif);
+    font-size: clamp(16px, 3.6vw, 18px);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+    max-width: 56ch;
+  }
+  .mast-meta {
+    display: flex; flex-wrap: wrap; gap: 6px 0;
+    font-size: 13px; color: var(--ink-soft);
+    padding-top: 14px;
+    border-top: 1px solid var(--hair);
+  }
+  .mast-meta > span { display: inline-flex; align-items: center; }
+  .mast-meta > span + span::before {
+    content: "·"; margin: 0 9px; color: var(--ink-faint);
+  }
+  .mast-meta strong { color: var(--ink); font-weight: 600; }
+  .agenda-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--flight);
+    background: var(--flight-wash);
+    border: 1px solid color-mix(in srgb, var(--flight) 35%, transparent);
+    border-radius: 999px; padding: 2px 10px;
+  }
+  .agenda-chip.chip-inert {
+    color: var(--inert);
+    background: var(--inert-wash);
+    border-color: color-mix(in srgb, var(--inert) 35%, transparent);
+  }
+  .agenda-chip.chip-ok {
+    color: var(--ok);
+    background: var(--ok-wash);
+    border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+  }
+  .mast-readiness { margin-top: 10px; font-size: 13px; color: var(--ink-soft); }
+  .mast-readiness .flagword { color: var(--warn); font-weight: 600; }
+  .double-rule { border: 0; border-top: 3px solid var(--hair-strong); margin: 0; position: relative; }
+  .double-rule::after { content: ""; display: block; border-top: 1px solid var(--hair-strong); margin-top: 2px; }
+
+  /* cycle line — the Friday rhythm, type only */
+  .cycle-line {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 0;
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px solid var(--hair);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .cycle-line .cl-stop { white-space: nowrap; }
+  .cycle-line .cl-stop + .cl-stop::before { content: "·"; margin: 0 9px; font-weight: 400; color: var(--ink-faint); }
+  .cycle-line .cl-stop.current { color: var(--accent); font-weight: 700; }
+  .cycle-line .cl-stop.current .cl-now { font-weight: 600; letter-spacing: 0.09em; }
+
+  /* time budget — one plain line, no chart */
+  .budget-line {
+    font-size: 12.5px; color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    margin: 0 0 14px; padding-top: 8px;
+    border-top: 1px solid var(--hair);
+  }
+  .budget-line strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ TABS ============ */
+  .tabbar-holder {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--paper);
+    border-bottom: 1px solid var(--hair);
+    margin: 0 -20px; padding: 2px 20px;
+  }
+  .tabbar {
+    display: flex; gap: 4px;
+    overflow-x: auto; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    padding: 13px 13px 11px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 2.5px solid transparent;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--ink-soft); }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+  /* ============ SECTIONS (typographic strips) ============ */
+  .strip { padding: 26px 0 8px; border-bottom: 1px solid var(--hair); }
+  .strip:last-child { border-bottom: 0; }
+  .strip-label {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    margin: 0 0 4px;
+  }
+  .strip-label h2 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.17em; text-transform: uppercase;
+    color: var(--accent); margin: 0;
+  }
+  .strip-label .count { font-size: 12px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase; }
+  .strip-note { font-size: 13px; color: var(--ink-faint); margin: 0 0 6px; }
+
+  /* ============ LINE ITEMS (brief rows) ============ */
+  .brief-item {
+    display: block; width: 100%; text-align: left;
+    padding: 14px 0;
+  }
+  .brief-item + .brief-item { border-top: 1px solid var(--hair); }
+  .brief-item .bi-title {
+    font-family: var(--serif);
+    font-size: 17.5px; line-height: 1.32; font-weight: 600;
+    margin: 0 0 3px;
+  }
+  .brief-item:hover .bi-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .brief-item .bi-sub {
+    font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+    display: flex; flex-wrap: wrap; gap: 2px 0; align-items: baseline;
+  }
+  .bi-sub > span + span::before { content: "·"; margin: 0 8px; color: var(--ink-faint); }
+  .bi-why { font-size: 13.5px; color: var(--ink-soft); margin: 2px 0 0; }
+  .due-plain { font-weight: 600; color: var(--ink); }
+  .due-over { font-weight: 700; color: var(--danger); }
+
+  /* status word */
+  .st { font-weight: 600; letter-spacing: 0.02em; }
+  .st::before { content: "●"; font-size: 8px; vertical-align: 2px; margin-right: 5px; }
+  .st-ok { color: var(--ok); }
+  .st-warn { color: var(--warn); }
+  .st-flight { color: var(--flight); }
+  .st-inert { color: var(--inert); }
+
+  /* flags */
+  .flagline { font-size: 12.5px; margin-top: 4px; }
+  .flag-adv { color: var(--warn); font-weight: 600; }
+  .flag-age { color: var(--warn); font-weight: 600; }
+  .flag-mine { color: var(--accent); font-weight: 600; }
+
+  /* ============ AGENDA DOCKET ============ */
+  .docket-toolbar {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+    padding: 22px 0 10px;
+  }
+  .docket-toolbar .dt-title {
+    font-family: var(--serif); font-size: 21px; font-weight: 700; margin: 0;
+  }
+  .docket-toolbar .dt-meta { font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); }
+  .docket { border-top: 1px solid var(--hair-strong); }
+  .docket-row {
+    display: grid; grid-template-columns: 34px 1fr; gap: 0 14px;
+    width: 100%; text-align: left;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .docket-row .num {
+    font-family: var(--serif); font-size: 15px; font-weight: 700;
+    color: var(--ink-faint); padding-top: 2px;
+  }
+  .docket-row .dr-title {
+    font-family: var(--serif); font-size: 18px; line-height: 1.3; font-weight: 600; margin: 0 0 4px;
+  }
+  .docket-row:hover .dr-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .dr-meta {
+    display: flex; flex-wrap: wrap; gap: 2px 0;
+    font-size: 13px; color: var(--ink-soft);
+  }
+  .dr-meta > span + span::before { content: "·"; margin: 0 8px; color: var(--ink-faint); }
+  .dr-type { font-size: 11px; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 3px; }
+  .timebox { font-variant-numeric: tabular-nums; }
+
+  .segment-head {
+    margin: 30px 0 0;
+    padding: 10px 0 8px;
+    border-top: 2px solid var(--accent);
+  }
+  .segment-head h3 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin: 0;
+  }
+  .segment-head p { font-size: 13px; color: var(--ink-soft); margin: 4px 0 0; }
+
+  /* submit affordances */
+  .submit-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.03em;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 999px;
+    padding: 7px 16px;
+    background: var(--paper-raise);
+    transition: background 120ms ease;
+  }
+  .submit-cta:hover { background: color-mix(in srgb, var(--accent) 8%, var(--paper-raise)); }
+  .closed-note {
+    font-size: 13px; color: var(--ink-soft); font-style: italic;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .closed-note::before { content: "—"; color: var(--ink-faint); font-style: normal; }
+  .headline-submit { padding: 16px 0 4px; }
+
+  /* ============ NEXT SESSION preview ============ */
+  .next-session {
+    border-left: 3px solid var(--track-b);
+    padding: 4px 0 6px 16px;
+    margin: 12px 0 16px;
+  }
+  #brief-app[data-track="B"] .next-session { border-left-color: var(--track-a); }
+  .next-session .ns-kicker {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--track-b); margin: 0 0 4px;
+  }
+  #brief-app[data-track="B"] .next-session .ns-kicker { color: var(--track-a); }
+  .next-session h3 { font-family: var(--serif); font-size: 19px; font-weight: 700; margin: 0 0 4px; }
+  .next-session p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+  /* ============ TRACKING ============ */
+  .tq { padding: 24px 0 14px; border-bottom: 1px solid var(--hair); }
+  .tq:last-child { border-bottom: 0; }
+  .tq .tq-q {
+    font-family: var(--serif); font-size: 21px; font-weight: 700; margin: 0 0 2px;
+  }
+  .tq .tq-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent); display: block; margin-bottom: 6px;
+  }
+  .tq-primary .tq-q { font-size: 25px; }
+  .tq p.tq-empty { font-size: 13.5px; color: var(--ink-faint); font-style: italic; }
+  .readiness-grid {
+    display: flex; gap: 26px; flex-wrap: wrap;
+    padding: 10px 0 4px;
+  }
+  .readiness-grid .rg-cell .n {
+    font-family: var(--serif); font-size: 28px; font-weight: 700; line-height: 1.1; display: block;
+    font-variant-numeric: tabular-nums;
+  }
+  .readiness-grid .rg-cell .l { font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); }
+  .rg-cell.warned .n { color: var(--warn); }
+  .lineage-trail {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    font-size: 13px; color: var(--ink-soft);
+    padding: 6px 0 2px;
+  }
+  .lineage-trail .node {
+    border: 1px solid var(--hair-strong); border-radius: 999px; padding: 2px 11px;
+    font-variant-numeric: tabular-nums;
+    background: var(--paper-raise);
+  }
+  .lineage-trail .node.current { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .lineage-trail .arrow { color: var(--ink-faint); }
+
+  /* ============ PROSE TABS ============ */
+  .prose-tab h2 {
+    font-family: var(--serif); font-size: 22px; font-weight: 700; margin: 28px 0 8px;
+  }
+  .prose-tab h2:first-child { margin-top: 26px; }
+  .prose-tab p { font-size: 14.5px; color: var(--ink-soft); max-width: 62ch; margin: 0 0 12px; }
+  .prose-tab p strong { color: var(--ink); }
+  .op-rule {
+    font-family: var(--serif); font-size: 16px; line-height: 1.5; color: var(--ink);
+    border-left: 3px solid var(--warn);
+    padding: 2px 0 2px 16px; margin: 14px 0 18px;
+    max-width: 58ch;
+  }
+  .term-list { list-style: none; margin: 8px 0 16px; padding: 0; max-width: 62ch; }
+  .term-list li { padding: 8px 0; border-bottom: 1px solid var(--hair); font-size: 14px; color: var(--ink-soft); }
+  .term-list li strong { color: var(--ink); font-weight: 600; }
+  .cadence-row { padding: 16px 0; border-bottom: 1px solid var(--hair); }
+  .cadence-row .cr-track {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .cadence-row .cr-track.a { color: var(--track-a); }
+  .cadence-row .cr-track.b { color: var(--track-b); }
+  .cadence-row h3 { font-family: var(--serif); font-size: 19px; font-weight: 700; margin: 0 0 4px; }
+  .cadence-row p { font-size: 14px; color: var(--ink-soft); margin: 0 0 4px; max-width: 62ch; }
+
+  /* ============ SHEET ============ */
+  .scrim {
+    position: fixed; inset: 0; background: var(--scrim); z-index: 60;
+    opacity: 0; pointer-events: none; transition: opacity 180ms ease;
+  }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 70;
+    width: min(480px, 100vw);
+    background: var(--paper);
+    border-left: 1px solid var(--hair);
+    box-shadow: -18px 0 48px rgba(0,0,0,0.18);
+    transform: translateX(102%);
+    transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex; flex-direction: column;
+  }
+  .sheet.open { transform: translateX(0); }
+  .sheet-head {
+    padding: 18px 22px 14px;
+    border-bottom: 3px solid var(--hair-strong);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .sheet-head .sh-type {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); display: block; margin-bottom: 5px;
+  }
+  .sheet-head h2 { font-family: var(--serif); font-size: 21px; line-height: 1.25; font-weight: 700; margin: 0; }
+  .sheet-close {
+    flex: 0 0 auto; margin-left: auto;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--hair);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 17px; line-height: 1; color: var(--ink-soft);
+  }
+  .sheet-close:hover { border-color: var(--hair-strong); color: var(--ink); }
+  .sheet-body { overflow-y: auto; padding: 6px 22px 40px; flex: 1; }
+  .sheet-statusline {
+    display: flex; flex-wrap: wrap; gap: 4px 0; align-items: baseline;
+    font-size: 13px; color: var(--ink-soft);
+    padding: 14px 0; border-bottom: 1px solid var(--hair);
+  }
+  .sheet-statusline > span + span::before { content: "·"; margin: 0 8px; color: var(--ink-faint); }
+  .sheet-flags { padding: 10px 0 2px; }
+  .sf {
+    font-size: 12.5px; font-weight: 600; padding: 3px 0; display: block;
+  }
+  .sf.adv { color: var(--warn); }
+  .sf.mine { color: var(--accent); }
+  .sheet-sec { padding: 15px 0 4px; border-bottom: 1px solid var(--hair); }
+  .sheet-sec:last-child { border-bottom: 0; }
+  .sheet-sec h3 {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 0 0 7px;
+  }
+  .sheet-sec p { font-size: 14px; line-height: 1.6; margin: 0 0 11px; color: var(--ink); }
+  .fieldrow { display: grid; grid-template-columns: 118px 1fr; gap: 4px 14px; padding: 5px 0; font-size: 13.5px; }
+  .fieldrow dt { color: var(--ink-faint); }
+  .fieldrow dd { margin: 0; color: var(--ink); font-weight: 500; overflow-wrap: anywhere; }
+  .fieldrow dd .em { color: var(--ink-faint); font-weight: 400; font-size: 12px; }
+  .kv-block { margin: 0 0 10px; }
+  .kv-block .kv-k {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); display: block; margin-bottom: 3px;
+  }
+  .kv-block .kv-v { font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .kv-decision .kv-k { color: var(--flight); }
+  .kv-decision .kv-v { font-family: var(--serif); font-size: 15.5px; font-weight: 600; }
+  .park-block {
+    background: var(--warn-wash);
+    border-left: 3px solid var(--warn);
+    padding: 11px 14px; margin: 12px 0;
+    font-size: 13.5px;
+  }
+  .park-block .kv-k { color: var(--warn); }
+  .decided-block {
+    background: var(--ok-wash);
+    border-left: 3px solid var(--ok);
+    padding: 11px 14px; margin: 12px 0;
+    font-size: 13.5px;
+  }
+  .decided-block .kv-k { color: var(--ok); }
+  .sheet-provenance { font-size: 12px; color: var(--ink-faint); padding: 14px 0 0; }
+  .sheet-actions { padding: 14px 0 2px; }
+  .edit-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 999px; padding: 7px 16px;
+    background: var(--paper-raise);
+  }
+  .edit-btn:hover { background: color-mix(in srgb, var(--accent) 8%, var(--paper-raise)); }
+  .sheet-lineage { padding-top: 4px; }
+
+  /* ============ MODAL (submit) ============ */
+  .modal-holder {
+    position: fixed; inset: 0; z-index: 80;
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .modal-holder.open { display: flex; }
+  .modal {
+    position: relative; z-index: 81;
+    width: min(560px, 100%);
+    max-height: 92vh; overflow-y: auto;
+    background: var(--paper);
+    border: 1px solid var(--hair);
+    border-radius: 14px 14px 0 0;
+    padding: 22px 22px 30px;
+    box-shadow: 0 -14px 44px rgba(0,0,0,0.22);
+  }
+  @media (min-width: 640px) {
+    .modal-holder.open { align-items: center; }
+    .modal { border-radius: 12px; padding: 26px 28px 30px; }
+  }
+  .modal .m-kicker {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent); display: block; margin-bottom: 5px;
+  }
+  .modal h2 { font-family: var(--serif); font-size: 22px; font-weight: 700; margin: 0 0 6px; }
+  .modal .m-note { font-size: 13px; color: var(--ink-soft); margin: 0 0 18px; max-width: 52ch; }
+  .modal label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-soft); margin: 16px 0 5px; }
+  .modal input[type="text"], .modal select, .modal textarea {
+    width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--paper-raise);
+    border: 1px solid var(--hair-strong); border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .modal textarea { min-height: 96px; resize: vertical; font-family: var(--serif); }
+  .modal .m-enrich {
+    font-size: 12.5px; color: var(--ink-faint); margin: 14px 0 0;
+    border-top: 1px solid var(--hair); padding-top: 12px;
+  }
+  .modal .m-actions { display: flex; justify-content: flex-end; gap: 14px; margin-top: 20px; }
+  .m-cancel { font-size: 13px; font-weight: 600; color: var(--ink-soft); padding: 8px 6px; }
+  .m-submit {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.03em;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: 999px; padding: 9px 22px;
+  }
+  .m-submit:hover { opacity: 0.88; }
+
+  /* toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px);
+    z-index: 90;
+    background: var(--ink); color: var(--paper);
+    font-size: 13px; font-weight: 600;
+    border-radius: 999px; padding: 9px 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+    max-width: calc(100vw - 40px);
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ============ EMPTY STATE ============ */
+  .empty-state { padding: 70px 0 40px; text-align: center; }
+  .empty-state .es-rule { width: 54px; border-top: 3px solid var(--hair-strong); margin: 0 auto 26px; }
+  .empty-state h2 { font-family: var(--serif); font-size: 26px; font-weight: 700; margin: 0 0 8px; }
+  .empty-state p { font-size: 14.5px; color: var(--ink-soft); margin: 0 auto 22px; max-width: 44ch; }
+  .empty-state .create-btn {
+    font-size: 13px; font-weight: 700;
+    color: var(--paper); background: var(--ink);
+    border-radius: 999px; padding: 10px 24px;
+  }
+  .empty-state .es-adminnote { font-size: 12px; color: var(--ink-faint); margin-top: 12px; }
+
+  /* ============ ERROR STATE ============ */
+  .error-state .es-rule { border-top-color: var(--danger); }
+  .error-state .retry-btn {
+    font-size: 13px; font-weight: 700;
+    color: var(--paper); background: var(--ink);
+    border-radius: 999px; padding: 10px 24px;
+  }
+  .error-state .es-errdetail {
+    font-size: 12px; color: var(--ink-faint); margin-top: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* supporting materials link */
+  .mat-link {
+    color: var(--flight); font-weight: 500;
+    text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  }
+
+  /* ============ DEMO WIDGET ============ */
+  .demo-widget {
+    position: fixed; right: 14px; bottom: 14px; z-index: 50;
+    background: var(--paper-raise);
+    border: 1.5px dashed var(--ink-faint);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 11px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.14);
+    max-width: 190px;
+  }
+  .demo-widget .dw-label {
+    font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--ink-faint); display: block; margin-bottom: 7px; font-size: 9.5px;
+  }
+  .demo-widget button {
+    display: block; width: 100%; text-align: left;
+    font-size: 12px; font-weight: 600; color: var(--ink-soft);
+    padding: 5px 7px; border-radius: 6px;
+    border: 1px solid var(--hair);
+    margin-bottom: 5px;
+    background: var(--paper);
+  }
+  .demo-widget button:last-child { margin-bottom: 0; }
+  .demo-widget button span { color: var(--accent); }
+  .demo-widget button:hover { border-color: var(--hair-strong); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 0 16px 140px; }
+    .tabbar-holder { margin: 0 -16px; padding: 2px 16px; }
+    .fieldrow { grid-template-columns: 100px 1fr; }
+    .demo-widget { max-width: 165px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet, .scrim, .toast { transition: none; }
+    #tour-spot, #tour-caption, #tour-intro .ti-card, #tour-launch { transition: none !important; animation: none !important; }
+  }
+
+  /* ============ PROTOTYPE STAMP (mitigation #1) ============ */
+  #proto-stamp {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 6px 16px;
+    background: #f4efe4;
+    border-bottom: 1px solid rgba(146, 64, 14, 0.28);
+    color: #6b4a1c;
+    font-family: var(--sans);
+    font-size: 12.5px; letter-spacing: 0.02em; line-height: 1.35;
+    text-align: center;
+  }
+  #proto-stamp .ps-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--warn); flex: 0 0 auto;
+  }
+  #proto-stamp .ps-text strong { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 10.5px; }
+
+  /* ============ SITE FOOTER (discreet Fourth + iQ) ============ */
+  .site-footer {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 18px;
+    margin-top: 40px; padding: 18px 0 4px;
+    border-top: 1px solid var(--hair);
+    font-family: var(--sans); font-size: 12px; color: var(--ink-faint);
+  }
+  .site-footer .sf-left { display: inline-flex; align-items: baseline; gap: 8px; }
+  .site-footer .fourth-mark {
+    font-weight: 700; letter-spacing: 0.02em; font-size: 14px; color: #0c4a7d; /* Fourth Deep Blue */
+  }
+  .site-footer .sf-div { color: var(--hair-strong); opacity: 0.72; }
+  .site-footer .sf-team { letter-spacing: 0.01em; text-transform: none; font-size: 12px; }
+  .site-footer .sf-right { display: inline-flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .site-footer .powered { font-size: 12px; }
+  .site-footer .powered .iq { font-weight: 700; color: #00b69f; letter-spacing: -0.01em; } /* iQ teal accent */
+  .site-footer .sf-proto { font-size: 12px; font-style: italic; color: var(--ink-faint); }
+  .ccv3-wrap { position: relative; display: inline-flex; align-items: baseline; }
+  .ccv3-link {
+    color: var(--track-a);
+    font-weight: 800;
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--track-a) 35%, transparent);
+  }
+  .ccv3-link:hover { color: #0c4a7d; border-bottom-color: currentColor; }
+  .ccv3-info {
+    position: absolute;
+    right: -18px;
+    bottom: calc(100% + 12px);
+    z-index: 100;
+    width: min(320px, calc(100vw - 32px));
+    padding: 14px 16px;
+    border: 1px solid var(--hair);
+    border-radius: 8px;
+    background: var(--paper-raise);
+    box-shadow: 0 18px 44px rgba(28, 26, 23, 0.18);
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.45;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+  .ccv3-info::after {
+    content: "";
+    position: absolute;
+    right: 25px;
+    bottom: -7px;
+    width: 12px;
+    height: 12px;
+    background: var(--paper-raise);
+    border-right: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+    transform: rotate(45deg);
+  }
+  .ccv3-info strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--track-a);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .ccv3-info span { display: block; color: var(--ink-soft); }
+  .ccv3-wrap:hover .ccv3-info,
+  .ccv3-wrap:focus-within .ccv3-info {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ============ TOUR LAUNCHER ============ */
+  #tour-launch {
+    position: fixed; left: 16px; bottom: 16px; z-index: 55;
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 11px 16px;
+    background: var(--track-a); color: #fff;
+    border-radius: 999px;
+    font-family: var(--sans); font-size: 13.5px; font-weight: 600; letter-spacing: 0.01em;
+    box-shadow: 0 6px 18px rgba(28, 26, 23, 0.24);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+  #tour-launch:hover { transform: translateY(-1px); box-shadow: 0 9px 24px rgba(28, 26, 23, 0.3); }
+  #tour-launch .tl-badge { font-size: 10px; opacity: 0.9; }
+  #tour-launch .tl-time {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; background: rgba(255,255,255,0.16);
+  }
+  body.tour-on #tour-launch { display: none; }
+
+  /* ============ TOUR SPOTLIGHT ============ */
+  #tour-root[hidden] { display: none; }
+  #tour-scrim {
+    position: fixed; inset: 0; z-index: 1000;
+    background: transparent; /* the dim is painted by #tour-spot's box-shadow */
+  }
+  #tour-spot {
+    position: fixed; top: 0; left: 0; width: 0; height: 0; z-index: 1001;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 9999px rgba(24, 22, 19, 0.52);
+    pointer-events: none;
+    /* animate position only (not width/height) to avoid layout thrash */
+    transition: top 300ms cubic-bezier(0.22, 0.61, 0.36, 1), left 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  /* overlay steps (submit modal / item sheet already own attention) → no page dim/ring */
+  #tour-root.no-spot #tour-scrim { pointer-events: none; }
+  #tour-root.no-spot #tour-spot { display: none; }
+
+  /* ============ TOUR INTRO PANEL ============ */
+  #tour-intro {
+    position: fixed; inset: 0; z-index: 1300;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+    background: rgba(24, 22, 19, 0.5);
+    -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  }
+  #tour-root.intro #tour-intro { display: flex; }
+  .ti-card {
+    position: relative;
+    background: var(--paper-raise); color: var(--ink);
+    max-width: 560px; width: 100%;
+    border-radius: 14px; padding: 34px 34px 26px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    animation: tiRise 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  /* top accent as a radius-matched bar (avoids a straight border clashing with the rounded corners) */
+  .ti-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--track-a); border-radius: 14px 14px 0 0;
+  }
+  @keyframes tiRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .ti-kicker {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent, var(--track-a)); margin-bottom: 12px;
+  }
+  .ti-card h2 {
+    font-family: var(--serif); font-size: clamp(23px, 5vw, 30px); line-height: 1.14; font-weight: 700;
+    letter-spacing: -0.012em; margin: 0 0 14px;
+  }
+  .ti-lede { font-family: var(--serif); font-size: 16.5px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 20px; max-width: 60ch; }
+  .ti-contrast { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 10px; }
+  .ti-contrast li { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: baseline; }
+  .ti-contrast .tic-k {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); padding-top: 2px;
+  }
+  .ti-contrast li:last-child .tic-k { color: var(--track-a); }
+  .ti-contrast .tic-v { font-size: 14.5px; line-height: 1.5; color: var(--ink); }
+  .ti-contrast .tic-v em { font-style: italic; font-weight: 600; }
+  .ti-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .ti-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--track-a); color: #fff;
+    padding: 12px 20px; border-radius: 8px;
+    font-size: 14.5px; font-weight: 600;
+    transition: background 140ms ease;
+  }
+  .ti-primary:hover { background: #1a3149; }
+  .ti-ghost { color: var(--ink-soft); font-size: 13.5px; font-weight: 500; padding: 12px 6px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--hair-strong); }
+  .ti-ghost:hover { color: var(--ink); }
+  .ti-honest { font-size: 12px; line-height: 1.5; color: var(--ink-faint); margin: 0; padding-top: 14px; border-top: 1px solid var(--hair); font-style: italic; }
+
+  /* ============ TOUR CAPTION ============ */
+  #tour-caption {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    z-index: 1200; width: min(460px, calc(100vw - 32px));
+    background: var(--paper-raise); color: var(--ink);
+    border-radius: 14px;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.28);
+    animation: tcRise 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  #tour-caption::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent, var(--track-a)); border-radius: 14px 14px 0 0;
+  }
+  #tour-caption[hidden] { display: none; }
+  .tc-inner { padding: 16px 18px 15px; }
+  .tc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .tc-step { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent, var(--track-a)); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+  .tc-kicker { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tc-exit { font-size: 12px; color: var(--ink-faint); font-weight: 500; flex: 0 0 auto; }
+  .tc-exit:hover { color: var(--ink); }
+  .tc-title { font-family: var(--serif); font-size: 19px; line-height: 1.22; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.008em; }
+  .tc-body { font-size: 13.8px; line-height: 1.52; color: var(--ink-soft); margin: 0 0 14px; }
+  .tc-body strong { color: var(--ink); font-weight: 600; }
+  .tc-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .tc-dots { display: inline-flex; gap: 6px; }
+  .tc-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hair-strong); opacity: 0.32; transition: opacity 160ms ease, transform 160ms ease; }
+  .tc-dots .dot.on { opacity: 1; background: var(--accent, var(--track-a)); transform: scale(1.15); }
+  .tc-dots .dot.done { opacity: 0.6; background: var(--accent, var(--track-a)); }
+  .tc-nav { display: inline-flex; gap: 8px; }
+  .tc-btn { padding: 8px 14px; border-radius: 7px; font-size: 13px; font-weight: 600; transition: background 140ms ease, border-color 140ms ease; }
+  .tc-back { color: var(--ink-soft); border: 1px solid var(--hair); }
+  .tc-back:hover { border-color: var(--hair-strong); color: var(--ink); }
+  .tc-back:disabled { opacity: 0.4; cursor: default; }
+  .tc-next { background: var(--accent, var(--track-a)); color: #fff; display: inline-flex; align-items: center; gap: 6px; }
+  .tc-next:hover { filter: brightness(0.94); }
+  @keyframes tcRise { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%); } }
+
+  /* ============ SANDBOX (collapsible) ============ */
+  .demo-widget .dw-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+  .demo-widget .dw-label { margin-bottom: 0; }
+  .demo-widget .dw-collapse {
+    width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--hair); border-radius: 5px; color: var(--ink-faint);
+    font-size: 14px; line-height: 1; flex: 0 0 auto;
+  }
+  .demo-widget .dw-collapse:hover { border-color: var(--hair-strong); color: var(--ink); }
+  .demo-widget .dw-hint { font-size: 12px; line-height: 1.4; color: var(--ink-faint); margin: 0 0 8px; font-style: italic; }
+  .demo-widget.collapsed .dw-body { display: none; }
+
+  @media (max-width: 560px) {
+    #tour-caption { left: 8px; right: 8px; bottom: 8px; transform: none; width: auto; }
+    @keyframes tcRise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .ti-card { padding: 26px 20px 20px; }
+    .ti-contrast li { grid-template-columns: 1fr; gap: 3px; }
+    .ti-contrast .tic-k { padding-top: 0; }
+    #tour-launch { left: 10px; bottom: 10px; padding: 10px 14px; font-size: 13px; }
+    /* sandbox is noise on a phone — collapse it out of the way by default there */
+    .demo-widget { right: 8px; bottom: 8px; max-width: 148px; }
+    body.tour-on #demo-widget { display: none; }
+  }
+
+  /* ============================================================
+     REVIEW ROUND (Dave, 2026-07-09): broadsheet desktop, A/B
+     switcher, clickable sessions, item hover, section separation
+     ============================================================ */
+
+  /* --- Wordmark: brand left, [A|B] switch + edition pushed right --- */
+  .wordmark .brand { margin-right: auto; }
+  .track-switch {
+    display: inline-flex; gap: 2px;
+    padding: 2px; border-radius: 999px;
+    border: 1px solid var(--hair); background: var(--paper);
+  }
+  .ts-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 13px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-faint); white-space: nowrap;
+    transition: color 140ms ease, background 140ms ease;
+  }
+  .ts-btn > span { font-weight: 500; letter-spacing: 0.03em; text-transform: none; opacity: 0.82; }
+  .ts-btn:hover { color: var(--ink); }
+  .ts-btn.on { background: var(--accent); color: #fff; }
+  .ts-btn.on > span { opacity: 0.92; }
+
+  /* --- Clickable cycle-line stops --- */
+  .cycle-line .cl-stop {
+    transition: color 120ms ease; border-radius: 4px; padding: 1px 2px; margin: -1px 0;
+  }
+  .cycle-line .cl-stop:hover {
+    color: var(--accent);
+    text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  }
+  .cycle-line .cl-stop.current:hover { color: var(--accent); }
+
+  /* --- Section separation: a short accent tick leads each section header --- */
+  .strip { padding-top: 30px; padding-bottom: 14px; }
+  .strip-label { margin-bottom: 9px; }
+  .strip-label h2::before {
+    content: ""; display: inline-block; width: 15px; height: 2px; border-radius: 1px;
+    background: var(--accent); vertical-align: middle; margin-right: 9px;
+    position: relative; top: -1px;
+  }
+
+  /* --- Item hover: bg wash + accent title + reveal chevron (no layout shift) --- */
+  .brief-item {
+    margin: 0 -10px; padding: 14px 10px; border-radius: 8px;
+    transition: background 130ms ease;
+  }
+  .brief-item + .brief-item { border-top: 1px solid var(--hair); }
+  button.brief-item { position: relative; padding-right: 30px; }
+  button.brief-item:hover { background: color-mix(in srgb, var(--accent) 6%, var(--paper-raise)); }
+  .brief-item:hover .bi-title { color: var(--accent); text-decoration: none; }
+  button.brief-item::after {
+    content: "\203A"; position: absolute; right: 12px; top: 13px;
+    font-size: 20px; line-height: 1; color: var(--accent);
+    opacity: 0; transform: translateX(-4px);
+    transition: opacity 130ms ease, transform 130ms ease;
+  }
+  button.brief-item:hover::after { opacity: 0.9; transform: none; }
+
+  /* docket rows (Agenda tab) get the same treatment */
+  .docket-row {
+    border-radius: 8px; margin: 0 -10px; padding-left: 10px; padding-right: 10px;
+    transition: background 130ms ease;
+  }
+  .docket-row:hover { background: color-mix(in srgb, var(--accent) 6%, var(--paper-raise)); }
+  .docket-row:hover .dr-title { color: var(--accent); text-decoration: none; }
+
+  /* --- Broadsheet: mobile stacks (default); desktop is two columns --- */
+  .hl-grid { display: block; }
+  @media (min-width: 1000px) {
+    .wrap { max-width: 1120px; }
+    /* keep prose + list tabs at a readable measure even in the wide shell */
+    #panel-agenda, #panel-tracking, #panel-guidelines, #panel-cadence { max-width: 840px; }
+    .hl-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      column-gap: 0; align-items: start;
+    }
+    .hl-primary { padding-right: 44px; }
+    .hl-secondary { padding-left: 44px; border-left: 1px solid var(--hair); }
+    /* the primary column's own last strip shouldn't draw a rule under it */
+    .hl-primary .strip:last-child, .hl-secondary .strip:last-child { border-bottom: 0; }
+  }
+
+  /* ============================================================
+     RESEARCH & GOVERNANCE OPERATING SYSTEM LANDING PAGE
+     ============================================================ */
+
+  :root {
+    --rg-paper: #f7fbf8;
+    --rg-surface: #ffffff;
+    --rg-mist: #eaf3ee;
+    --rg-ink: #14211c;
+    --rg-muted: #596b63;
+    --rg-line: rgba(20, 33, 28, 0.16);
+    --rg-line-strong: rgba(20, 33, 28, 0.34);
+    --rg-teal: #007c89;
+    --rg-teal-deep: #005f67;
+    --rg-copper: #b45b32;
+    --rg-violet: #5548a8;
+    --rg-gold: #d6a53d;
+    --rg-shadow: 0 28px 80px rgba(20, 33, 28, 0.16);
+  }
+
+  body {
+    background:
+      linear-gradient(180deg, #f7fbf8 0%, #f4f8fb 44%, #f8f6f0 100%);
+  }
+
+  .rg-landing,
+  .rg-landing * {
+    letter-spacing: 0;
+  }
+
+  .rg-landing {
+    position: relative;
+    isolation: isolate;
+    background: var(--rg-paper);
+    color: var(--rg-ink);
+    font-family: var(--sans);
+  }
+
+  .rg-nav {
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 64px;
+    padding: 12px max(20px, calc((100vw - 1180px) / 2));
+    background: rgba(247, 251, 248, 0.9);
+    border-bottom: 1px solid var(--rg-line);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+
+  .rg-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--rg-ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .rg-mark-sigil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--rg-teal), var(--rg-violet));
+    font-size: 12px;
+    font-weight: 800;
+    flex: 0 0 auto;
+  }
+
+  .rg-mark-sigil svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+
+  .rg-logo-link,
+  .rg-logo-spine {
+    fill: none;
+    stroke: rgba(255,255,255,0.95);
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .rg-logo-spine {
+    stroke-width: 2.4;
+    opacity: 0.78;
+  }
+
+  .rg-logo-dot {
+    fill: #ffffff;
+  }
+
+  .rg-nav-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+
+  .rg-nav-links a,
+  .rg-nav-links button {
+    min-height: 40px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--rg-muted);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .rg-nav-links a:hover,
+  .rg-nav-links button:hover {
+    background: var(--rg-mist);
+    color: var(--rg-ink);
+  }
+
+  .rg-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: min(760px, calc(100svh - 170px));
+    padding: 74px max(20px, calc((100vw - 1180px) / 2)) 32px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--rg-line);
+    background:
+      radial-gradient(circle at 24% 24%, rgba(0, 124, 137, 0.14), transparent 28%),
+      radial-gradient(circle at 76% 34%, rgba(180, 91, 50, 0.13), transparent 26%),
+      linear-gradient(135deg, #f7fbf8 0%, #eef7f4 48%, #f8f5ed 100%);
+  }
+
+  .rg-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 34%;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(247, 251, 248, 0.96));
+  }
+
+  .rg-hero-inner {
+    position: relative;
+    z-index: 3;
+    flex: 1 1 520px;
+    max-width: 640px;
+  }
+
+  .rg-hero-inner::before {
+    content: "";
+    position: absolute;
+    inset: -42px -76px -34px -64px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 28% 44%, rgba(247, 251, 248, 0.92) 0%, rgba(247, 251, 248, 0.78) 36%, rgba(247, 251, 248, 0) 70%),
+      linear-gradient(90deg, rgba(247, 251, 248, 0.7), rgba(247, 251, 248, 0));
+  }
+
+  .rg-kicker {
+    margin: 0 0 12px;
+    color: var(--rg-teal-deep);
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .rg-hero h1 {
+    margin: 0;
+    max-width: 12ch;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 58px;
+    line-height: 0.98;
+    font-weight: 800;
+  }
+
+  .rg-lede {
+    max-width: 650px;
+    margin: 22px 0 0;
+    color: var(--rg-muted);
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.45;
+  }
+
+  .rg-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 28px;
+  }
+
+  .rg-actions-center {
+    justify-content: center;
+  }
+
+  /* ===== Hero record stage (variant 1: The Record, Opened) ===== */
+  .rg-hero-stage {
+    position: relative;
+    z-index: 3;
+    flex: 1.2 1 500px;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 160px;
+    gap: 18px;
+    align-items: center;
+    margin-left: clamp(16px, 4vw, 56px);
+  }
+
+  .rg-record-card {
+    background: #ffffff;
+    border: 1px solid var(--rg-line);
+    border-top: 3px solid #23405e;
+    border-radius: 0 0 6px 6px;
+    padding: 24px 26px 22px;
+    box-shadow: 0 14px 38px rgba(20, 33, 28, 0.12);
+    transform: rotate(-0.4deg);
+  }
+
+  .rg-record-k {
+    margin: 0 0 10px;
+    color: #23405e;
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .rg-record-title {
+    margin: 0 0 12px;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 25px;
+    line-height: 1.18;
+    font-weight: 500;
+  }
+
+  .rg-record-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 14px;
+  }
+
+  .rg-record-chip {
+    color: var(--rg-muted);
+    background: #f3f0e9;
+    border: 1px solid var(--rg-line);
+    border-radius: 3px;
+    padding: 5px 9px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .rg-record-status {
+    display: inline-block;
+    margin: 0 0 16px;
+    padding: 6px 10px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 450ms ease;
+  }
+
+  .rg-record-status.is-draft { color: var(--rg-muted); }
+  .rg-record-status.is-ready { color: #23405e; }
+  .rg-record-status.is-decided { color: #166534; }
+
+  .rg-record-lineage {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0 0 14px;
+  }
+
+  .rg-lin {
+    padding: 5px 11px;
+    border: 1px solid var(--rg-line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--rg-muted);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 450ms ease, color 450ms ease, border-color 450ms ease;
+  }
+
+  .rg-lin.is-on {
+    color: #ffffff;
+    background: #23405e;
+    border-color: #23405e;
+  }
+
+  .rg-record-lineage i {
+    width: 14px;
+    height: 1px;
+    background: var(--rg-line);
+  }
+
+  .rg-record-q {
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--rg-line);
+    color: var(--rg-muted);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .rg-record-annots {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .rg-record-annots p {
+    margin: 0;
+    padding-left: 14px;
+    border-left: 2px solid var(--rg-line);
+    color: #7c766a;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13.5px;
+    line-height: 1.45;
+    transition: color 450ms ease, border-color 450ms ease;
+  }
+
+  .rg-record-annots p.is-hot {
+    color: #8a4a1f;
+    border-left-color: #8a4a1f;
+  }
+
+  @media (max-width: 1120px) {
+    .rg-hero { flex-wrap: wrap; }
+    .rg-hero-stage {
+      margin: 34px 0 6px;
+      grid-template-columns: 1fr;
+    }
+    .rg-record-annots { flex-direction: row; gap: 12px; }
+    .rg-record-annots p { flex: 1; }
+  }
+
+  .rg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 48px;
+    min-height: 50px;
+    padding: 13px 19px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .rg-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .rg-btn-primary {
+    color: #ffffff;
+    background: var(--rg-ink);
+    box-shadow: 0 12px 30px rgba(20, 33, 28, 0.22);
+  }
+
+  .rg-btn-primary:hover {
+    background: #0d1713;
+  }
+
+  .rg-btn-secondary {
+    color: var(--rg-ink);
+    background: rgba(255, 255, 255, 0.68);
+    border-color: var(--rg-line-strong);
+  }
+
+  .rg-btn-secondary:hover {
+    background: #ffffff;
+    border-color: var(--rg-teal);
+  }
+
+  .rg-hero-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    max-width: 760px;
+    margin: 40px 0 0;
+    border: 1px solid var(--rg-line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--rg-line);
+    box-shadow: var(--rg-shadow);
+  }
+
+  .rg-hero-metrics div {
+    min-height: 110px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.74);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .rg-hero-metrics dt {
+    margin: 0 0 8px;
+    color: var(--rg-copper);
+    font-family: var(--serif);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  .rg-hero-metrics dd {
+    margin: 0;
+    color: var(--rg-muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .rg-proof-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--rg-line);
+    border-bottom: 1px solid var(--rg-line);
+  }
+
+  .rg-proof-strip > div {
+    min-height: 104px;
+    padding: 24px max(20px, calc((100vw - 1180px) / 2));
+    background: #ffffff;
+  }
+
+  .rg-proof-label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--rg-teal-deep);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .rg-proof-strip strong {
+    display: block;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 19px;
+    line-height: 1.3;
+  }
+
+  .rg-section {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 56px;
+    align-items: start;
+    padding: 92px max(20px, calc((100vw - 1180px) / 2));
+    border-bottom: 1px solid var(--rg-line);
+  }
+
+  .rg-copy h2,
+  .rg-section-head h2,
+  .rg-system-copy h2,
+  .rg-live-head h2,
+  .rg-final h2 {
+    margin: 0;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 38px;
+    line-height: 1.08;
+    font-weight: 800;
+  }
+
+  .rg-copy p,
+  .rg-system-copy p,
+  .rg-final p {
+    color: var(--rg-muted);
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  .rg-signal-list {
+    display: grid;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--rg-line);
+    border-radius: 8px;
+    background: var(--rg-line);
+  }
+
+  .rg-signal-list > div {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 14px 18px;
+    padding: 22px;
+    background: #ffffff;
+  }
+
+  .rg-signal-list span {
+    grid-row: span 2;
+    color: var(--rg-copper);
+    font-family: var(--serif);
+    font-size: 25px;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  .rg-signal-list strong {
+    color: var(--rg-ink);
+    font-size: 17px;
+    line-height: 1.25;
+  }
+
+  .rg-signal-list p {
+    margin: 0;
+    color: var(--rg-muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .rg-model {
+    display: block;
+    background: linear-gradient(180deg, #ffffff 0%, #f1f7f5 100%);
+  }
+
+  .rg-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  .rg-section-head h2 {
+    max-width: 680px;
+  }
+
+  .rg-model-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .rg-model-card {
+    min-height: 250px;
+    padding: 24px;
+    border: 1px solid var(--rg-line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 18px 44px rgba(20, 33, 28, 0.08);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .rg-model-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--rg-line-strong);
+    box-shadow: var(--rg-shadow);
+  }
+
+  .rg-track-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .rg-track-research { background: var(--rg-copper); }
+  .rg-track-governance { background: var(--rg-teal); }
+  .rg-track-record { background: var(--rg-violet); }
+
+  .rg-model-card h3 {
+    margin: 30px 0 10px;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 24px;
+    line-height: 1.18;
+  }
+
+  .rg-model-card p {
+    margin: 0;
+    color: var(--rg-muted);
+    font-size: 15px;
+    line-height: 1.58;
+  }
+
+  .rg-system-lab {
+    grid-template-columns: 1fr;
+    align-items: start;
+    background:
+      linear-gradient(90deg, rgba(0,124,137,0.08), transparent 42%),
+      #f7fbf8;
+  }
+
+  .rg-system-tabs {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 24px;
+    padding: 4px;
+    border: 1px solid var(--rg-line);
+    border-radius: 10px;
+    background: #ffffff;
+  }
+
+  .rg-system-tab {
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--rg-muted);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .rg-system-tab.is-active {
+    color: #ffffff;
+    background: var(--rg-ink);
+  }
+
+  .rg-system-stage {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 22px;
+  }
+
+  .rg-system-copy {
+    max-width: 720px;
+  }
+
+  .rg-flow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .rg-flow-card {
+    background: #ffffff;
+    border: 1px solid var(--rg-line);
+    border-top: 3px solid rgba(180, 91, 50, 0.75);
+    border-radius: 0 0 6px 6px;
+    padding: 16px 16px 14px;
+    box-shadow: 0 12px 32px rgba(20, 33, 28, 0.10);
+    transform: rotate(-0.5deg);
+    transition: box-shadow 400ms ease, border-color 400ms ease, transform 400ms ease;
+  }
+
+  .rg-flow-card[data-flow='governance'] { border-top-color: rgba(0, 124, 137, 0.8); transform: rotate(0.2deg); }
+  .rg-flow-card[data-flow='ledger'] { border-top-color: rgba(85, 72, 168, 0.75); transform: rotate(0.6deg); }
+
+  .rg-flow-card.is-hot {
+    box-shadow: 0 18px 44px rgba(20, 33, 28, 0.18);
+    transform: rotate(0deg) translateY(-3px);
+  }
+
+  .rg-flow-title {
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rg-line);
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .rg-flow-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rg-flow-rows li {
+    padding: 9px 8px;
+    border-bottom: 1px solid rgba(20, 33, 28, 0.07);
+    color: var(--rg-muted);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  .rg-flow-rows li:last-child { border-bottom: 0; }
+
+  .rg-flow-feature {
+    border-radius: 4px;
+    transition: background 400ms ease;
+  }
+
+  .rg-flow-feature strong {
+    display: block;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 14.5px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .rg-flow-feature span {
+    display: block;
+    font-size: 12px;
+    color: var(--rg-muted);
+  }
+
+  .rg-flow-feature.is-hot {
+    background: rgba(0, 124, 137, 0.07);
+  }
+
+  .rg-flow-card[data-flow='ledger'] .rg-flow-feature.is-hot { background: rgba(85, 72, 168, 0.08); }
+  .rg-flow-card[data-flow='research'] .rg-flow-feature.is-hot { background: rgba(180, 91, 50, 0.08); }
+
+  .rg-flow-arrow {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 92px;
+    color: var(--rg-muted);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.35;
+  }
+
+  .rg-flow-arrow i {
+    font-style: normal;
+    font-size: 20px;
+    color: #8a4a1f;
+    line-height: 1;
+  }
+
+  .rg-flow-token {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #23405e;
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    box-shadow: 0 6px 16px rgba(20, 33, 28, 0.3);
+    transition: transform 750ms cubic-bezier(0.5, 0.05, 0.25, 1);
+    will-change: transform;
+  }
+
+  .rg-system-panels {
+    border: 1px solid var(--rg-line);
+    border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .rg-system-panel {
+    min-height: 154px;
+    padding: 22px;
+  }
+
+  .rg-system-panel h3 {
+    margin: 0 0 10px;
+    color: var(--rg-ink);
+    font-family: var(--serif);
+    font-size: 23px;
+    line-height: 1.18;
+  }
+
+  .rg-system-panel p {
+    margin: 0;
+    color: var(--rg-muted);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .rg-live-record {
+    display: block;
+    background: #f2f7f4;
+  }
+
+  .rg-live-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+
+  .rg-record-frame {
+    overflow: hidden;
+    border: 1px solid rgba(20, 33, 28, 0.22);
+    border-radius: 8px;
+    background: var(--paper);
+    box-shadow: var(--rg-shadow);
+  }
+
+  .rg-record-frame #brief-app {
+    min-height: 740px;
+    border-top: 3px solid var(--rg-ink);
+  }
+
+  .rg-record-frame .wrap {
+    padding-bottom: 72px;
+  }
+
+  .rg-final {
+    padding: 94px max(20px, calc((100vw - 820px) / 2)) 108px;
+    text-align: center;
+    color: #ffffff;
+    background:
+      linear-gradient(135deg, rgba(0,124,137,0.28), transparent 36%),
+      linear-gradient(225deg, rgba(180,91,50,0.26), transparent 38%),
+      #14211c;
+  }
+
+  .rg-final .rg-kicker,
+  .rg-final h2,
+  .rg-final p {
+    color: #ffffff;
+  }
+
+  .rg-final p {
+    max-width: 720px;
+    margin: 18px auto 0;
+    opacity: 0.84;
+  }
+
+  .rg-final .rg-btn-primary {
+    color: var(--rg-ink);
+    background: #ffffff;
+  }
+
+  .rg-final .rg-btn-secondary {
+    color: #ffffff;
+    background: transparent;
+    border-color: rgba(255,255,255,0.42);
+  }
+
+  .rg-final .rg-btn-secondary:hover {
+    border-color: #ffffff;
+    background: rgba(255,255,255,0.12);
+  }
+
+  .rg-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 520ms ease, transform 520ms ease;
+  }
+
+  .rg-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .rg-landing :is(a, button):focus-visible {
+    outline: 3px solid var(--rg-gold);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 980px) {
+    .rg-hero {
+      min-height: min(720px, calc(100svh - 142px));
+      padding-top: 58px;
+    }
+
+    .rg-hero h1 {
+      font-size: 42px;
+    }
+
+    .rg-lede {
+      font-size: 19px;
+    }
+
+    .rg-hero-metrics,
+    .rg-proof-strip,
+    .rg-section,
+    .rg-model-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .rg-proof-strip > div {
+      padding: 22px 24px;
+    }
+
+    .rg-section {
+      gap: 32px;
+      padding-top: 72px;
+      padding-bottom: 72px;
+    }
+
+    .rg-system-lab {
+      grid-template-columns: 1fr;
+    }
+
+    .rg-live-head {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 620px) {
+    #tour-launch,
+    .demo-widget {
+      display: none;
+    }
+
+    .rg-nav {
+      min-height: 58px;
+      padding: 9px 14px;
+    }
+
+    #ro-canvas {
+      opacity: 0.34;
+    }
+
+    .rg-mark {
+      font-size: 13px;
+    }
+
+    .rg-nav-links a {
+      display: none;
+    }
+
+    .rg-nav-links button {
+      padding: 9px 10px;
+    }
+
+    .rg-hero {
+      min-height: auto;
+      padding: 42px 16px 22px;
+    }
+
+    .rg-hero-inner::before {
+      inset: -30px -38px -28px -34px;
+      background:
+        radial-gradient(ellipse at 22% 43%, rgba(247, 251, 248, 0.94) 0%, rgba(247, 251, 248, 0.82) 44%, rgba(247, 251, 248, 0) 76%),
+        linear-gradient(90deg, rgba(247, 251, 248, 0.76), rgba(247, 251, 248, 0));
+    }
+
+    .rg-hero h1 {
+      max-width: 11ch;
+      font-size: 35px;
+      line-height: 1.03;
+    }
+
+    .rg-lede {
+      font-size: 17px;
+      line-height: 1.48;
+    }
+
+    .rg-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .rg-btn {
+      width: 100%;
+    }
+
+    .rg-hero-concepts {
+      display: grid;
+      grid-template-columns: 1fr repeat(3, auto);
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .rg-hero-concepts span {
+      padding-left: 8px;
+      white-space: normal;
+    }
+
+    .rg-hero-concepts button {
+      padding-left: 9px;
+      padding-right: 9px;
+    }
+
+    .rg-hero-metrics {
+      margin-top: 20px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .rg-hero-metrics div {
+      min-height: 118px;
+      padding: 12px 10px;
+    }
+
+    .rg-hero-metrics dt {
+      font-size: 21px;
+    }
+
+    .rg-hero-metrics dd {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .rg-copy h2,
+    .rg-section-head h2,
+    .rg-system-copy h2,
+    .rg-live-head h2,
+    .rg-final h2 {
+      font-size: 30px;
+      line-height: 1.12;
+    }
+
+    .rg-signal-list > div {
+      grid-template-columns: 44px minmax(0, 1fr);
+      padding: 18px;
+    }
+
+    .rg-section {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .rg-system-tabs {
+      width: 100%;
+    }
+
+    .rg-system-tab {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .rg-system-stage {
+      min-height: 0;
+      grid-template-rows: auto auto;
+    }
+
+    .rg-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .rg-flow-arrow {
+      flex-direction: row;
+      max-width: none;
+      gap: 8px;
+    }
+
+    .rg-flow-arrow i { transform: rotate(90deg); }
+
+    .rg-record-frame {
+      margin-left: -16px;
+      margin-right: -16px;
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+    }
+
+    .rg-record-frame #brief-app {
+      min-height: 680px;
+    }
+
+    .rg-final {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+
+  @media (max-height: 720px) and (min-width: 700px) {
+    .rg-hero {
+      min-height: min(680px, calc(100svh - 120px));
+      padding-top: 38px;
+      padding-bottom: 22px;
+    }
+
+    .rg-hero h1 {
+      font-size: 46px;
+    }
+
+    .rg-lede {
+      margin-top: 16px;
+      font-size: 18px;
+    }
+
+    .rg-hero-metrics {
+      margin-top: 24px;
+    }
+
+    .rg-hero-metrics div {
+      min-height: 92px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rg-btn,
+    .rg-model-card,
+    .rg-flow-card,
+    .rg-flow-feature,
+    .rg-flow-token,
+    .rg-reveal {
+      transition: none !important;
+    }
+
+    .rg-reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+</head>
+<body>
+<!-- Prototype stamp (mitigation #1b): visible on the page so the foundation-data
+     artifact cannot be mistaken for a fully connected production deployment. -->
+<div id="proto-stamp" role="note">
+  <span class="ps-dot" aria-hidden="true"></span>
+  <span class="ps-text"><strong>Live prototype</strong> · foundation data · integration-ready design artifact</span>
+</div>
+
+<div class="rg-landing" id="top">
+  <nav class="rg-nav" aria-label="Landing page">
+    <a class="rg-mark" href="#top" aria-label="Research and Governance Operating System home">
+      <span class="rg-mark-sigil" aria-hidden="true">
+        <svg viewBox="0 0 40 40" focusable="false">
+          <path class="rg-logo-link" d="M12 13.5h8.5c4.6 0 7.6 2.5 7.6 6.5s-3 6.5-7.6 6.5H12" />
+          <path class="rg-logo-spine" d="M12 10v20" />
+          <circle class="rg-logo-dot" cx="12" cy="13.5" r="2.8" />
+          <circle class="rg-logo-dot" cx="20.5" cy="20" r="2.8" />
+          <circle class="rg-logo-dot" cx="12" cy="26.5" r="2.8" />
+        </svg>
+      </span>
+      <span>Research &amp; Governance OS</span>
+    </a>
+    <div class="rg-nav-links">
+      <a href="#model">Model</a>
+      <a href="#live-record">Prototype</a>
+      <button type="button" data-tour-trigger>Tour</button>
+    </div>
+  </nav>
+
+  <section class="rg-hero" aria-labelledby="rg-hero-title">
+    <div class="rg-hero-inner">
+      <p class="rg-kicker">Fourth AI Research Lab</p>
+      <h1 id="rg-hero-title">Research &amp; Governance Operating System</h1>
+      <p class="rg-lede">A living record where research discoveries mature into governed decisions, with ownership, lineage, and readiness visible before the meeting starts.</p>
+      <div class="rg-actions" aria-label="Primary actions">
+        <a class="rg-btn rg-btn-primary" href="#live-record">Explore the live record <span aria-hidden="true">&rarr;</span></a>
+        <button class="rg-btn rg-btn-secondary" type="button" data-tour-trigger>Start guided tour</button>
+      </div>
+      <dl class="rg-hero-metrics" aria-label="Operating promises">
+        <div>
+          <dt>2 tracks</dt>
+          <dd>Discovery and decisioning stay connected</dd>
+        </div>
+        <div>
+          <dt>5 questions</dt>
+          <dd>Every meeting opens with the same answers</dd>
+        </div>
+        <div>
+          <dt>1 record</dt>
+          <dd>Decisions keep their owners and paper trail</dd>
+        </div>
+      </dl>
+    </div>
+    <div class="rg-hero-stage" aria-label="An example record cycling from draft to decided">
+      <article class="rg-record-card">
+        <p class="rg-record-k">Track A &middot; Decisioning Forum &middot; Cycle 5</p>
+        <p class="rg-record-title">Third-party model risk framework</p>
+        <div class="rg-record-meta">
+          <span class="rg-record-chip">Owner &middot; Tom Riley</span>
+          <span class="rg-record-chip">Due &middot; Jul 17, 2026</span>
+          <span class="rg-record-chip">Governance escalation</span>
+        </div>
+        <span class="rg-record-status is-draft" id="rg-record-status">Your draft</span>
+        <div class="rg-record-lineage" aria-hidden="true">
+          <span class="rg-lin is-on">Discovery</span><i></i><span class="rg-lin">Evidence</span><i></i><span class="rg-lin">Decision</span>
+        </div>
+        <p class="rg-record-q">Decision needed: adopt the framework for all model vendors, or scope to new intake only?</p>
+      </article>
+      <div class="rg-record-annots" aria-hidden="true">
+        <p data-annot="0">owner named: a person, not a team</p>
+        <p data-annot="1">readiness computed, not claimed</p>
+        <p data-annot="2">decided, with the paper trail attached</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="rg-proof-strip" aria-label="Operating outcomes">
+    <div>
+      <span class="rg-proof-label">For governance chairs</span>
+      <strong>Know what needs a decision before the call.</strong>
+    </div>
+    <div>
+      <span class="rg-proof-label">For researchers</span>
+      <strong>Escalate mature ideas with context intact.</strong>
+    </div>
+    <div>
+      <span class="rg-proof-label">For leaders</span>
+      <strong>See ownership, readiness, and carry-forward risk.</strong>
+    </div>
+  </section>
+
+  <section class="rg-section rg-problem rg-reveal" aria-labelledby="rg-problem-title">
+    <div class="rg-copy">
+      <p class="rg-kicker">The operating gap</p>
+      <h2 id="rg-problem-title">Decisions are made in meetings, then scattered across memory, chat, and follow-up notes.</h2>
+      <p>Research forums surface promising ideas. Governance forums approve spend, security posture, and rollout paths. Without a shared record between them, the same topics get re-litigated and the context thins out every cycle.</p>
+    </div>
+    <div class="rg-signal-list" aria-label="What the system makes visible">
+      <div><span>01</span><strong>Who owns the next move?</strong><p>Owner, due date, presenter, and accountable track are visible on the record.</p></div>
+      <div><span>02</span><strong>Is the agenda ready?</strong><p>Readiness is computed from the structured item data, not hand-written status prose.</p></div>
+      <div><span>03</span><strong>Where did this come from?</strong><p>Carry-forward and escalation lineage stay attached as ideas move from research to governance.</p></div>
+    </div>
+  </section>
+
+  <section class="rg-section rg-model rg-reveal" id="model" aria-labelledby="rg-model-title">
+    <div class="rg-section-head">
+      <p class="rg-kicker">Operating model</p>
+      <h2 id="rg-model-title">A two-track system that keeps the work moving.</h2>
+    </div>
+    <div class="rg-model-grid">
+      <article class="rg-model-card">
+        <span class="rg-track-pill rg-track-research">Track B · Research</span>
+        <h3>Discover what is becoming real</h3>
+        <p>Present emerging technology, pressure-test ideas, and turn useful patterns into candidates for governance approval.</p>
+      </article>
+      <article class="rg-model-card">
+        <span class="rg-track-pill rg-track-governance">Track A · Governance</span>
+        <h3>Decide what can safely scale</h3>
+        <p>Approve architecture, security posture, budget, ownership, and rollout gates with the decision question already framed.</p>
+      </article>
+      <article class="rg-model-card">
+        <span class="rg-track-pill rg-track-record">Operating record</span>
+        <h3>Remember what happened</h3>
+        <p>Each item keeps its structured context, status, lineage, and follow-up so the next cycle starts from evidence.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="rg-section rg-system-lab rg-reveal" aria-labelledby="rg-system-title">
+    <div class="rg-system-copy">
+      <p class="rg-kicker">Live system shape</p>
+      <h2 id="rg-system-title">The record behaves like an operating system, not a meeting note.</h2>
+      <p>Switch the lens below to see how the same structured item changes meaning for researchers, governance owners, and executives.</p>
+      <div class="rg-system-tabs" role="tablist" aria-label="System lens">
+        <button class="rg-system-tab is-active" id="rg-tab-research" role="tab" aria-selected="true" aria-controls="rg-panel-research" type="button" data-system-tab="research">Research</button>
+        <button class="rg-system-tab" id="rg-tab-governance" role="tab" aria-selected="false" aria-controls="rg-panel-governance" type="button" data-system-tab="governance">Governance</button>
+        <button class="rg-system-tab" id="rg-tab-evidence" role="tab" aria-selected="false" aria-controls="rg-panel-evidence" type="button" data-system-tab="evidence">Evidence</button>
+      </div>
+    </div>
+    <div class="rg-system-stage" data-system-stage="research">
+      <div class="rg-flow" id="rg-flow" aria-label="One record moving from research intake to the governance docket to the decision ledger">
+        <article class="rg-flow-card" data-flow="research">
+          <p class="rg-flow-title">Research intake</p>
+          <ul class="rg-flow-rows">
+            <li class="rg-flow-feature"><strong>Third-party model risk framework</strong><span>candidate &middot; presenter slot booked</span></li>
+            <li>Agent handoff quality &middot; gathering signal</li>
+            <li>Prompt library refresh &middot; idea</li>
+          </ul>
+        </article>
+        <span class="rg-flow-arrow" aria-hidden="true"><i>&rarr;</i>escalates with context intact</span>
+        <article class="rg-flow-card" data-flow="governance">
+          <p class="rg-flow-title">Governance docket</p>
+          <ul class="rg-flow-rows">
+            <li class="rg-flow-feature"><strong>Third-party model risk framework</strong><span>owner &middot; due date &middot; recommendation attached</span></li>
+            <li>Q3 funding call &middot; ready for review</li>
+            <li>Telemetry retention policy &middot; needs owner</li>
+          </ul>
+        </article>
+        <span class="rg-flow-arrow" aria-hidden="true"><i>&rarr;</i>decided, with follow-up owned</span>
+        <article class="rg-flow-card" data-flow="ledger">
+          <p class="rg-flow-title">Decision ledger</p>
+          <ul class="rg-flow-rows">
+            <li class="rg-flow-feature"><strong>Third-party model risk framework</strong><span>decided Jul 17 &middot; follow-up owned &amp; dated</span></li>
+            <li>Incident response runbook &middot; decided Jul 3</li>
+            <li>Slack assistant rollout &middot; parked, review Aug 1</li>
+          </ul>
+        </article>
+        <span class="rg-flow-token" id="rg-flow-token" aria-hidden="true">DR-014</span>
+      </div>
+      <div class="rg-system-panels">
+        <article class="rg-system-panel is-active" id="rg-panel-research" role="tabpanel" aria-labelledby="rg-tab-research" data-system-panel="research">
+          <h3>Research adds signal without forcing a decision too early.</h3>
+          <p>Presenter slots, group solutioning, and candidate ideas stay in the discovery lane until they are ready to escalate.</p>
+        </article>
+        <article class="rg-system-panel" id="rg-panel-governance" role="tabpanel" aria-labelledby="rg-tab-governance" data-system-panel="governance" hidden>
+          <h3>Governance starts with the decision question already shaped.</h3>
+          <p>Decision-required items carry owner, due date, options, recommendation, risk, and materials before they consume meeting time.</p>
+        </article>
+        <article class="rg-system-panel" id="rg-panel-evidence" role="tabpanel" aria-labelledby="rg-tab-evidence" data-system-panel="evidence" hidden>
+          <h3>Evidence survives the meeting.</h3>
+          <p>Decided, deferred, parked, and carried-forward items stay attached to their lineage so follow-up work remains auditable.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="rg-section rg-live-record rg-reveal" id="live-record" aria-labelledby="rg-live-title">
+    <div class="rg-live-head">
+      <div>
+        <p class="rg-kicker">Live prototype</p>
+        <h2 id="rg-live-title">Drive the record with real interactions.</h2>
+      </div>
+      <button class="rg-btn rg-btn-secondary" type="button" data-tour-trigger>Launch tour</button>
+    </div>
+    <div class="rg-record-frame">
+<div id="brief-app" data-track="A">
+  <div class="wrap">
+    <header class="wordmark">
+      <span class="brand">AI Decision Operating Record</span>
+      <div class="track-switch" role="tablist" aria-label="Switch track">
+        <button class="ts-btn on" id="ts-a" role="tab" aria-selected="true" data-track-switch="A" type="button">Track A <span>Governance</span></button>
+        <button class="ts-btn" id="ts-b" role="tab" aria-selected="false" data-track-switch="B" type="button">Track B <span>Research</span></button>
+      </div>
+      <span class="edition" id="edition-line">Fourth · AI Research Lab</span>
+    </header>
+
+    <div id="page-normal">
+      <!-- ============ MASTHEAD ============ -->
+      <section class="masthead" id="masthead" aria-label="Current meeting"></section>
+      <hr class="double-rule" aria-hidden="true" />
+
+      <!-- ============ TABS ============ -->
+      <div class="tabbar-holder">
+        <div class="tabbar" role="tablist" aria-label="Decision Record sections">
+          <button class="tab" role="tab" id="tab-headlines" aria-controls="panel-headlines" aria-selected="true">Headlines</button>
+          <button class="tab" role="tab" id="tab-agenda" aria-controls="panel-agenda" aria-selected="false">Agenda</button>
+          <button class="tab" role="tab" id="tab-tracking" aria-controls="panel-tracking" aria-selected="false">Tracking</button>
+          <button class="tab" role="tab" id="tab-guidelines" aria-controls="panel-guidelines" aria-selected="false">Guidelines</button>
+          <button class="tab" role="tab" id="tab-cadence" aria-controls="panel-cadence" aria-selected="false">Cadence</button>
+        </div>
+      </div>
+
+      <main>
+        <section id="panel-headlines" role="tabpanel" aria-labelledby="tab-headlines" tabindex="0"></section>
+        <section id="panel-agenda" role="tabpanel" aria-labelledby="tab-agenda" tabindex="0" hidden></section>
+        <section id="panel-tracking" role="tabpanel" aria-labelledby="tab-tracking" tabindex="0" hidden></section>
+
+        <section id="panel-guidelines" role="tabpanel" aria-labelledby="tab-guidelines" tabindex="0" hidden class="prose-tab">
+          <h2>What belongs on this record</h2>
+          <p>Submit an item when a <strong>decision, approval, prioritization, ownership assignment, or escalation</strong> is needed — or when the group must be made aware of something that affects governance, security, or spend.</p>
+          <p class="op-rule">This is not a status update forum. Items appear here only if the meeting must act on them.</p>
+
+          <h2>How to submit</h2>
+          <p>File the minimum first: a <strong>title</strong>, a <strong>topic type</strong>, and the <strong>decision needed</strong> — or the context the group must know. Your item lands as a Draft. Enrich the full record (context, options, recommendation, risks) by editing your draft any time until the agenda is <strong>published</strong>. New submissions close Wednesday at close of business; your existing draft stays editable after that.</p>
+          <p>Decision-required items must carry an <strong>Owner</strong>, a <strong>Decision needed</strong> statement, and a <strong>Due date</strong> before the agenda can be published. Flags on the agenda are advisory until publish.</p>
+
+          <h2>Operating language</h2>
+          <ul class="term-list">
+            <li><strong>Decision needed</strong> — the single question the meeting must answer.</li>
+            <li><strong>Owner</strong> — one accountable person, by name. Not a team.</li>
+            <li><strong>Due date</strong> — when the decision or action is required, as a plain date.</li>
+            <li><strong>Recommendation</strong> — the submitter's proposed answer, stated plainly.</li>
+            <li><strong>Carry forward</strong> — unresolved at close; clones to the next meeting with lineage.</li>
+            <li><strong>No decision required</strong> — awareness-only; timeboxed, never debated.</li>
+          </ul>
+        </section>
+
+        <section id="panel-cadence" role="tabpanel" aria-labelledby="tab-cadence" tabindex="0" hidden class="prose-tab">
+          <h2>Two tracks, alternating Fridays</h2>
+          <p>One record, two forums. Governance decides; Research discovers. Items that mature in Research are escalated into Governance for ratification.</p>
+
+          <div class="cadence-row">
+            <div class="cr-track a">Track A · Decisioning forum</div>
+            <h3>AI Governance: Architecture &amp; Education</h3>
+            <p>Every other Friday, 8:30–9:30 AM · series opened <strong>Friday, Jun 19, 2026</strong> and runs through Jan 16, 2027. This session — <strong>Friday, Jul 17, 2026</strong> — is the track&rsquo;s third occurrence.</p>
+            <p>Submitted topics for decisioning · funding approval and budgeting decisions · critical updates not covered in other forums.</p>
+          </div>
+
+          <div class="cadence-row">
+            <div class="cr-track b">Track B · Discovery forum</div>
+            <h3>AI Research, Awareness, &amp; Learning</h3>
+            <p>Alternating Fridays, 8:30–9:30 AM (opposite weeks from Track A) · series opened <strong>Friday, Jun 26, 2026</strong> and runs through Jan 23, 2027. Next occurrence <strong>Friday, Jul 24, 2026</strong>. Includes the Track A group plus a broader audience.</p>
+            <p>Opens with a 20-minute innovation &amp; emerging-technology block (David Hayes), then presenter slots, then group solutioning and review of ideas headed for governance approval.</p>
+          </div>
+
+          <div class="cadence-row">
+            <div class="cr-track" style="color: var(--ink-soft);">Both tracks</div>
+            <h3>Submission deadline</h3>
+            <p>Close of business <strong>Wednesday</strong> before each meeting. After the deadline the agenda is closed to <strong>new</strong> submissions; late items file to the next cycle. Drafts already filed stay editable by their submitter until the agenda is published.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============ EMPTY STATE (admin + member variants) ============ -->
+    <div id="page-empty" hidden>
+      <div class="empty-state" id="empty-admin">
+        <div class="es-rule" aria-hidden="true"></div>
+        <h2>No active agenda meeting</h2>
+        <p>There is no upcoming meeting on the record. The next cycle begins when a meeting is created.</p>
+        <button class="create-btn" id="empty-create-btn">Create the next meeting</button>
+        <p class="es-adminnote">You're seeing this action because you are an administrator. Create one to start the cycle.</p>
+      </div>
+      <div class="empty-state" id="empty-member" hidden>
+        <div class="es-rule" aria-hidden="true"></div>
+        <h2>No active agenda meeting</h2>
+        <p>There is no upcoming meeting on the record. An administrator opens the next cycle by creating the meeting — nothing is needed from you yet.</p>
+        <p class="es-adminnote">When the next meeting is created, submissions open here. Questions in the meantime go to David Hayes.</p>
+      </div>
+    </div>
+
+    <!-- ============ ERROR STATE (list-level error + retry) ============ -->
+    <div id="page-error" hidden>
+      <div class="empty-state error-state">
+        <div class="es-rule" aria-hidden="true"></div>
+        <h2>The record could not be loaded</h2>
+        <p>The request for the current meeting failed. Nothing you filed has been lost — this view is simply unavailable right now.</p>
+        <button class="retry-btn" id="error-retry-btn">Retry</button>
+        <p class="es-errdetail">GET /api/agenda/meetings/current · request failed</p>
+      </div>
+    </div>
+
+    <!-- ============ FOOTER (discreet Fourth mark + CCv3 signature) ============ -->
+    <footer class="site-footer">
+      <div class="sf-left">
+        <span class="fourth-mark">Fourth</span>
+        <span class="sf-div" aria-hidden="true">|</span>
+        <span class="sf-team">AI Research Lab</span>
+      </div>
+      <div class="sf-right">
+        <span class="powered">Powered by
+          <span class="ccv3-wrap">
+            <a class="ccv3-link" href="https://github.com/Rev4nchist/Continuous-Claude-v3" target="_blank" rel="noopener noreferrer" aria-describedby="ccv3-info">CCv3</a>
+            <span class="ccv3-info" id="ccv3-info" role="tooltip">
+              <strong>Continuous-Claude-v3</strong>
+              <span>Dave's agent harness for serious project work: memory, hooks, handoffs, orchestration, and repeatable Claude Code delivery loops in one system.</span>
+            </span>
+          </span>
+        </span>
+        <span class="sf-div" aria-hidden="true">|</span>
+        <span class="sf-proto">Live prototype on foundation data</span>
+      </div>
+    </footer>
+  </div>
+</div>
+    </div>
+  </section>
+
+  <section class="rg-final" aria-labelledby="rg-final-title">
+    <p class="rg-kicker">Next useful artifact</p>
+    <h2 id="rg-final-title">Turn the prototype into the shared operating layer for AI research and governance.</h2>
+    <p>Use this page to walk stakeholders through the model, then use the live record below it to pressure-test adoption details with the people who will run the forum.</p>
+    <div class="rg-actions rg-actions-center">
+      <a class="rg-btn rg-btn-primary" href="#live-record">Return to prototype</a>
+      <button class="rg-btn rg-btn-secondary" type="button" data-tour-trigger>Replay guided tour</button>
+    </div>
+  </section>
+</div>
+
+<!-- ============ SHEET ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-head">
+    <div>
+      <span class="sh-type" id="sheet-type"></span>
+      <h2 id="sheet-title"></h2>
+    </div>
+    <button class="sheet-close" id="sheet-close" aria-label="Close detail">&times;</button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+</aside>
+
+<!-- ============ SUBMIT MODAL ============ -->
+<div class="modal-holder" id="modal-holder">
+  <div class="scrim open" id="modal-scrim" style="position: absolute;"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <span class="m-kicker" id="modal-kicker">Submit an item</span>
+    <h2 id="modal-title">File the essentials. Enrich later.</h2>
+    <p class="m-note" id="modal-note">Three fields now. Your item lands as a Draft on this agenda — you can edit the full record until the agenda is published.</p>
+    <form id="submit-form">
+      <label for="f-title">Title</label>
+      <input type="text" id="f-title" name="title" required autocomplete="off" placeholder="e.g., Approve sandbox access policy for agent builders" />
+      <label for="f-type">Topic type</label>
+      <select id="f-type" name="type" required>
+        <option value="" disabled selected>Select a topic type…</option>
+        <option>Decision Required</option>
+        <option>Awareness Only</option>
+        <option>Research Intake</option>
+        <option>Governance Escalation</option>
+        <option>Funding</option>
+        <option>Budget</option>
+        <option>Security Review</option>
+        <option>Admin</option>
+        <option>Access Review</option>
+        <option>Procurement Review</option>
+        <option>Enablement</option>
+        <option>Training Dependency</option>
+        <option>Compliance</option>
+        <option>Policy</option>
+        <option>Tooling</option>
+        <option>Platform Update</option>
+      </select>
+      <label for="f-ask">Decision needed / context</label>
+      <textarea id="f-ask" name="ask" required placeholder="What must this meeting decide, or what must the group know?"></textarea>
+      <p class="m-enrich">Owner, timebox, options, recommendation, risks and the rest of the structured record are added later by editing your Draft.</p>
+      <div class="m-actions">
+        <button type="button" class="m-cancel" id="modal-cancel">Cancel</button>
+        <button type="submit" class="m-submit" id="modal-submit">Submit item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ GUIDED TOUR ============ -->
+<button id="tour-launch" type="button" aria-haspopup="dialog">
+  <span class="tl-badge" aria-hidden="true">&#9654;</span>
+  <span class="tl-text">Take the guided tour</span>
+  <span class="tl-time">90 sec</span>
+</button>
+
+<div id="tour-root" hidden>
+  <!-- spotlight: dim scrim + a highlight ring positioned over the target element -->
+  <div id="tour-scrim"></div>
+  <div id="tour-spot" aria-hidden="true"></div>
+
+  <!-- intro / "why this matters" panel (tour step 0) -->
+  <div id="tour-intro" role="dialog" aria-modal="true" aria-labelledby="ti-title">
+    <div class="ti-card">
+      <span class="ti-kicker">A 90-second walkthrough</span>
+      <h2 id="ti-title">Decisions get made in the meeting. Then they vanish.</h2>
+      <p class="ti-lede">Agendas are scrambled together five minutes before the call. Decisions are made out loud and never written down. No one is sure who owns what, or what was already decided last time.</p>
+      <ul class="ti-contrast">
+        <li><span class="tic-k">Today</span><span class="tic-v">A verbal decision, a lost thread, a re-litigated topic next fortnight.</span></li>
+        <li><span class="tic-k">With the record</span><span class="tic-v">One living page. An exec sees <em>what needs them</em> in a minute. Every decision has an owner, a due date, and a paper trail.</span></li>
+      </ul>
+      <div class="ti-actions">
+        <button id="ti-start" class="ti-primary" type="button">Start the tour <span aria-hidden="true">&rarr;</span></button>
+        <button id="ti-skip" class="ti-ghost" type="button">Skip and explore it myself</button>
+      </div>
+      <p class="ti-honest">A live prototype on foundation data. The production system connects this interface to agent-arch accounts, permissions, and source records.</p>
+    </div>
+  </div>
+
+  <!-- narration caption (tour steps 1..N) -->
+  <div id="tour-caption" role="dialog" aria-modal="false" aria-labelledby="tc-title" hidden>
+    <div class="tc-inner">
+      <div class="tc-head">
+        <span class="tc-step" id="tc-step"></span>
+        <span class="tc-kicker" id="tc-kicker"></span>
+        <button id="tc-exit" class="tc-exit" type="button">End tour</button>
+      </div>
+      <h3 class="tc-title" id="tc-title"></h3>
+      <p class="tc-body" id="tc-body"></p>
+      <div class="tc-foot">
+        <div class="tc-dots" id="tc-dots" aria-hidden="true"></div>
+        <div class="tc-nav">
+          <button id="tc-back" class="tc-btn tc-back" type="button">Back</button>
+          <button id="tc-next" class="tc-btn tc-next" type="button">Next <span aria-hidden="true">&rarr;</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LIVE SANDBOX (demo-only controls) ============ -->
+<div class="demo-widget" id="demo-widget" aria-label="Live sandbox controls">
+  <div class="dw-head">
+    <span class="dw-label">Live sandbox</span>
+    <button class="dw-collapse" id="dw-collapse" type="button" aria-expanded="true" aria-controls="dw-body" aria-label="Collapse sandbox controls">&minus;</button>
+  </div>
+  <div class="dw-body" id="dw-body">
+    <p class="dw-hint">Drive it live. Toggle any axis mid-conversation.</p>
+    <button id="dw-track">Track view: <span>A — Governance</span></button>
+    <button id="dw-subs">Agenda: <span>submissions open</span></button>
+    <button id="dw-role">Role: <span>admin</span></button>
+    <button id="dw-empty">State: <span>normal</span></button>
+  </div>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  /* ============ DATA ============ */
+  var ME = "david.hayes@fourth.com";
+  var PEOPLE = {
+    "david.hayes@fourth.com": "David Hayes",
+    "carly.smith@fourth.com": "Carly Smith",
+    "mike.jones@fourth.com": "Mike Jones",
+    "sarah.chen@fourth.com": "Sarah Chen",
+    "tom.riley@fourth.com": "Tom Riley"
+  };
+  function nameOf(email) {
+    if (!email) return null;
+    if (email === ME) return "You";
+    return PEOPLE[email] || email;
+  }
+
+  /* Demo timeline (internally consistent): the weekly-alternating series opened
+     Fri Jun 19, 2026 (A, cycle 1) → Jun 26 (B, c2) → Jul 3 (A, c3) → Jul 10 (B, c4)
+     → Jul 17 (A, c5, THIS session) → Jul 24 (B, c6) → Jul 31 (A, c7).
+     "Today" in the mock is Mon, Jul 13, 2026 — after the Jul 10 due date (a6 overdue),
+     before the Wed Jul 15 deadline (submissions open). */
+  var MEETING_A = {
+    track: "A",
+    name: "AI Governance: Architecture & Education",
+    trackWord: "Decisioning forum",
+    dateLine: "Friday, July 17, 2026",
+    shortDate: "Jul 17",
+    timeLine: "8:30–9:30 AM",
+    cycle: 5,
+    agendaStatus: "Ready for Review",
+    deadline: "Submissions close Wed, Jul 15, 2026 (COB)",
+    deadlineShort: "Wed, Jul 15, 2026 (COB)",
+    decisionOwners: ["david.hayes@fourth.com", "carly.smith@fourth.com"],
+    objective: "Clear the decision docket: Q3 funding calls and two escalated governance items."
+  };
+  var MEETING_B = {
+    track: "B",
+    name: "AI Research, Awareness, & Learning",
+    trackWord: "Discovery forum",
+    dateLine: "Friday, July 24, 2026",
+    shortDate: "Jul 24",
+    timeLine: "8:30–9:30 AM",
+    cycle: 6,
+    agendaStatus: "Draft",
+    deadline: "Submissions close Wed, Jul 22, 2026 (COB)",
+    deadlineShort: "Wed, Jul 22, 2026 (COB)",
+    decisionOwners: ["david.hayes@fourth.com"],
+    objective: "Surface what's emerging: computer-use agents, MCP marketplace patterns, and the research intake pipeline."
+  };
+  /* G3 — the Friday rhythm, rendered as a single typographic cycle line */
+  var CYCLE_LINE = [
+    { d: "Jul 3", t: "A" },
+    { d: "Jul 10", t: "B" },
+    { d: "Jul 17", t: "A" },
+    { d: "Jul 24", t: "B" },
+    { d: "Jul 31", t: "A" }
+  ];
+
+  var STATUS_CLASS = {
+    "Decided": "st-ok", "Closed": "st-ok",
+    "Deferred": "st-warn", "Escalated": "st-warn", "Parked": "st-warn",
+    "Ready": "st-flight", "Discussed": "st-flight",
+    "Draft": "st-inert"
+  };
+
+  var ITEMS_A = [
+    {
+      id: "a1", title: "Approve Copilot Studio licensing tier", type: "Decision Required", status: "Ready",
+      owner: "carly.smith@fourth.com", timebox: 15, due: "Jul 17, 2026", submittedBy: "carly.smith@fourth.com",
+      context: "Pilot cohort of 40 builders completes onboarding this month. Current trial licensing expires Jul 31; procurement needs the tier decision to issue the FY27 PO.",
+      why: "Licensing tier locks unit economics for every agent the enablement program ships in FY27. A wrong-size commitment either strands budget or throttles the pilot's expansion.",
+      desired: "A ratified licensing tier and seat count that procurement can execute before trial expiry.",
+      decisionNeeded: "Select the Copilot Studio licensing tier for FY27: per-user licenses for the pilot cohort, or pooled capacity packs.",
+      options: "Option 1 — Per-user licenses, 40 seats (predictable per-builder cost, no headroom). Option 2 — Two pooled capacity packs (usage-based, absorbs cohort growth, needs quarterly review).",
+      recommendation: "Option 2. The pilot roadmap adds two teams in Q3; pooled capacity avoids a second procurement cycle.",
+      risks: "Capacity packs are forecast-sensitive: an underused pool overpays ~18%. Mitigate with the quarterly usage review already on the register.",
+      dependencies: "FY27 procurement calendar — the PO must issue before trial expiry on Jul 31.",
+      smeNeeded: true, smeEmails: ["sarah.chen@fourth.com"],
+      materials: { label: "Licensing tier comparison — procurement workbook", url: "#" },
+      impacted: ["IT", "Finance", "Enablement"],
+      created: "Jul 1, 2026", updated: "Jul 8, 2026"
+    },
+    {
+      id: "a2", title: "Agent telemetry retention policy", type: "Decision Required", status: "Ready",
+      owner: null, timebox: 10, due: null, submittedBy: "mike.jones@fourth.com",
+      missing: ["Owner", "Due date"],
+      context: "Agent gateway telemetry is accumulating without a defined retention window. Legal has asked for a documented policy before the Q3 audit.",
+      why: "Unbounded retention is both a cost line and a compliance exposure; the audit will flag the absence of a policy.",
+      desired: "A retention window with a named policy owner.",
+      decisionNeeded: "Set the retention window for agent telemetry: 90 days operational-only, or 12 months with quarterly archive.",
+      options: "Option 1 — 90 days (lowest cost, weakest incident forensics). Option 2 — 12 months with cold archive after 90 days (moderate cost, satisfies security's forensics ask).",
+      recommendation: "Option 2, pending security sign-off.",
+      risks: "No owner is attached; without one this decision cannot be published to the agenda.",
+      smeNeeded: true, smeEmails: [],
+      impacted: ["Security", "Legal", "Platform"],
+      created: "Jul 3, 2026", updated: "Jul 6, 2026"
+    },
+    {
+      id: "a3", title: "FY27 AI enablement budget envelope", type: "Funding", status: "Draft",
+      owner: "david.hayes@fourth.com", timebox: 15, due: "Jul 17, 2026", submittedBy: "david.hayes@fourth.com",
+      ownDraft: true,
+      context: "Draft filed ahead of the FY27 planning window. Envelope covers licensing, training programs, and two platform workstreams.",
+      why: "Every downstream funding call this half depends on the envelope being ratified first.",
+      desired: "An approved envelope figure the team can allocate against.",
+      decisionNeeded: "Approve the FY27 budget envelope for AI enablement programs.",
+      recommendation: "Enrichment pending — options and figures land before the Wednesday deadline.",
+      impacted: ["Finance", "Enablement"],
+      created: "Jul 7, 2026", updated: "Jul 7, 2026"
+    },
+    {
+      id: "a4", title: "Third-party model risk framework", type: "Governance Escalation", status: "Ready",
+      owner: "tom.riley@fourth.com", timebox: 15, due: "Jul 17, 2026", submittedBy: "tom.riley@fourth.com",
+      carried: ["Jun 19, 2026", "Jul 3, 2026"],
+      context: "Escalated from Research after consensus that vendor-hosted models need a standing risk assessment. Deferred twice on timebox pressure; this is its third appearance.",
+      why: "Three vendor evaluations are queued behind this framework. Each carry delays procurement by a full cycle.",
+      desired: "Ratification of the framework so vendor evaluations can proceed under it.",
+      decisionNeeded: "Ratify the third-party model risk assessment framework and name the standing review owner.",
+      options: "Option 1 — Adopt as drafted. Option 2 — Adopt with a 90-day review checkpoint.",
+      recommendation: "Option 2. The framework is sound; a checkpoint de-risks first-cycle gaps.",
+      risks: "A third carry signals a structural timebox problem — recommend it leads the docket.",
+      dependencies: "Three queued vendor evaluations are blocked until this framework is ratified.",
+      smeNeeded: true, smeEmails: ["sarah.chen@fourth.com"],
+      materials: { label: "Draft framework v3 — risk assessment template", url: "#" },
+      impacted: ["Security", "Procurement", "Architecture"],
+      created: "Jun 12, 2026", updated: "Jul 6, 2026"
+    },
+    {
+      id: "a5", title: "EU AI Act readiness update", type: "Awareness Only", status: "Ready",
+      owner: "sarah.chen@fourth.com", presenter: "sarah.chen@fourth.com", timebox: 5, due: null, submittedBy: "sarah.chen@fourth.com",
+      noDecision: true,
+      context: "Quarterly regulatory scan. Classification work on in-scope systems is complete; two systems move to the limited-risk register.",
+      why: "Leadership visibility ahead of the August compliance filing.",
+      desired: "No decision required — five-minute awareness briefing.",
+      impacted: ["Legal", "Compliance"],
+      created: "Jul 5, 2026", updated: "Jul 5, 2026"
+    },
+    {
+      id: "a6", title: "Vendor pen-test findings for agent gateway", type: "Security Review", status: "Deferred",
+      owner: "mike.jones@fourth.com", timebox: 10, due: "Jul 10, 2026", overdue: true, submittedBy: "mike.jones@fourth.com",
+      context: "Deferred from the Jul 3 session pending vendor remediation evidence. The due date has passed without the evidence landing.",
+      why: "Two medium findings block the gateway's production attestation.",
+      desired: "Accept remediation evidence or set a hard escalation date.",
+      decisionNeeded: "Accept the vendor's remediation of the two medium findings, or escalate to contract review.",
+      risks: "Overdue since Jul 10. Attestation slips a full cycle if this defers again.",
+      materials: { label: "Vendor pen-test report — findings PT-014, PT-017", url: "#" },
+      impacted: ["Security", "Platform"],
+      created: "Jun 26, 2026", updated: "Jul 6, 2026"
+    },
+    {
+      id: "a7", title: "Slack AI assistant rollout", type: "Procurement Review", status: "Parked",
+      owner: "carly.smith@fourth.com", timebox: null, due: null, submittedBy: "carly.smith@fourth.com",
+      parked: { reason: "Awaiting procurement review outcome", destination: "Procurement Review", review: "Aug 1, 2026" },
+      context: "Rollout proposal is complete but gated on the procurement review of the vendor's data-processing terms.",
+      why: "Re-docketing before the procurement outcome would waste a timebox.",
+      desired: "Hold until the review lands; auto-resurface on the review date.",
+      impacted: ["IT", "Procurement"],
+      created: "Jun 20, 2026", updated: "Jul 2, 2026"
+    },
+    {
+      id: "a8", title: "Prompt-injection incident response runbook", type: "Decision Required", status: "Decided",
+      owner: "mike.jones@fourth.com", timebox: 10, due: "Jul 3, 2026", submittedBy: "mike.jones@fourth.com",
+      decided: { on: "Jul 3, 2026", summary: "Runbook adopted as the standing response procedure for prompt-injection incidents across all agent surfaces." },
+      followUp: { text: "Publish runbook to security wiki", owner: "mike.jones@fourth.com", due: "Jul 24, 2026" },
+      context: "Drafted after the June tabletop exercise; reviewed by security and platform.",
+      why: "First structured response procedure covering agent-specific attack surfaces.",
+      desired: "Adoption — achieved Jul 3.",
+      decisionNeeded: "Adopt the runbook as the standing incident response procedure.",
+      impacted: ["Security", "Platform", "Support"],
+      created: "Jun 18, 2026", updated: "Jul 3, 2026"
+    }
+  ];
+
+  var ITEMS_B = [
+    {
+      id: "b1", title: "Demo: computer-use agents for QA", type: "Awareness Only", status: "Ready",
+      presenter: "sarah.chen@fourth.com", timebox: 10, submittedBy: "sarah.chen@fourth.com", segment: "present",
+      context: "Live demo of a computer-use agent running regression passes against the staging build.",
+      why: "QA automation is the most-requested agent capability from support teams this quarter.",
+      desired: "Group familiarity ahead of a possible research intake.",
+      noDecision: true,
+      created: "Jul 8, 2026", updated: "Jul 12, 2026"
+    },
+    {
+      id: "b2", title: "New concept: MCP marketplace patterns", type: "Research Intake", status: "Ready",
+      presenter: "tom.riley@fourth.com", timebox: 10, submittedBy: "tom.riley@fourth.com", segment: "present",
+      context: "Survey of emerging MCP marketplace patterns and what an internal catalog could borrow from them.",
+      why: "Tool distribution is becoming the bottleneck as agent count grows.",
+      desired: "Decide whether this enters the research intake ladder.",
+      created: "Jul 9, 2026", updated: "Jul 12, 2026"
+    },
+    {
+      id: "b3", title: "How should we intake research ideas from support teams?", type: "Research Intake", status: "Ready",
+      owner: "david.hayes@fourth.com", timebox: 10, submittedBy: "david.hayes@fourth.com", segment: "solution",
+      context: "Support teams generate a steady stream of agent ideas with no structured path onto this record.",
+      why: "Ideas are currently arriving by DM — untracked and unprioritized.",
+      desired: "A group-agreed intake path that feeds the research ladder.",
+      created: "Jul 7, 2026", updated: "Jul 11, 2026"
+    },
+    {
+      id: "b4", title: "Review: candidate ideas for Q4 governance approval", type: "Enablement", status: "Ready",
+      owner: "carly.smith@fourth.com", timebox: 10, submittedBy: "carly.smith@fourth.com", segment: "solution",
+      context: "Walk the shortlist of research items approaching escalation-readiness and pressure-test which are fit for the Q4 governance docket.",
+      why: "Escalations land better when the group has pre-aligned on rationale and risk framing.",
+      desired: "A ranked shortlist with named escalation sponsors.",
+      created: "Jul 8, 2026", updated: "Jul 12, 2026"
+    }
+  ];
+
+  /* ============ STATE ============ */
+  var state = {
+    track: "A",
+    /* Agenda phase (demo): "open" → submissions open, drafts editable.
+       "closed" → NEW submissions closed (Wed COB passed); own drafts STILL editable.
+       "published" → agenda_status Published+: submissions closed AND drafts locked. */
+    phase: "open",
+    role: "admin",           // admin | member (empty-state variant + create affordance)
+    page: "normal",          // normal | empty | error
+    activeTab: "headlines",
+    lastFocus: null
+  };
+  function submissionsOpen() { return state.phase === "open"; }
+  function agendaPublished() { return state.phase === "published"; }
+  /* Edit gate (F3): own-draft Edit survives the submission deadline; it closes only
+     when the agenda reaches Published+ (or the item leaves Draft). */
+  function canEditOwnDraft(it) {
+    return !!it.ownDraft && it.status === "Draft" && !agendaPublished();
+  }
+  /* Advisory readiness checks (U3 + SME): missing Owner / Decision needed / Due date
+     block publish; SME-needed-but-none-named is advisory only. */
+  function advisoryFlags(it) {
+    var f = (it.missing || []).slice();
+    if (it.smeNeeded && (!it.smeEmails || !it.smeEmails.length)) f.push("SMEs");
+    return f;
+  }
+  /* G2 — readiness accounting: pre-decision Decision Required items only.
+     Deferred / Parked / Decided / Closed are excluded — they surface under
+     Aging & carried / Recently decided instead. */
+  var PRE_DECISION = { "Draft": 1, "Ready": 1, "Discussed": 1 };
+  function decisionScope() {
+    return items().filter(function (it) {
+      return it.type === "Decision Required" && PRE_DECISION[it.status];
+    });
+  }
+  function fieldsReady(it) {
+    return !!(it.owner && it.decisionNeeded && it.due);
+  }
+
+  var app = document.getElementById("brief-app");
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function meeting() { return state.track === "A" ? MEETING_A : MEETING_B; }
+  function items() { return state.track === "A" ? ITEMS_A : ITEMS_B; }
+  function findItem(id) {
+    var all = ITEMS_A.concat(ITEMS_B);
+    for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
+    return null;
+  }
+  function statusSpan(st) {
+    return '<span class="st ' + (STATUS_CLASS[st] || "st-inert") + '">' + esc(st) + "</span>";
+  }
+
+  /* ============ MASTHEAD ============ */
+  function renderMasthead() {
+    var m = meeting();
+    var agendaStatus = agendaPublished() ? "Published" : m.agendaStatus;
+
+    /* G1 + G2 — one readiness sentence, all computed */
+    var ny = needsYou();
+    var scope = decisionScope();
+    var ready = scope.filter(fieldsReady).length;
+    var advisory = items().filter(function (it) { return advisoryFlags(it).length; }).length;
+    var parts = [];
+    parts.push("<strong>" + ny.length + " item" + (ny.length !== 1 ? "s" : "") + " need" + (ny.length === 1 ? "s" : "") + " you</strong>");
+    if (scope.length) {
+      parts.push(ready + " of " + scope.length + " decision item" + (scope.length !== 1 ? "s" : "") + " ready");
+    } else {
+      parts.push("no Decision Required items on this docket");
+    }
+    if (state.track === "A") {
+      parts.push(advisory
+        ? '<span class="flagword">' + advisory + " item" + (advisory > 1 ? "s carry" : " carries") + " advisory flags</span>"
+        : "no advisory flags");
+    } else {
+      parts.push("segments derived from presenter &amp; topic type");
+    }
+    var readiness = parts.join(" · ");
+
+    /* G3 — the Friday rhythm as a single typographic cycle line */
+    var cycleLine = '<div class="cycle-line" aria-label="Session rhythm — click a stop to jump to that track">';
+    CYCLE_LINE.forEach(function (s) {
+      var current = s.d === m.shortDate;
+      cycleLine += '<button class="cl-stop' + (current ? " current" : "") + '" data-cycle-track="' + esc(s.t) + '"' +
+        (current ? ' aria-current="true"' : "") + '>' +
+        esc(s.d) + ' <span class="cl-tag">' + esc(s.t) + "</span>" +
+        (current ? ' <span class="cl-now">· this session</span>' : "") +
+        "</button>";
+    });
+    cycleLine += "</div>";
+
+    $("masthead").innerHTML =
+      '<div class="kicker">' +
+        '<span class="track-glyph" aria-hidden="true">' + esc(state.track) + "</span>" +
+        "<span>Track " + esc(state.track) + " · " + esc(m.trackWord) + " · Cycle " + m.cycle + "</span>" +
+      "</div>" +
+      "<h1>" + esc(m.name) + "</h1>" +
+      '<p class="deck">' + esc(m.objective) + "</p>" +
+      '<div class="mast-meta">' +
+        "<span><strong>" + esc(m.dateLine) + "</strong></span>" +
+        "<span>" + esc(m.timeLine) + "</span>" +
+        '<span><span class="agenda-chip' +
+          (agendaStatus === "Draft" ? " chip-inert" : (agendaStatus === "Completed" || agendaStatus === "Rolled Forward") ? " chip-ok" : "") +
+          '">' + esc(agendaStatus) + "</span></span>" +
+        "<span>" + esc(
+          submissionsOpen() ? m.deadline
+          : agendaPublished() ? "Submissions closed · items locked at publish"
+          : "New submissions closed — deadline was " + m.deadlineShort
+        ) + "</span>" +
+      "</div>" +
+      '<p class="mast-readiness">' + readiness + "</p>" +
+      cycleLine;
+    $("edition-line").textContent = m.dateLine + " · Cycle " + m.cycle;
+  }
+
+  /* ============ HEADLINES ============ */
+  /* G1 — "Needs you" is COMPUTED from item data, never hand-curated. Rule:
+     needs-you = items where the viewer is owner, OR presenter, OR
+     (submitted_by == viewer AND status == Draft), OR
+     (viewer is a decision owner of the meeting AND the item is Decision Required
+      with readiness gaps). Recomputed on every render / demo toggle. */
+  function needsYou() {
+    var m = meeting();
+    var isDecisionOwner = (m.decisionOwners || []).indexOf(ME) >= 0;
+    var out = [];
+    items().forEach(function (it) {
+      var role = null, why = null;
+      var gaps = advisoryFlags(it);
+      if (it.submittedBy === ME && it.status === "Draft") {
+        role = "Your draft";
+        why = agendaPublished()
+          ? "Your Draft — the agenda is published; drafts are locked."
+          : "Your Draft — enrich the full record; it stays editable until the agenda is published.";
+      } else if (it.owner === ME) {
+        role = "Owner";
+        why = "You own this item" + (it.timebox ? " — " + it.timebox + " min timebox." : ".");
+      } else if (it.presenter === ME) {
+        role = "Presenter";
+        why = "You present" + (it.timebox ? " — " + it.timebox + " min." : ".");
+      } else if (isDecisionOwner && it.type === "Decision Required" && PRE_DECISION[it.status] && gaps.length) {
+        role = "Decision owner";
+        why = "Decision Required with readiness gaps — " + gaps.join(", ") + " missing. Resolve before publish.";
+      }
+      if (role) out.push({ id: it.id, title: it.title, role: role, why: why, due: it.due, overdue: !!it.overdue });
+    });
+    return out;
+  }
+  function needsYouRow(n) {
+    var dueHtml = "";
+    if (n.overdue) dueHtml = '<span class="due-over">Due date ' + esc(n.due) + " — overdue</span>";
+    else if (n.due) dueHtml = '<span>Due date <span class="due-plain">' + esc(n.due) + "</span></span>";
+    else if (n.role === "Decision owner") dueHtml = '<span class="flag-adv">Due date missing</span>';
+    var inner =
+      '<p class="bi-title">' + esc(n.title) + "</p>" +
+      '<div class="bi-sub"><span class="flag-mine">' + esc(n.role) + "</span>" + dueHtml + "</div>" +
+      '<p class="bi-why">' + esc(n.why) + "</p>";
+    return '<button class="brief-item" data-item="' + n.id + '">' + inner + "</button>";
+  }
+
+  function submitAffordance() {
+    if (submissionsOpen()) {
+      return '<button class="submit-cta" data-open-submit>Submit an item <span aria-hidden="true">&rarr;</span></button>';
+    }
+    if (agendaPublished()) {
+      return '<span class="closed-note">Agenda published. Submissions are closed and items are locked; late items file to the next cycle.</span>';
+    }
+    return '<span class="closed-note">New submissions closed for this agenda — late items file to the next cycle. Drafts already filed stay editable until publish.</span>';
+  }
+
+  function renderHeadlines() {
+    var m = meeting();
+    /* Broadsheet layout (desktop): primary column = Submit + Needs you (the money);
+       secondary column = Aging/Decided (A) or Session structure (B) + Next session.
+       On mobile the .hl-grid collapses to one column, preserving this reading order. */
+    var primary = "";
+    var secondary = "";
+
+    // Submit affordance — primary
+    primary += '<div class="headline-submit">' + submitAffordance() + "</div>";
+
+    // NEEDS YOU (computed — see needsYou()) — primary
+    var ny = needsYou();
+    primary += '<section class="strip" id="strip-needs" aria-labelledby="hl-needs">';
+    primary += '<div class="strip-label"><h2 id="hl-needs">Needs you</h2><span class="count">' + ny.length + " item" + (ny.length !== 1 ? "s" : "") + "</span></div>";
+    if (ny.length) {
+      ny.forEach(function (n) { primary += needsYouRow(n); });
+    } else {
+      primary += '<p class="strip-note" style="padding:10px 0;">Nothing on this docket is assigned to you right now.</p>';
+    }
+    primary += "</section>";
+
+    if (state.track === "A") {
+      // AGING & CARRIED — secondary
+      secondary += '<section class="strip" id="strip-aging" aria-labelledby="hl-aging">';
+      secondary += '<div class="strip-label"><h2 id="hl-aging">Aging &amp; carried</h2><span class="count">watchlist</span></div>';
+      secondary +=
+        '<button class="brief-item" data-item="a4">' +
+          '<p class="bi-title">Third-party model risk framework</p>' +
+          '<div class="bi-sub"><span>Governance Escalation</span><span>' + statusSpan("Ready") + "</span><span>Owner: Tom Riley</span></div>" +
+          '<p class="flagline"><span class="flag-age">Carried forward twice — third appearance on a docket.</span> Recommend it leads.</p>' +
+        "</button>";
+      secondary +=
+        '<button class="brief-item" data-item="a6">' +
+          '<p class="bi-title">Vendor pen-test findings for agent gateway</p>' +
+          '<div class="bi-sub"><span>Security Review</span><span>' + statusSpan("Deferred") + '</span><span class="due-over">Due date Jul 10, 2026 — overdue</span></div>' +
+          '<p class="bi-why">Remediation evidence has not landed. Attestation slips a cycle if deferred again.</p>' +
+        "</button>";
+      secondary +=
+        '<button class="brief-item" data-item="a7">' +
+          '<p class="bi-title">Slack AI assistant rollout</p>' +
+          '<div class="bi-sub"><span>' + statusSpan("Parked") + '</span><span>Recommended destination: Procurement Review</span><span>Review date Aug 1, 2026</span></div>' +
+          '<p class="bi-why">Parked — awaiting procurement review outcome.</p>' +
+        "</button>";
+      secondary += "</section>";
+
+      // RECENTLY DECIDED — secondary
+      secondary += '<section class="strip" aria-labelledby="hl-decided">';
+      secondary += '<div class="strip-label"><h2 id="hl-decided">Recently decided</h2><span class="count">since Jul 3</span></div>';
+      secondary +=
+        '<button class="brief-item" data-item="a8">' +
+          '<p class="bi-title">Prompt-injection incident response runbook</p>' +
+          '<div class="bi-sub"><span>' + statusSpan("Decided") + " Jul 3, 2026</span></div>" +
+          '<p class="bi-why">Follow-up: <strong>Publish runbook to security wiki</strong> — Owner Mike Jones · Due date Jul 24, 2026.</p>' +
+        "</button>";
+      secondary += "</section>";
+    } else {
+      // Track B: session structure strip instead of aging — secondary
+      secondary += '<section class="strip" aria-labelledby="hl-structure">';
+      secondary += '<div class="strip-label"><h2 id="hl-structure">Session structure</h2><span class="count">3 segments</span></div>';
+      secondary += '<div class="brief-item"><p class="bi-title">1 · Innovation &amp; Emerging Technology — David Hayes (20 min)</p><p class="bi-why">Standing opening block.</p></div>';
+      secondary += '<div class="brief-item"><p class="bi-title">2 · Presentations</p><p class="bi-why">Sarah Chen and Tom Riley present — 10 minutes each.</p></div>';
+      secondary += '<div class="brief-item"><p class="bi-title">3 · Group Solutioning &amp; Review</p><p class="bi-why">Two topics: research intake path, Q4 governance candidates.</p></div>';
+      secondary += "</section>";
+    }
+
+    // NEXT SESSION — secondary
+    var nxt = state.track === "A" ? MEETING_B : MEETING_A;
+    secondary += '<section class="strip" aria-labelledby="hl-next">';
+    secondary += '<div class="strip-label"><h2 id="hl-next">Next session</h2><span class="count">Track ' + esc(nxt.track) + "</span></div>";
+    secondary += '<div class="next-session">';
+    secondary += '<p class="ns-kicker">' + esc(nxt.trackWord) + "</p>";
+    secondary += "<h3>" + esc(nxt.name) + "</h3>";
+    secondary += "<p><strong>" + esc(nxt.dateLine) + "</strong> · " + esc(nxt.timeLine) + " · " + esc(nxt.deadline) + "</p>";
+    if (nxt.track === "B") {
+      secondary += '<p style="margin-top:6px;">Opens with the 20-minute innovation block, then presenter slots, then group solutioning. Broader audience than Track A.</p>';
+    } else {
+      secondary += '<p style="margin-top:6px;">Decisioning forum: submitted topics, funding approvals, and ratification of escalated research items.</p>';
+    }
+    secondary += "</div></section>";
+
+    $("panel-headlines").innerHTML =
+      '<div class="hl-grid">' +
+        '<div class="hl-col hl-primary">' + primary + "</div>" +
+        '<div class="hl-col hl-secondary">' + secondary + "</div>" +
+      "</div>";
+  }
+
+  /* ============ AGENDA ============ */
+  function rowMeta(it) {
+    var parts = [];
+    parts.push("<span>" + statusSpan(it.status) + "</span>");
+    if (it.presenter && !it.owner) parts.push("<span>Presenter: " + esc(nameOf(it.presenter)) + "</span>");
+    if (it.owner) parts.push("<span>Owner: " + esc(nameOf(it.owner)) + "</span>");
+    if (!it.owner && !it.presenter) parts.push('<span class="flag-adv">Owner missing</span>');
+    if (it.timebox) parts.push('<span class="timebox">' + it.timebox + " min</span>");
+    if (it.due && !it.overdue) parts.push('<span>Due date <span class="due-plain">' + esc(it.due) + "</span></span>");
+    if (it.due && it.overdue) parts.push('<span class="due-over">Due date ' + esc(it.due) + " — overdue</span>");
+    if (!it.due && it.missing && it.missing.indexOf("Due date") >= 0) parts.push('<span class="flag-adv">Due date missing</span>');
+    return parts.join("");
+  }
+  function rowFlags(it) {
+    var f = [];
+    if (it.carried && it.carried.length >= 2) f.push('<span class="flag-age">Carried &times;' + it.carried.length + " — third appearance</span>");
+    else if (it.carried && it.carried.length) f.push('<span class="flag-age">Carried &times;' + it.carried.length + "</span>");
+    if (it.parked) f.push('<span class="flag-adv">Parked — ' + esc(it.parked.reason) + "</span>");
+    if (it.smeNeeded && (!it.smeEmails || !it.smeEmails.length)) f.push('<span class="flag-adv">SMEs needed — none named</span>');
+    if (canEditOwnDraft(it)) f.push('<span class="flag-mine">Your draft — editable until publish</span>');
+    if (it.decided) f.push('<span style="color:var(--ok);font-weight:600;">Decided ' + esc(it.decided.on) + "</span>");
+    return f.length ? '<p class="flagline">' + f.join(" &nbsp;·&nbsp; ") + "</p>" : "";
+  }
+  function docketRow(it, n) {
+    return (
+      '<button class="docket-row" data-item="' + it.id + '">' +
+        '<span class="num" aria-hidden="true">' + (n < 10 ? "0" + n : n) + "</span>" +
+        "<span>" +
+          '<span class="dr-type">' + esc(it.type) + "</span>" +
+          '<p class="dr-title">' + esc(it.title) + "</p>" +
+          '<div class="dr-meta">' + rowMeta(it) + "</div>" +
+          rowFlags(it) +
+        "</span>" +
+      "</button>"
+    );
+  }
+  function renderAgenda() {
+    var m = meeting();
+    var agendaStatus = agendaPublished() ? "Published" : m.agendaStatus;
+    var html = '<div class="docket-toolbar">';
+    html += '<h2 class="dt-title">' + (state.track === "A" ? "The docket" : "The session") + "</h2>";
+    html += '<span class="dt-meta">' + items().length + " items · " + esc(agendaStatus) + "</span>";
+    html += "</div>";
+
+    /* G4 — time budget, one plain line. Sums Ready items' timeboxes only;
+       Deferred / Parked / Decided excluded from the budget. */
+    var allocated = 0;
+    items().forEach(function (it) {
+      if (it.status === "Ready" && it.timebox) allocated += it.timebox;
+    });
+    if (state.track === "B") allocated += 20; // standing innovation block, not an item card
+    html += '<p class="budget-line"><strong>Allocated ' + allocated + " of 60 min</strong> · Ready items&rsquo; timeboxes" +
+      (state.track === "B" ? " + the 20-minute standing block" : "") +
+      " · Deferred, Parked and Decided items excluded</p>";
+
+    html += '<p style="margin:0 0 16px;">' + submitAffordance() + "</p>";
+
+    if (state.track === "A") {
+      html += '<div class="docket">';
+      ITEMS_A.forEach(function (it, i) { html += docketRow(it, i + 1); });
+      html += "</div>";
+    } else {
+      html += '<div class="segment-head"><h3>1 · Innovation &amp; Emerging Technology — David Hayes (20 min)</h3><p>Standing opening block. No card required — David presents.</p></div>';
+      html += '<div class="segment-head"><h3>2 · Presentations</h3><p>Attendee and invited presenters — new concepts, tools, and processes.</p></div>';
+      html += '<div class="docket">';
+      var n = 0;
+      ITEMS_B.filter(function (x) { return x.segment === "present"; }).forEach(function (it) { n++; html += docketRow(it, n); });
+      html += "</div>";
+      html += '<div class="segment-head"><h3>3 · Group Solutioning &amp; Review</h3><p>Questions, problems for group solutioning, and ideas headed for governance approval.</p></div>';
+      html += '<div class="docket">';
+      ITEMS_B.filter(function (x) { return x.segment === "solution"; }).forEach(function (it) { n++; html += docketRow(it, n); });
+      html += "</div>";
+    }
+    $("panel-agenda").innerHTML = html;
+  }
+
+  /* ============ TRACKING ============ */
+  function renderTracking() {
+    var html = "";
+
+    // Q1 — what needs me (primary)
+    html += '<section class="tq tq-primary" id="tqsec-1" aria-labelledby="tq1">';
+    html += '<span class="tq-label">Tracking · 1 of 5</span><h2 class="tq-q" id="tq1">What needs me?</h2>';
+    var ny = needsYou();
+    if (ny.length) {
+      ny.forEach(function (n) { html += needsYouRow(n); });
+    } else {
+      html += '<p class="tq-empty">Nothing on this docket is assigned to you right now.</p>';
+    }
+    html += "</section>";
+
+    // Q2 — blocked or aging
+    html += '<section class="tq" aria-labelledby="tq2">';
+    html += '<span class="tq-label">Tracking · 2 of 5</span><h2 class="tq-q" id="tq2">What&rsquo;s blocked or aging?</h2>';
+    if (state.track === "A") {
+      html +=
+        '<button class="brief-item" data-item="a6"><p class="bi-title">Vendor pen-test findings for agent gateway</p>' +
+        '<div class="bi-sub"><span>' + statusSpan("Deferred") + '</span><span class="due-over">Due date Jul 10, 2026 — overdue</span></div></button>';
+      html +=
+        '<button class="brief-item" data-item="a4"><p class="bi-title">Third-party model risk framework</p>' +
+        '<div class="bi-sub"><span class="flag-age">Carried &times;2 — third appearance</span><span>' + statusSpan("Ready") + "</span></div></button>";
+      html +=
+        '<button class="brief-item" data-item="a7"><p class="bi-title">Slack AI assistant rollout</p>' +
+        '<div class="bi-sub"><span>' + statusSpan("Parked") + "</span><span>Review date Aug 1, 2026</span></div></button>";
+    } else {
+      html += '<p class="tq-empty">Nothing blocked or aging on this session.</p>';
+    }
+    html += "</section>";
+
+    // Q3 — decided, did it stick
+    html += '<section class="tq" aria-labelledby="tq3">';
+    html += '<span class="tq-label">Tracking · 3 of 5</span><h2 class="tq-q" id="tq3">What did we decide — and did it stick?</h2>';
+    if (state.track === "A") {
+      html +=
+        '<button class="brief-item" data-item="a8"><p class="bi-title">Prompt-injection incident response runbook</p>' +
+        '<div class="bi-sub"><span>' + statusSpan("Decided") + " Jul 3, 2026</span></div>" +
+        '<p class="bi-why">Follow-up open: <strong>Publish runbook to security wiki</strong> — Owner Mike Jones · Due date Jul 24, 2026.</p></button>';
+      html += '<p class="strip-note" style="padding-top:10px;">The full decisions log joins this view when the register wiring lands.</p>';
+    } else {
+      html += '<p class="tq-empty">Research sessions record escalations, not decisions. Decisions live on Track A.</p>';
+    }
+    html += "</section>";
+
+    // Q4 — readiness
+    html += '<section class="tq" aria-labelledby="tq4">';
+    html += '<span class="tq-label">Tracking · 4 of 5</span><h2 class="tq-q" id="tq4">Is this agenda ready?</h2>';
+    if (state.track === "A") {
+      /* G2 — readiness counts pre-decision Decision Required items only */
+      var scope = decisionScope();
+      var readyDec = scope.filter(fieldsReady).length;
+      var flagged = items().filter(function (it) { return advisoryFlags(it).length; }).length;
+      html += '<div class="readiness-grid">' +
+        '<div class="rg-cell"><span class="n">' + items().length + '</span><span class="l">Items</span></div>' +
+        '<div class="rg-cell"><span class="n">' + scope.length + '</span><span class="l">Decision items pending</span></div>' +
+        '<div class="rg-cell"><span class="n">' + readyDec + '</span><span class="l">Ready to publish</span></div>' +
+        '<div class="rg-cell warned"><span class="n">' + flagged + '</span><span class="l">Advisory flags</span></div>' +
+      "</div>";
+      html += '<p class="strip-note">Readiness counts pre-decision Decision Required items only — Deferred, Parked and Decided items are excluded here and surface under Aging &amp; carried or Recently decided.</p>';
+      html +=
+        '<button class="brief-item" data-item="a2"><p class="bi-title">Agent telemetry retention policy</p>' +
+        '<div class="bi-sub"><span class="flag-adv">Owner missing</span><span class="flag-adv">Due date missing</span><span class="flag-adv">SMEs needed — none named</span></div>' +
+        '<p class="bi-why">Advisory now; publishing is blocked until decision-required items carry Owner, Decision needed, and Due date. The SME gap is advisory only.</p></button>';
+    } else {
+      html += '<p class="tq-empty">All four submitted items are Ready. Segment structure is derived automatically.</p>';
+    }
+    html += "</section>";
+
+    // Q5 — provenance
+    html += '<section class="tq" aria-labelledby="tq5">';
+    html += '<span class="tq-label">Tracking · 5 of 5</span><h2 class="tq-q" id="tq5">Where did it come from?</h2>';
+    if (state.track === "A") {
+      html += '<button class="brief-item" data-item="a4"><p class="bi-title">Third-party model risk framework</p>' +
+        '<p class="bi-why">Escalated from Research, then carried across two governance cycles:</p></button>';
+      html += '<div class="lineage-trail" aria-label="Carry-forward lineage">' +
+        '<span class="node">Jun 19, 2026</span><span class="arrow" aria-hidden="true">&rarr;</span>' +
+        '<span class="node">Jul 3, 2026</span><span class="arrow" aria-hidden="true">&rarr;</span>' +
+        '<span class="node current">Jul 17, 2026 · current</span>' +
+      "</div>";
+      html += '<p class="strip-note" style="padding-top:10px;">Lineage renders from carry-forward records. The full research &rarr; escalation &rarr; decision chain joins as those stages come online.</p>';
+    } else {
+      html += '<p class="tq-empty">Items that reach consensus here are escalated to Track A with lineage attached.</p>';
+    }
+    html += "</section>";
+
+    $("panel-tracking").innerHTML = html;
+  }
+
+  /* ============ SHEET ============ */
+  function openSheet(id) {
+    var it = findItem(id);
+    if (!it) return;
+    state.lastFocus = document.activeElement;
+
+    $("sheet-type").textContent = it.type + " · Track " + (it.id.charAt(0) === "a" ? "A" : "B");
+    $("sheet-title").textContent = it.title;
+
+    var b = "";
+
+    // status line
+    b += '<div class="sheet-statusline">';
+    b += "<span>" + statusSpan(it.status) + "</span>";
+    if (it.timebox) b += '<span class="timebox">' + it.timebox + " min timebox</span>";
+    if (it.due && !it.overdue) b += '<span>Due date <span class="due-plain">' + esc(it.due) + "</span></span>";
+    if (it.due && it.overdue) b += '<span class="due-over">Due date ' + esc(it.due) + " — overdue</span>";
+    b += "</div>";
+
+    // flags
+    var flags = "";
+    if (it.missing && it.missing.length) flags += '<span class="sf adv">Advisory: missing ' + it.missing.join(" and ") + " — required before this agenda can be published.</span>";
+    if (it.smeNeeded && (!it.smeEmails || !it.smeEmails.length)) flags += '<span class="sf adv">Advisory: SMEs needed but none named yet.</span>';
+    if (it.carried && it.carried.length >= 2) flags += '<span class="sf adv">Carried forward twice — this is its third appearance on a docket.</span>';
+    if (it.ownDraft) {
+      flags += '<span class="sf mine">Your draft. ' + (agendaPublished()
+        ? "The agenda is published — drafts are locked."
+        : "Editable until the agenda is published." + (submissionsOpen() ? "" : " New submissions have closed, but your draft stays open.")) + "</span>";
+    }
+    if (flags) b += '<div class="sheet-flags">' + flags + "</div>";
+
+    // decided block
+    if (it.decided) {
+      b += '<div class="decided-block"><span class="kv-k kv-k-ok" style="display:block;font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ok);margin-bottom:3px;">Decided ' + esc(it.decided.on) + "</span>" + esc(it.decided.summary) + "</div>";
+    }
+    // parked block
+    if (it.parked) {
+      b += '<div class="park-block"><span style="display:block;font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--warn);margin-bottom:3px;">Parked</span>' +
+        "Reason: " + esc(it.parked.reason) + "<br/>Recommended destination: <strong>" + esc(it.parked.destination) + "</strong><br/>Review date: <strong>" + esc(it.parked.review) + "</strong></div>";
+    }
+
+    // people
+    b += '<div class="sheet-sec"><h3>People</h3><dl style="margin:0;">';
+    b += '<div class="fieldrow"><dt>Owner</dt><dd>' + (it.owner ? esc(nameOf(it.owner)) + ' <span class="em">' + esc(it.owner) + "</span>" : '<span class="flag-adv">Missing</span>') + "</dd></div>";
+    if (it.presenter) b += '<div class="fieldrow"><dt>Presenter</dt><dd>' + esc(nameOf(it.presenter)) + ' <span class="em">' + esc(it.presenter) + "</span></dd></div>";
+    b += '<div class="fieldrow"><dt>Submitted by</dt><dd>' + esc(nameOf(it.submittedBy)) + ' <span class="em">' + esc(it.submittedBy) + "</span></dd></div>";
+    if (it.smeNeeded) {
+      b += '<div class="fieldrow"><dt>SMEs</dt><dd>' + (it.smeEmails && it.smeEmails.length
+        ? it.smeEmails.map(function (e) { return esc(nameOf(e)) + ' <span class="em">' + esc(e) + "</span>"; }).join(", ")
+        : '<span class="flag-adv">Needed — none named yet</span>') + "</dd></div>";
+    }
+    if (it.impacted) b += '<div class="fieldrow"><dt>Impacted teams</dt><dd>' + it.impacted.map(esc).join(", ") + "</dd></div>";
+    b += "</dl></div>";
+
+    // decision needed (operational vocabulary — SPEC §21)
+    b += '<div class="sheet-sec"><h3>Decision needed</h3>';
+    if (it.decisionNeeded) {
+      b += '<div class="kv-block kv-decision"><span class="kv-v">' + esc(it.decisionNeeded) + "</span></div>";
+    } else if (it.noDecision) {
+      b += '<div class="kv-block"><span class="kv-v">No decision required — awareness only.</span></div>';
+    } else if (it.type === "Decision Required") {
+      b += '<div class="kv-block"><span class="kv-v"><span class="flag-adv">Missing</span> — required before this agenda can be published.</span></div>';
+    }
+    if (it.desired) b += '<div class="kv-block"><span class="kv-k">Desired outcome</span><span class="kv-v">' + esc(it.desired) + "</span></div>";
+    b += "</div>";
+
+    // context + structured record
+    var hasRecord = it.context || it.why || it.options || it.recommendation || it.risks || it.dependencies || it.materials;
+    if (hasRecord) {
+      b += '<div class="sheet-sec"><h3>Context</h3>';
+      if (it.context) b += '<div class="kv-block"><span class="kv-v">' + esc(it.context) + "</span></div>";
+      if (it.why) b += '<div class="kv-block"><span class="kv-k">Why it matters</span><span class="kv-v">' + esc(it.why) + "</span></div>";
+      if (it.options) b += '<div class="kv-block"><span class="kv-k">Options</span><span class="kv-v">' + esc(it.options) + "</span></div>";
+      if (it.recommendation) b += '<div class="kv-block"><span class="kv-k">Recommendation</span><span class="kv-v">' + esc(it.recommendation) + "</span></div>";
+      if (it.risks) b += '<div class="kv-block"><span class="kv-k">Risks</span><span class="kv-v">' + esc(it.risks) + "</span></div>";
+      if (it.dependencies) b += '<div class="kv-block"><span class="kv-k">Dependencies</span><span class="kv-v">' + esc(it.dependencies) + "</span></div>";
+      if (it.materials) b += '<div class="kv-block"><span class="kv-k">Supporting materials</span><span class="kv-v"><a class="mat-link" href="' + esc(it.materials.url) + '">' + esc(it.materials.label) + "</a></span></div>";
+      b += "</div>";
+    }
+
+    // follow-up
+    if (it.followUp) {
+      b += '<div class="sheet-sec"><h3>Follow-up</h3><div class="kv-block"><span class="kv-v"><strong>' + esc(it.followUp.text) + "</strong></span>" +
+        '<div class="fieldrow" style="padding-top:8px;"><dt>Owner</dt><dd>' + esc(nameOf(it.followUp.owner)) + ' <span class="em">' + esc(it.followUp.owner) + "</span></dd></div>" +
+        '<div class="fieldrow"><dt>Due date</dt><dd>' + esc(it.followUp.due) + "</dd></div></div></div>";
+    }
+
+    // lineage
+    if (it.carried && it.carried.length) {
+      b += '<div class="sheet-sec sheet-lineage"><h3>Lineage</h3><div class="lineage-trail">';
+      it.carried.forEach(function (d) {
+        b += '<span class="node">' + esc(d) + '</span><span class="arrow" aria-hidden="true">&rarr;</span>';
+      });
+      b += '<span class="node current">' + esc(meeting().dateLine.replace("Friday, ", "")) + " · current</span></div>";
+      b += '<p style="font-size:12.5px;color:var(--ink-faint);margin:8px 0 4px;">Each carry clones the item to the next meeting; earlier records are frozen snapshots.</p></div>';
+    }
+
+    // actions: own-draft edit only, pre-Published (A8: no dead affordances).
+    // F3: the gate is agenda_status Published+, NOT the submission deadline —
+    // the Edit affordance survives "submissions closed".
+    if (canEditOwnDraft(it)) {
+      b += '<div class="sheet-actions"><button class="edit-btn" data-edit="' + it.id + '">Edit draft <span aria-hidden="true">&rarr;</span></button></div>';
+    }
+
+    // provenance
+    b += '<p class="sheet-provenance">Created ' + esc(it.created || "—") + " · Updated " + esc(it.updated || "—") + " · Item travels with this meeting&rsquo;s record.</p>";
+
+    $("sheet-body").innerHTML = b;
+    $("sheet").classList.add("open");
+    $("scrim").classList.add("open");
+    $("sheet-close").focus();
+  }
+  function closeSheet() {
+    $("sheet").classList.remove("open");
+    $("scrim").classList.remove("open");
+    if (state.lastFocus && state.lastFocus.focus) state.lastFocus.focus();
+  }
+
+  /* ============ SUBMIT MODAL ============ */
+  var editingId = null;
+  function openSubmit(editId) {
+    editingId = editId || null;
+    var m = meeting();
+    if (editingId) {
+      var it = findItem(editingId);
+      $("modal-kicker").textContent = "Edit your draft";
+      $("modal-title").textContent = "Enrich the record.";
+      $("modal-note").textContent = "Update your Draft any time until the agenda is published. The full structured record (options, recommendation, risks) is edited the same way.";
+      $("f-title").value = it.title;
+      $("f-type").value = it.type;
+      $("f-ask").value = it.decisionNeeded || "";
+      $("modal-submit").textContent = "Save draft";
+    } else {
+      $("modal-kicker").textContent = "Submit an item";
+      $("modal-title").textContent = "File the essentials. Enrich later.";
+      $("modal-note").textContent = "Three fields now. New submissions close " + m.deadlineShort + "; your item lands as a Draft and stays editable until the agenda is published.";
+      $("submit-form").reset();
+      $("modal-submit").textContent = "Submit item";
+    }
+    $("modal-holder").classList.add("open");
+    $("f-title").focus();
+  }
+  function closeSubmit() {
+    $("modal-holder").classList.remove("open");
+    editingId = null;
+  }
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._h);
+    t._h = setTimeout(function () { t.classList.remove("show"); }, 2600);
+  }
+
+  /* ============ TRACK SWITCH (top-level A/B control) ============ */
+  function switchTrack(t) {
+    if (t !== "A" && t !== "B") return;
+    if (state.track === t && state.page === "normal") return;
+    state.track = t;
+    state.page = "normal"; // switching tracks always returns to the live record
+    renderAll();
+    selectTab("headlines");
+  }
+  function updateTrackSwitch() {
+    var a = $("ts-a"), b = $("ts-b");
+    if (!a || !b) return;
+    var onA = state.track === "A";
+    a.setAttribute("aria-selected", onA ? "true" : "false");
+    b.setAttribute("aria-selected", onA ? "false" : "true");
+    a.classList.toggle("on", onA);
+    b.classList.toggle("on", !onA);
+  }
+
+  /* ============ RENDER / STATE ============ */
+  function renderAll() {
+    app.setAttribute("data-track", state.track);
+    updateTrackSwitch();
+    $("page-normal").hidden = state.page !== "normal";
+    $("page-empty").hidden = state.page !== "empty";
+    $("page-error").hidden = state.page !== "error";
+    if (state.page === "empty") {
+      // F5 — role-gated empty state: admins get Create, members get guidance
+      $("empty-admin").hidden = state.role !== "admin";
+      $("empty-member").hidden = state.role !== "member";
+      $("edition-line").textContent = "No active meeting";
+      updateDemoWidget();
+      return;
+    }
+    if (state.page === "error") {
+      $("edition-line").textContent = "Record unavailable";
+      updateDemoWidget();
+      return;
+    }
+    renderMasthead();
+    renderHeadlines();
+    renderAgenda();
+    renderTracking();
+    updateDemoWidget();
+  }
+
+  /* ============ TABS ============ */
+  var TABS = ["headlines", "agenda", "tracking", "guidelines", "cadence"];
+  function selectTab(name) {
+    state.activeTab = name;
+    TABS.forEach(function (t) {
+      var tab = $("tab-" + t), panel = $("panel-" + t);
+      var on = t === name;
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+      panel.hidden = !on;
+    });
+  }
+  TABS.forEach(function (t) {
+    $("tab-" + t).addEventListener("click", function () { selectTab(t); });
+  });
+  // arrow-key tab nav
+  document.querySelector(".tabbar").addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    var i = TABS.indexOf(state.activeTab);
+    var next = e.key === "ArrowRight" ? (i + 1) % TABS.length : (i - 1 + TABS.length) % TABS.length;
+    selectTab(TABS[next]);
+    $("tab-" + TABS[next]).focus();
+  });
+
+  /* ============ EVENT DELEGATION ============ */
+  document.addEventListener("click", function (e) {
+    var cy = e.target.closest("[data-cycle-track]");
+    if (cy) { switchTrack(cy.getAttribute("data-cycle-track")); return; }
+    var tsw = e.target.closest("[data-track-switch]");
+    if (tsw) { switchTrack(tsw.getAttribute("data-track-switch")); return; }
+    var el = e.target.closest("[data-item]");
+    if (el) { openSheet(el.getAttribute("data-item")); return; }
+    var sb = e.target.closest("[data-open-submit]");
+    if (sb) { openSubmit(null); return; }
+    var ed = e.target.closest("[data-edit]");
+    if (ed) { closeSheet(); openSubmit(ed.getAttribute("data-edit")); return; }
+  });
+  $("sheet-close").addEventListener("click", closeSheet);
+  $("scrim").addEventListener("click", closeSheet);
+  $("modal-cancel").addEventListener("click", closeSubmit);
+  $("modal-scrim").addEventListener("click", closeSubmit);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      if ($("modal-holder").classList.contains("open")) closeSubmit();
+      else if ($("sheet").classList.contains("open")) closeSheet();
+    }
+  });
+
+  $("submit-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var title = $("f-title").value.trim();
+    var type = $("f-type").value;
+    var ask = $("f-ask").value.trim();
+    if (!title || !type || !ask) return;
+    if (editingId) {
+      var it = findItem(editingId);
+      it.title = title; it.type = type; it.decisionNeeded = ask; it.updated = "Jul 13, 2026";
+      toast("Draft saved. Enrich the full record any time until the agenda is published.");
+    } else {
+      var arr = items();
+      arr.push({
+        id: (state.track === "A" ? "a" : "b") + (arr.length + 1) + "n",
+        title: title, type: type, status: "Draft",
+        owner: ME, timebox: null, due: null, submittedBy: ME,
+        ownDraft: true, decisionNeeded: ask,
+        segment: "solution",
+        created: "Jul 13, 2026", updated: "Jul 13, 2026"
+      });
+      toast("Submitted as a Draft. Edit it to enrich the record until the agenda is published.");
+    }
+    closeSubmit();
+    renderAll();
+    selectTab(state.activeTab);
+  });
+
+  /* ============ DEMO WIDGET ============ */
+  var PHASE_LABEL = {
+    open: "submissions open",
+    closed: "submissions closed",
+    published: "Published (items locked)"
+  };
+  var PAGE_LABEL = { normal: "normal", empty: "empty (no meeting)", error: "error + retry" };
+  function updateDemoWidget() {
+    $("dw-track").innerHTML = "Track view: <span>" + (state.track === "A" ? "A — Governance" : "B — Research") + "</span>";
+    $("dw-subs").innerHTML = "Agenda: <span>" + PHASE_LABEL[state.phase] + "</span>";
+    $("dw-role").innerHTML = "Role: <span>" + state.role + "</span>";
+    $("dw-empty").innerHTML = "State: <span>" + PAGE_LABEL[state.page] + "</span>";
+  }
+  $("dw-track").addEventListener("click", function () {
+    state.track = state.track === "A" ? "B" : "A";
+    renderAll();
+  });
+  // Cycles the agenda lifecycle: open → closed (deadline passed; drafts still
+  // editable) → published (drafts locked) → open. Demonstrates the F3 edit gate.
+  $("dw-subs").addEventListener("click", function () {
+    state.phase = state.phase === "open" ? "closed" : state.phase === "closed" ? "published" : "open";
+    renderAll();
+  });
+  $("dw-role").addEventListener("click", function () {
+    state.role = state.role === "admin" ? "member" : "admin";
+    renderAll();
+  });
+  // Cycles page-level states: normal → empty → error → normal.
+  $("dw-empty").addEventListener("click", function () {
+    state.page = state.page === "normal" ? "empty" : state.page === "empty" ? "error" : "normal";
+    renderAll();
+  });
+  $("empty-create-btn").addEventListener("click", function () {
+    state.page = "normal";
+    renderAll();
+    toast("Meeting created — the next cycle begins. (Mockup: admin create flow.)");
+  });
+  $("error-retry-btn").addEventListener("click", function () {
+    state.page = "normal";
+    renderAll();
+    toast("Reloaded. The record is current.");
+  });
+
+  /* ============ DEMO API (consumed by the guided tour module) ============ */
+  /* A deliberately small, controlled surface so tour.js can drive the same state
+     machine the sandbox does — no second state engine (Pre-Mortem mitigation #8). */
+  window.DemoAPI = {
+    state: state,
+    render: renderAll,
+    selectTab: selectTab,
+    openSheet: openSheet,
+    closeSheet: closeSheet,
+    openSubmit: openSubmit,
+    closeSubmit: closeSubmit,
+    isModalOpen: function () { return $("modal-holder").classList.contains("open"); },
+    isSheetOpen: function () { return $("sheet").classList.contains("open"); },
+    prefillSubmit: function (f) {
+      $("f-title").value = f.title || "";
+      $("f-type").value = f.type || "";
+      $("f-ask").value = f.ask || "";
+    },
+    submitDemo: function () {
+      var form = $("submit-form");
+      if (form.requestSubmit) form.requestSubmit();
+      else form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+    },
+    /* Restore the demo to a known baseline before/after a tour run. */
+    reset: function () {
+      state.track = "A"; state.phase = "open"; state.role = "admin"; state.page = "normal";
+      renderAll(); selectTab("headlines");
+    }
+  };
+
+  /* ============ INIT ============ */
+  renderAll();
+  selectTab("headlines");
+})();
+
+/* ============================================================================
+   LANDING PAGE ENGINE
+   Self-contained controls for the Research & Governance OS landing page.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var doc = document;
+
+  function qs(sel) { return doc.querySelector(sel); }
+  function qsa(sel) { return Array.prototype.slice.call(doc.querySelectorAll(sel)); }
+
+  function initTourTriggers() {
+    qsa("[data-tour-trigger]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var launch = doc.getElementById("tour-launch");
+        if (launch) launch.click();
+      });
+    });
+  }
+
+  function initReveals() {
+    var items = qsa(".rg-reveal");
+    if (!items.length) return;
+    if (!("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.16 });
+    items.forEach(function (el) { io.observe(el); });
+  }
+
+  function initSystemTabs() {
+    var tabs = qsa("[data-system-tab]");
+    var panels = qsa("[data-system-panel]");
+    var stage = qs("[data-system-stage]");
+    if (!tabs.length || !panels.length || !stage) return;
+
+    function activate(name) {
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute("data-system-tab") === name;
+        tab.classList.toggle("is-active", on);
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      panels.forEach(function (panel) {
+        var on = panel.getAttribute("data-system-panel") === name;
+        panel.classList.toggle("is-active", on);
+        panel.hidden = !on;
+      });
+      stage.setAttribute("data-system-stage", name);
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        activate(tab.getAttribute("data-system-tab"));
+      });
+    });
+  }
+
+  function initMobileSandboxCollapse() {
+    var widget = doc.getElementById("demo-widget");
+    var button = doc.getElementById("dw-collapse");
+    if (!widget || !button || !window.matchMedia || !window.matchMedia("(max-width: 620px)").matches) return;
+    widget.classList.add("collapsed");
+    button.setAttribute("aria-expanded", "false");
+    button.innerHTML = "&plus;";
+    button.setAttribute("aria-label", "Expand sandbox controls");
+  }
+
+  function initHeroRecord() {
+    var chip = doc.getElementById("rg-record-status");
+    var stage = qs(".rg-hero-stage");
+    if (!chip || !stage) return;
+    var lins = Array.prototype.slice.call(stage.querySelectorAll(".rg-lin"));
+    var annots = Array.prototype.slice.call(stage.querySelectorAll("[data-annot]"));
+    var states = [
+      { cls: "is-draft", txt: "Your draft", lin: 1, annot: 0 },
+      { cls: "is-ready", txt: "Ready for review", lin: 2, annot: 1 },
+      { cls: "is-decided", txt: "Decided · Jul 17", lin: 3, annot: 2 }
+    ];
+    function apply(i) {
+      var s = states[i];
+      chip.className = "rg-record-status " + s.cls;
+      chip.textContent = s.txt;
+      lins.forEach(function (l, k) { l.classList.toggle("is-on", k < s.lin); });
+      annots.forEach(function (a, k) { a.classList.toggle("is-hot", k === s.annot); });
+    }
+    var prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduce) {
+      apply(1);
+      annots.forEach(function (a) { a.classList.add("is-hot"); });
+      return;
+    }
+    var idx = 0;
+    apply(0);
+    window.setInterval(function () { idx = (idx + 1) % states.length; apply(idx); }, 2700);
+  }
+
+  function initSystemFlow() {
+    var flow = doc.getElementById("rg-flow");
+    var token = doc.getElementById("rg-flow-token");
+    if (!flow || !token) return;
+    var cards = Array.prototype.slice.call(flow.querySelectorAll(".rg-flow-card"));
+    var feats = Array.prototype.slice.call(flow.querySelectorAll(".rg-flow-feature"));
+    function apply(i) {
+      cards.forEach(function (c, k) { c.classList.toggle("is-hot", k === i); });
+      feats.forEach(function (f, k) { f.classList.toggle("is-hot", k <= i); });
+      var fr = feats[i].getBoundingClientRect();
+      var cr = flow.getBoundingClientRect();
+      token.style.transform = "translate(" + (fr.right - cr.left - 30) + "px, " + (fr.top - cr.top - 14) + "px)";
+    }
+    var prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduce) { apply(2); return; }
+    var i = 0;
+    var kick = function () { apply(i); };
+    apply(0);
+    window.setInterval(function () { i = (i + 1) % 3; apply(i); }, 2600);
+    window.addEventListener("resize", kick);
+  }
+
+  initTourTriggers();
+  initReveals();
+  initSystemTabs();
+  initMobileSandboxCollapse();
+  initHeroRecord();
+  initSystemFlow();
+})();
+/* ============================================================================
+   GUIDED TOUR ENGINE
+   A scripted Next/Back narration that drives the SAME state machine the live
+   sandbox does (via window.DemoAPI — no second state engine, mitigation #8).
+   Mobile-first: the caption is a bottom sheet; the spotlight scrolls its target
+   into the upper third so the caption never covers it (mitigation #3).
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var API = window.DemoAPI;
+  if (!API) return; // defensive: app.js must have loaded first
+
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $("tour-root");
+  var scrim = $("tour-scrim");
+  var spot = $("tour-spot");
+  var caption = $("tour-caption");
+  var intro = $("tour-intro");
+  var launch = $("tour-launch");
+
+  var prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var submittedThisSession = false; // keep re-runs from stacking duplicate drafts
+
+  /* ---- Tour script: intro panel (in HTML) then these content beats ---- */
+  var STEPS = [
+    {
+      key: "masthead", kicker: "Track A · Governance",
+      title: "The whole meeting, in one honest line",
+      body: "The masthead computes readiness live: how many items still need a decision, how many are ready to publish, what carries a flag. No one hand-writes it. It is true the moment you open the record.",
+      target: "#masthead",
+      setup: function () { API.state.track = "A"; API.state.phase = "open"; API.state.role = "admin"; API.state.page = "normal"; API.render(); API.selectTab("headlines"); }
+    },
+    {
+      key: "needs", kicker: "The exec moment",
+      title: "“What needs me?” Answered before you ask.",
+      body: "The record already knows your slice: items you own, drafts you filed, decisions waiting on you. An exec skims this in under a minute and walks in knowing exactly where to lean.",
+      target: "#strip-needs",
+      setup: function () { API.selectTab("headlines"); }
+    },
+    {
+      key: "submit", kicker: "30-second submit", overlay: true,
+      title: "File the essentials. Enrich later.",
+      body: "Adoption lives or dies on friction. Three fields: a title, a type, the decision needed. That puts you on the agenda as a Draft. Owner, options and risks come later, never up front.",
+      setup: function () {
+        API.openSubmit(null);
+        API.prefillSubmit({
+          title: "Approve sandbox access policy for agent builders",
+          type: "Decision Required",
+          ask: "Approve the self-serve sandbox access policy so builders can provision agent workspaces without a per-request ticket."
+        });
+      },
+      onNext: function () {
+        if (!submittedThisSession) { API.submitDemo(); submittedThisSession = true; }
+        else API.closeSubmit();
+      },
+      onLeave: function () { if (API.isModalOpen()) API.closeSubmit(); }
+    },
+    {
+      key: "tracking", kicker: "The standing cockpit",
+      title: "Five questions, always answered",
+      body: "What needs me · what is blocked or aging · what did we decide and did it stick · is this agenda ready · where did it come from. Overdue and twice-carried items surface themselves, so nothing rots in silence.",
+      target: "#tqsec-1",
+      setup: function () { API.selectTab("tracking"); }
+    },
+    {
+      key: "decided", kicker: "Accountability", overlay: true,
+      title: "Every decision keeps its paper trail",
+      body: "Open any item and its lineage is right there: where it came from, how many meetings it has been carried, who owns it now. Decisions stop evaporating; they leave a trail you can point back to.",
+      setup: function () { API.selectTab("tracking"); API.openSheet("a4"); },
+      onLeave: function () { if (API.isSheetOpen()) API.closeSheet(); }
+    },
+    {
+      key: "trackB", kicker: "Track B · Research",
+      title: "A second forum, its own identity",
+      body: "Research discovers; Governance decides. One living record, a distinct copper identity, structured for presentations and group solutioning. Ideas that mature here escalate into Governance, carrying their lineage with them.",
+      target: "#masthead",
+      setup: function () { API.state.track = "B"; API.render(); API.selectTab("headlines"); }
+    }
+  ];
+
+  var idx = -1;      // -1 = not in step flow (intro or closed)
+  var lastFocus = null;
+
+  /* ---- Dots ---- */
+  function buildDots() {
+    var dots = $("tc-dots");
+    dots.innerHTML = "";
+    for (var i = 0; i < STEPS.length; i++) {
+      var d = document.createElement("span");
+      d.className = "dot";
+      dots.appendChild(d);
+    }
+  }
+  function paintDots(active) {
+    var nodes = $("tc-dots").children;
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].className = "dot" + (i === active ? " on" : i < active ? " done" : "");
+    }
+  }
+
+  /* ---- Spotlight positioning ---- */
+  function scrollTargetIntoView(el) {
+    var rect = el.getBoundingClientRect();
+    var desiredTop = window.innerHeight * 0.16;
+    var delta = rect.top - desiredTop;
+    // Only scroll when it meaningfully helps (avoid tiny jitters).
+    if (Math.abs(delta) > 8) {
+      window.scrollBy({ top: delta, behavior: prefersReduce ? "auto" : "auto" });
+    }
+  }
+  function positionSpot(el) {
+    var pad = 8;
+    var r = el.getBoundingClientRect();
+    var top = Math.max(6, r.top - pad);
+    var left = Math.max(6, r.left - pad);
+    var width = Math.min(window.innerWidth - left - 6, r.width + pad * 2);
+    var height = r.height + pad * 2;
+    spot.style.top = top + "px";
+    spot.style.left = left + "px";
+    spot.style.width = width + "px";
+    spot.style.height = height + "px";
+  }
+
+  /* ---- Caption ---- */
+  function renderCaption(step, i) {
+    $("tc-step").textContent = (i + 1) + " / " + STEPS.length;
+    $("tc-kicker").textContent = step.kicker || "";
+    $("tc-title").textContent = step.title;
+    $("tc-body").innerHTML = step.body;
+    $("tc-back").disabled = i === 0;
+    $("tc-back").hidden = false;
+    var next = $("tc-next");
+    next.hidden = false;
+    next.innerHTML = (i === STEPS.length - 1) ? "Finish <span aria-hidden=\"true\">→</span>" : "Next <span aria-hidden=\"true\">→</span>";
+    paintDots(i);
+    caption.hidden = false;
+  }
+
+  /* ---- Step transition ---- */
+  function goToStep(i) {
+    // leave the current step cleanly
+    if (idx >= 0 && idx < STEPS.length && STEPS[idx].onLeave) STEPS[idx].onLeave();
+
+    if (i >= STEPS.length) { renderCompletion(); return; }
+    idx = i;
+    var step = STEPS[i];
+
+    // ensure not in intro
+    root.classList.remove("intro");
+
+    if (step.overlay) {
+      root.classList.add("no-spot");
+    } else {
+      root.classList.remove("no-spot");
+    }
+
+    if (step.setup) step.setup();
+
+    renderCaption(step, i);
+
+    if (!step.overlay && step.target) {
+      var el = document.querySelector(step.target);
+      if (el) {
+        scrollTargetIntoView(el);
+        // measure AFTER scroll + render settle
+        requestAnimationFrame(function () {
+          var el2 = document.querySelector(step.target);
+          if (el2) positionSpot(el2);
+        });
+      }
+    }
+  }
+
+  function renderCompletion() {
+    idx = STEPS.length;
+    root.classList.add("no-spot");
+    root.classList.remove("intro");
+    API.reset(); // back to a clean Track A baseline for the sandbox
+    $("tc-step").textContent = "Done";
+    $("tc-kicker").textContent = "That is the record";
+    $("tc-title").textContent = "Now drive it yourself";
+    $("tc-body").innerHTML = "Everything you saw is live in this prototype. Open the <strong>Live sandbox</strong> in the corner and steer it: switch tracks, change role, move the agenda through its lifecycle.";
+    paintDots(STEPS.length);
+    $("tc-back").hidden = false;
+    $("tc-back").disabled = false;
+    var next = $("tc-next");
+    next.hidden = false;
+    next.innerHTML = "Explore it →";
+    caption.hidden = false;
+  }
+
+  /* ---- Public flow ---- */
+  function startTour() {
+    lastFocus = document.activeElement;
+    document.body.classList.add("tour-on");
+    root.hidden = false;
+    root.classList.add("intro");
+    root.classList.add("no-spot");
+    caption.hidden = true;
+    idx = -1;
+    submittedThisSession = false;
+    // focus the intro's primary action
+    requestAnimationFrame(function () { var b = $("ti-start"); if (b) b.focus(); });
+  }
+  function beginSteps() {
+    root.classList.remove("intro");
+    buildDots();
+    goToStep(0);
+  }
+  function next() {
+    if (idx >= STEPS.length) { exitTour(); return; }   // completion → explore
+    if (idx >= 0 && STEPS[idx].onNext) STEPS[idx].onNext();
+    goToStep(idx + 1);
+  }
+  function back() {
+    if (idx <= 0) return;
+    if (idx >= 0 && idx < STEPS.length && STEPS[idx].onLeave) STEPS[idx].onLeave();
+    goToStep(idx - 1);
+  }
+  function exitTour() {
+    if (idx >= 0 && idx < STEPS.length && STEPS[idx].onLeave) STEPS[idx].onLeave();
+    if (API.isModalOpen()) API.closeSubmit();
+    if (API.isSheetOpen()) API.closeSheet();
+    root.hidden = true;
+    root.classList.remove("intro", "no-spot");
+    caption.hidden = true;
+    document.body.classList.remove("tour-on");
+    idx = -1;
+    API.reset(); // return the sandbox to a clean Track A / Headlines baseline
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+    else if (launch) launch.focus();
+  }
+
+  /* ---- Wiring ---- */
+  launch.addEventListener("click", startTour);
+  $("ti-start").addEventListener("click", beginSteps);
+  $("ti-skip").addEventListener("click", exitTour);
+  $("tc-next").addEventListener("click", next);
+  $("tc-back").addEventListener("click", back);
+  $("tc-exit").addEventListener("click", exitTour);
+
+  // keyboard: arrows navigate, Escape exits (only while a tour is running)
+  document.addEventListener("keydown", function (e) {
+    if (root.hidden) return;
+    if (e.key === "Escape") { e.stopPropagation(); exitTour(); return; }
+    // don't hijack arrow keys while the user is in a form field (e.g. the live-submit modal)
+    var t = e.target;
+    var typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
+    if (typing) return;
+    if (e.key === "ArrowRight") { if (idx >= 0) next(); }
+    else if (e.key === "ArrowLeft") { if (idx > 0) back(); }
+  }, true);
+
+  // reposition the spotlight on resize/scroll during a spotlight step
+  var repositionPending = false;
+  function reposition() {
+    if (root.hidden || idx < 0 || idx >= STEPS.length) return;
+    var step = STEPS[idx];
+    if (step.overlay || !step.target) return;
+    var el = document.querySelector(step.target);
+    if (el) positionSpot(el);
+  }
+  window.addEventListener("resize", function () {
+    if (repositionPending) return;
+    repositionPending = true;
+    requestAnimationFrame(function () { repositionPending = false; reposition(); });
+  });
+
+  /* ---- Sandbox collapse (mobile declutter, mitigation #3) ---- */
+  var collapseBtn = $("dw-collapse");
+  var widget = $("demo-widget");
+  if (collapseBtn && widget) {
+    collapseBtn.addEventListener("click", function () {
+      var collapsed = widget.classList.toggle("collapsed");
+      collapseBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      collapseBtn.innerHTML = collapsed ? "&plus;" : "&minus;";
+      collapseBtn.setAttribute("aria-label", collapsed ? "Expand sandbox controls" : "Collapse sandbox controls");
+    });
+  }
+})();
+</script>
+</body>
+</html>
