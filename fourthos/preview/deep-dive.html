@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FourthOS — Flagship Deep Dive | Connector Ecosystem</title>
+  <meta name="description" content="A teaching deep dive on the FourthOS Connector Ecosystem: the week the portfolio became a program, the spike gate that de-risks a build before it starts, and how the mold pays off — 16 July 2026.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:#0A1929; --bg-secondary:#0F2A3F; --bg-tertiary:#153650;
+      --bg-midnight:#051526; --bg-card:rgba(15,42,63,0.55);
+      --text-primary:#FFFFFF; --text-secondary:#CFD1D1; --text-muted:#8DA8C4;
+      --accent:#6FB4E3; --teal:#00B69F; --sunrise:#FAA51A; --danger:#D81632; --purple:#9678B6;
+      --fourth-deep-blue:#0C4A7D;
+      --vignette:linear-gradient(25deg,#00B69F 0%,#6FB4E3 40%,#0C4A7D 100%);
+      --border:rgba(111,180,227,0.10); --border-accent:rgba(111,180,227,0.22);
+      --font-display:'Poppins',sans-serif; --font-body:'Poppins',sans-serif; --font-mono:'JetBrains Mono',monospace;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+    }
+    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-size:18px; scroll-padding-top:80px; }
+    body {
+      font-family:var(--font-body); background:var(--bg-primary); color:var(--text-primary);
+      line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    }
+    a { color:inherit; text-decoration:none; }
+    .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
+    .wrap-wide { max-width:1160px; }
+    :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
+
+    .topbar {
+      position:sticky; top:0; z-index:50;
+      background:rgba(5,21,38,0.82); backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner {
+      display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap;
+      padding:0.7rem 0;
+    }
+    .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; letter-spacing:0.01em; }
+    .brand svg { width:26px; height:26px; flex-shrink:0; display:block; }
+    .brand .wordmark { font-size:1.02rem; }
+    .brand .wordmark b { font-weight:700; }
+    .brand .wordmark .os { color:var(--teal); font-weight:700; }
+    .crumbs { display:flex; align-items:center; gap:0.45rem; font-size:0.82rem; color:var(--text-muted); flex-wrap:wrap; }
+    .crumbs a { color:var(--text-secondary); transition:color .2s; }
+    .crumbs a:hover { color:var(--accent); }
+    .crumbs .sep { color:var(--text-muted); opacity:0.6; }
+    .crumbs .current { color:var(--text-primary); font-weight:500; }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem 1.25rem; flex-wrap:wrap; }
+    .tabs { display:flex; align-items:center; gap:0.25rem; }
+    .tabs a {
+      font-size:0.82rem; font-weight:500; color:var(--text-secondary);
+      padding:0.35rem 0.7rem; border-radius:8px; transition:color .2s, background .2s;
+    }
+    .tabs a:hover { color:var(--text-primary); background:rgba(111,180,227,0.08); }
+    body[data-tier="hub"]        .tab-hub,
+    body[data-tier="briefing"]   .tab-briefing,
+    body[data-tier="deep-dive"]  .tab-deepdive {
+      color:var(--teal); background:rgba(0,182,159,0.12);
+    }
+    .wkswitch { position:relative; display:inline-flex; align-items:center; }
+    .wkswitch select {
+      appearance:none; -webkit-appearance:none;
+      font-family:var(--font-body); font-size:0.8rem; font-weight:500; color:var(--text-secondary);
+      background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:999px;
+      padding:0.4rem 2rem 0.4rem 0.95rem; cursor:pointer; transition:border-color .2s, color .2s;
+    }
+    .wkswitch select:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); }
+    .wkswitch::after {
+      content:'▾'; position:absolute; right:0.85rem; top:50%; transform:translateY(-50%);
+      pointer-events:none; color:var(--accent); font-size:0.7rem;
+    }
+
+    .tab-wrap { position:relative; display:inline-flex; }
+    .tab-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%); min-width:225px; display:none; flex-direction:column; gap:0.1rem; z-index:60; background:rgba(5,21,38,0.97); backdrop-filter:blur(14px); border:1px solid var(--border-accent); border-radius:12px; padding:0.55rem; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
+    .tab-wrap:hover .tab-menu, .tab-wrap:focus-within .tab-menu { display:flex; }
+    .tab-menu .mh { font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); padding:0.3rem 0.7rem 0.2rem; }
+    .tab-menu a { display:block; font-size:0.82rem; font-weight:500; color:var(--text-secondary); padding:0.4rem 0.7rem; border-radius:8px; white-space:nowrap; transition:color .15s, background .15s; }
+    .tab-menu a:hover { color:var(--text-primary); background:rgba(111,180,227,0.10); }
+    #thesis, #payoff { scroll-margin-top:80px; }
+    @media (max-width:720px) { .tab-menu { display:none !important; } }
+
+    .pager { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
+    .pager a {
+      display:inline-flex; align-items:center; gap:0.5rem; font-size:0.9rem; font-weight:500;
+      color:var(--text-secondary); border:1px solid var(--border-accent); border-radius:10px;
+      padding:0.7rem 1.1rem; transition:color .2s, border-color .2s, background .2s;
+    }
+    .pager a:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); background:rgba(0,182,159,0.06); }
+
+    .progress { position:fixed; top:0; left:0; height:3px; width:0%; z-index:60; background:linear-gradient(90deg,var(--accent),var(--teal)); transition:width .15s ease-out; }
+
+    .rag { display:inline-flex; align-items:center; gap:0.55rem; padding:0.4rem 0.9rem; border-radius:999px; font-size:0.82rem; font-weight:600; border:1px solid; }
+    .rag .pip { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .rag-yellow { color:var(--sunrise); border-color:rgba(250,165,26,0.45); background:rgba(250,165,26,0.10); }
+    .rag-yellow .pip { background:var(--sunrise); box-shadow:0 0 8px rgba(250,165,26,0.55); }
+    .rag-green { color:var(--teal); border-color:rgba(0,182,159,0.45); background:rgba(0,182,159,0.10); }
+    .rag-green .pip { background:var(--teal); box-shadow:0 0 8px rgba(0,182,159,0.55); }
+
+    .hero { position:relative; overflow:hidden; background:linear-gradient(160deg,#051526 0%,#0A1929 60%,#0F2A3F 100%); padding:clamp(4rem,9vw,6.5rem) 0 clamp(3rem,6vw,5rem); border-bottom:1px solid var(--border); }
+    .hero::before { content:''; position:absolute; inset:0; background:var(--vignette); opacity:0.13; pointer-events:none; }
+    .hero::after { content:''; position:absolute; width:560px; height:560px; border-radius:50%; filter:blur(120px); background:rgba(0,182,159,0.13); top:-200px; left:-120px; pointer-events:none; }
+    .hero .wrap { position:relative; z-index:1; }
+    .eyebrow { font-size:0.72rem; font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+    .hero h1 { font-family:var(--font-display); font-weight:600; line-height:1.1; font-size:clamp(2.3rem,5.5vw,3.8rem); margin-bottom:1rem; letter-spacing:-0.01em; }
+    .hero h1 .grad { background:var(--vignette); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+    .hero .state { font-size:1.05rem; color:var(--text-secondary); max-width:640px; margin-top:0.5rem; }
+    .hero-meta { display:flex; flex-wrap:wrap; gap:1rem; margin-top:2rem; align-items:center; }
+    .hero-meta .updated { font-size:0.85rem; color:var(--text-muted); }
+
+    section.s { padding:clamp(3rem,6vw,4.75rem) 0; border-bottom:1px solid var(--border); }
+    .sec-label { font-size:0.72rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .sec-label .b { width:6px; height:6px; border-radius:50%; background:var(--teal); }
+    h2 { font-family:var(--font-display); font-weight:600; font-size:clamp(1.6rem,3.2vw,2.3rem); line-height:1.2; margin-bottom:1.25rem; }
+    h3 { font-family:var(--font-display); font-weight:600; font-size:1.2rem; margin-bottom:0.5rem; }
+    p { color:var(--text-secondary); margin-bottom:1rem; max-width:680px; }
+    .lead { font-size:1.12rem; color:var(--text-primary); }
+
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:stretch; margin-top:0.5rem; }
+    .panel { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:1.75rem; backdrop-filter:blur(8px); }
+    .panel.teal { border-left:3px solid var(--teal); }
+    .panel.sky { border-left:3px solid var(--accent); }
+    .panel.danger { border-left:3px solid var(--danger); }
+    .panel h3 { color:var(--text-primary); }
+    .panel p { margin-bottom:0; font-size:0.98rem; }
+
+    .spotlight { position:relative; overflow:hidden; border-radius:20px; border:1px solid rgba(0,182,159,0.3); background:linear-gradient(135deg,rgba(0,182,159,0.12) 0%,rgba(111,180,227,0.06) 45%,transparent 80%); padding:clamp(2rem,4vw,3rem); }
+    .spotlight::after { content:''; position:absolute; width:360px; height:360px; border-radius:50%; filter:blur(90px); background:rgba(0,182,159,0.16); bottom:-160px; right:-120px; pointer-events:none; }
+    .spotlight .sl-tag { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.7rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:1.25rem; }
+    .spotlight .sl-tag svg { width:18px; height:18px; }
+    .spotlight .term { font-family:var(--font-display); font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:600; margin-bottom:1.25rem; position:relative; z-index:1; }
+    .spotlight .term .mono { font-family:var(--font-mono); font-size:0.6em; color:var(--accent); font-weight:500; }
+    .spotlight .plain { color:var(--text-secondary); font-size:1.05rem; max-width:760px; position:relative; z-index:1; margin-bottom:0; }
+    .spotlight .plain strong { color:var(--text-primary); font-weight:600; }
+
+    .arch-frame { background:var(--bg-secondary); border:1px solid var(--border); border-radius:16px; padding:clamp(1rem,3vw,2rem); margin-top:0.5rem; }
+    .arch-svg { width:100%; height:auto; display:block; }
+    .arch-caption { font-size:0.85rem; color:var(--text-muted); margin-top:1rem; text-align:center; max-width:none; }
+    .arch-legend { display:flex; flex-wrap:wrap; gap:1.25rem; justify-content:center; margin-top:1.25rem; font-size:0.78rem; color:var(--text-secondary); }
+    .arch-legend span { display:inline-flex; align-items:center; gap:0.45rem; }
+    .arch-legend .sw { width:24px; height:0; border-top:2px solid; }
+    .legend-live .sw { border-color:var(--teal); }
+    .legend-built .sw { border-color:var(--accent); }
+    .legend-future .sw { border-top-style:dashed; border-color:var(--text-muted); }
+
+    .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; vertical-align:middle; }
+    .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
+    .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
+    .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
+    .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
+
+    .ws-card .ws-head { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.5rem; }
+    .ws-card .ws-head h3 { margin-bottom:0; }
+
+    /* ===== Spike gate worked example ===== */
+    .spikedemo { border:1px solid var(--border-accent); border-radius:16px; background:var(--bg-secondary); overflow:hidden; margin:1.5rem 0; }
+    .spikedemo-row { display:grid; grid-template-columns:1fr 1fr 1fr; }
+    .spikedemo-col { padding:1.4rem 1.5rem; }
+    .spikedemo-col + .spikedemo-col { border-left:1px solid var(--border); }
+    .spikedemo-tag { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.66rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.25rem 0.6rem; border-radius:999px; margin-bottom:0.9rem; }
+    .spikedemo-tag.bad { color:var(--danger); background:rgba(216,22,50,0.12); border:1px solid rgba(216,22,50,0.35); }
+    .spikedemo-tag.good { color:var(--teal); background:rgba(0,182,159,0.12); border:1px solid rgba(0,182,159,0.35); }
+    .spikedemo-q { font-size:0.88rem; color:var(--text-primary); margin-bottom:0.5rem; font-weight:500; }
+    .spikedemo-a { font-size:0.85rem; color:var(--text-secondary); margin-bottom:0; }
+    .spikedemo-foot { padding:1rem 1.6rem; border-top:1px solid var(--border); font-size:0.85rem; color:var(--text-muted); }
+    @media (max-width:880px) { .spikedemo-row { grid-template-columns:1fr; } .spikedemo-col + .spikedemo-col { border-left:none; border-top:1px solid var(--border); } }
+
+    /* ===== Pipeline steps ===== */
+    .pipeline { display:flex; flex-wrap:wrap; align-items:stretch; gap:0.6rem; margin:1.5rem 0 1rem; }
+    .pipe-node { flex:1 1 160px; position:relative; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1.1rem; backdrop-filter:blur(8px); }
+    .pipe-node.is-next { border-style:dashed; border-color:rgba(141,168,196,0.5); background:transparent; }
+    .pipe-step { font-family:var(--font-mono); font-size:0.72rem; color:var(--teal); font-weight:600; margin-bottom:0.55rem; display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+    .pipe-node.is-next .pipe-step { color:var(--text-muted); }
+    .pipe-node h4 { font-size:0.92rem; color:var(--text-primary); font-weight:600; margin-bottom:0.4rem; }
+    .pipe-node p { font-size:0.8rem; color:var(--text-muted); margin-bottom:0; max-width:none; }
+    .pipe-arrow { display:flex; align-items:center; color:var(--text-muted); font-size:1.2rem; flex:0 0 auto; }
+    @media(max-width:880px){.pipe-arrow{transform:rotate(90deg);width:100%;justify-content:center;}}
+
+    .ws-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; counter-reset:ws; }
+    .ws-card { position:relative; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:1.5rem 1.5rem 1.5rem 3.75rem; backdrop-filter:blur(8px); }
+    .ws-card::before { counter-increment:ws; content:counter(ws,decimal-leading-zero); position:absolute; left:1.4rem; top:1.5rem; font-family:var(--font-mono); font-size:0.95rem; font-weight:600; color:var(--teal); }
+    .ws-card h3 { font-size:1.05rem; color:var(--text-primary); margin-bottom:0.5rem; }
+    .ws-card p { font-size:0.92rem; margin-bottom:0; }
+
+    .focus-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+    .focus-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1.5rem; border-top:3px solid var(--accent); }
+    .focus-card.decision { border-top-color:var(--sunrise); }
+    .focus-card .fc-label { font-size:0.68rem; font-weight:600; letter-spacing:0.13em; text-transform:uppercase; color:var(--accent); margin-bottom:0.6rem; }
+    .focus-card.decision .fc-label { color:var(--sunrise); }
+    .focus-card p { font-size:0.95rem; margin-bottom:0; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:0.6rem; }
+    .chip-risk { display:inline-flex; align-items:center; gap:0.5rem; font-size:0.88rem; font-weight:500; padding:0.5rem 0.95rem; border-radius:999px; background:rgba(250,165,26,0.08); border:1px solid rgba(250,165,26,0.28); color:var(--text-secondary); }
+    .chip-risk .pip { width:8px; height:8px; border-radius:50%; background:var(--sunrise); flex-shrink:0; }
+
+    .links-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+    .link-card { display:flex; align-items:center; justify-content:space-between; gap:1rem; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:12px; padding:1.1rem 1.4rem; transition:transform .3s var(--ease), border-color .3s var(--ease); }
+    .link-card:hover, .link-card:focus-visible { transform:translateY(-3px); border-color:rgba(0,182,159,0.4); outline:none; }
+    .link-card .lc-text { font-weight:500; color:var(--text-primary); }
+    .link-card .arrow { color:var(--teal); flex-shrink:0; }
+    .link-card.feature { border-color:rgba(0,182,159,0.35); background:linear-gradient(135deg,rgba(0,182,159,0.10) 0%,transparent 60%); }
+
+    footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
+    .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
+    .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
+    .foot-grid .pwr .iq { color:var(--teal); }
+    .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
+
+    #outputs, #concept, #architecture { scroll-margin-top:80px; }
+
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.visible { opacity:1; transform:none; }
+
+    @media (max-width:880px) {
+      .two, .ws-grid, .focus-grid, .links-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:720px) {
+      .crumbs { width:100%; order:3; }
+      .topbar-right { width:100%; justify-content:space-between; }
+    }
+    @media (max-width:560px) {
+      html { font-size:16px; }
+      .foot-grid { flex-direction:column; align-items:flex-start; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .reveal { opacity:1; transform:none; transition:none; }
+      html { scroll-behavior:auto; }
+    }
+  </style>
+</head>
+<body data-tier="deep-dive">
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="topbar">
+    <div class="wrap wrap-wide topbar-inner">
+      <a class="brand" href="/ai-enablement-decks/fourthos/preview/" aria-label="FourthOS Sponsor Update home">
+        <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse"><stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/></linearGradient></defs>
+          <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
+          <circle cx="16" cy="16" r="3.4" fill="url(#fos-g)"/>
+          <circle cx="26.5" cy="9.5" r="2.1" fill="#00B69F"/>
+          <circle cx="5.5" cy="22.5" r="2.1" fill="#6FB4E3"/>
+          <circle cx="7" cy="8" r="1.6" fill="#FAA51A"/>
+        </svg>
+        <span class="wordmark"><b>Fourth</b><span class="os">OS</span></span>
+      </a>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/ai-enablement-decks/#sponsor-updates">Sponsor Updates</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <a href="/ai-enablement-decks/fourthos/preview/">2026-07-16</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <span class="current">Deep Dive</span>
+      </nav>
+      <div class="topbar-right">
+        <nav class="tabs" aria-label="Sections">
+          <div class="tab-wrap">
+            <a class="tab-hub" href="/ai-enablement-decks/fourthos/preview/">Hub</a>
+            <div class="tab-menu" aria-label="Hub sections">
+              <span class="mh">Hub</span>
+              <a href="/ai-enablement-decks/fourthos/preview/#glance">This week, for you</a>
+              <a href="/ai-enablement-decks/fourthos/preview/#next">Where to next</a>
+              <a href="/ai-enablement-decks/fourthos/preview/#seeds">What this seeds</a>
+              <a href="/ai-enablement-decks/fourthos/preview/#pillars">How this connects</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/preview/briefing.html">The Briefing</a>
+            <div class="tab-menu" aria-label="Briefing sections">
+              <span class="mh">The Briefing</span>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#sponsor-actions">For your decision</a>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#portfolio">Active portfolio</a>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar">Risk radar</a>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes">Outcomes &amp; evidence</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/preview/deep-dive.html">Deep Dive</a>
+            <div class="tab-menu" aria-label="Deep Dive sections">
+              <span class="mh">Deep Dive</span>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#thesis">The thesis</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#architecture">Architecture</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept">Concept spotlight</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#outputs">Workstreams</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#payoff">The payoff</a>
+            </div>
+          </div>
+        </nav>
+        <label class="wkswitch">
+          <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
+          <select id="weekSwitch" aria-label="Switch to another week's update">
+            <option value="2026-07-16" selected>16 July 2026 (preview)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Flagship Deep Dive &middot; Tier 2</p>
+      <h1>Flagship Deep Dive — <span class="grad">Connector Ecosystem</span></h1>
+      <p class="state">Yellow — the week the portfolio became a program. One master record now covers three connectors: Salesforce live in alpha, Zendesk scoped, NetSuite in discovery. The open item is architecture validation, not execution.</p>
+      <div class="hero-meta">
+        <span class="rag rag-yellow" role="status" aria-label="Flagship health: Yellow"><span class="pip" aria-hidden="true"></span> Health: Yellow</span>
+        <span class="updated">Updated 16 July 2026 &middot; for Carly &amp; Christian</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- WHY / OUTCOME -->
+    <section class="s" id="thesis">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The thesis</p>
+        <h2 class="reveal">The portfolio just became a <span style="color:var(--teal);">program</span>.</h2>
+        <p class="lead reveal">This week, three separate connector efforts were consolidated under one master record, with sponsor communications now happening at the program level and execution tracked on child pages beneath it: Salesforce live in alpha, Zendesk scoped as connector #2, and NetSuite in discovery as connector #3.</p>
+        <div class="two">
+          <div class="panel teal reveal">
+            <h3>Why this matters</h3>
+            <p>Owning the layer between the AI and the system of record gives governance, per-person sign-in (each person signs in as themselves), an audit trail, usage reporting, and in-chat feedback — solved once, at the program level, instead of three times over.</p>
+          </div>
+          <div class="panel sky reveal">
+            <h3>Expected outcome</h3>
+            <p>Every governance, identity, reporting, and feedback pattern demonstrated on Salesforce gets stamped onto Zendesk and NetSuite automatically — the mold gets cast again, not rebuilt from scratch.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE: inheritance (evergreen, committed SVG kept from last week) -->
+    <section class="s" id="architecture">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Architecture</p>
+        <h2 class="reveal">Build the mold once — every stamp inherits the governance</h2>
+        <p class="reveal">Every request flows through one governed checkpoint. The live proxy resolves per-person identity, enforces read-only / default-deny access, and writes an append-only audit trail — then brokers the call to the live system. Its reporting engine and feedback loop are built in-repo. Future connectors are stamped from the same mold and inherit all four assets.</p>
+        <div class="arch-frame reveal">
+          <svg class="arch-svg" viewBox="0 0 1000 560" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
+            <title id="archTitle">FourthOS connector inheritance architecture</title>
+            <desc id="archDesc">You sign in with Microsoft; Claude connects through a live FastMCP v3 governance proxy on Azure that enforces your own per-user identity, an append-only audit ledger, and read-only default-deny access. The proxy brokers a live-in-alpha connection to Salesforce. Below it sit two built-in-repo outputs: a three-tier reporting engine and a feedback loop. Dashed clone arrows show three future stamped connectors — Zendesk next, NetSuite in discovery, Jira future — each inheriting identity, audit, reporting, and feedback.</desc>
+            <defs>
+              <linearGradient id="proxyGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00B69F"/>
+                <stop offset="45%" stop-color="#6FB4E3"/>
+                <stop offset="100%" stop-color="#0C4A7D"/>
+              </linearGradient>
+              <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00B69F"/></marker>
+              <marker id="arrowSky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6FB4E3"/></marker>
+              <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8DA8C4"/></marker>
+            </defs>
+            <g>
+              <rect x="18" y="104" width="146" height="72" rx="14" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="91" y="136" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="16" font-weight="600">You</text>
+              <text x="91" y="157" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="12">Microsoft sign-in</text>
+            </g>
+            <line x1="166" y1="140" x2="193" y2="140" stroke="#6FB4E3" stroke-width="2" marker-end="url(#arrowSky)"/>
+            <g>
+              <rect x="196" y="104" width="120" height="72" rx="14" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="256" y="146" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="17" font-weight="600">Claude</text>
+            </g>
+            <line x1="318" y1="140" x2="361" y2="140" stroke="#00B69F" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+            <text x="339" y="131" text-anchor="middle" fill="#00B69F" font-family="JetBrains Mono,monospace" font-size="10">LIVE</text>
+            <g>
+              <rect x="364" y="66" width="300" height="250" rx="16" fill="#0A1929" stroke="url(#proxyGrad)" stroke-width="2.5"/>
+              <rect x="364" y="66" width="300" height="46" rx="16" fill="url(#proxyGrad)" opacity="0.18"/>
+              <text x="514" y="89" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="16" font-weight="600">FastMCP v3 Governance Proxy</text>
+              <text x="514" y="106" text-anchor="middle" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="11">on Azure (ACA) &#183; LIVE</text>
+              <g>
+                <rect x="384" y="128" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="406" cy="154" r="5" fill="#6FB4E3"/>
+                <text x="422" y="150" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Identity</text>
+                <text x="422" y="167" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Your own Microsoft sign-in (per-user)</text>
+              </g>
+              <g>
+                <rect x="384" y="186" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="406" cy="212" r="5" fill="#00B69F"/>
+                <text x="422" y="208" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Audit</text>
+                <text x="422" y="225" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Append-only ledger</text>
+              </g>
+              <g>
+                <rect x="384" y="244" width="260" height="52" rx="8" fill="#0F2A3F" stroke="rgba(111,180,227,0.25)" stroke-width="1"/>
+                <circle cx="406" cy="270" r="5" fill="#FAA51A"/>
+                <text x="422" y="266" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Access</text>
+                <text x="422" y="283" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="11">Read-only &#183; default-deny</text>
+              </g>
+            </g>
+            <line x1="664" y1="152" x2="718" y2="152" stroke="#00B69F" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+            <text x="691" y="143" text-anchor="middle" fill="#00B69F" font-family="JetBrains Mono,monospace" font-size="10">LIVE</text>
+            <g>
+              <rect x="720" y="116" width="160" height="72" rx="14" fill="#0F2A3F" stroke="#00B69F" stroke-width="2"/>
+              <text x="800" y="148" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="17" font-weight="600">Salesforce</text>
+              <text x="800" y="169" text-anchor="middle" fill="#00B69F" font-family="Poppins,sans-serif" font-size="12" font-weight="500">live in alpha</text>
+            </g>
+            <line x1="436" y1="316" x2="436" y2="349" stroke="#6FB4E3" stroke-width="2" marker-end="url(#arrowSky)"/>
+            <line x1="591" y1="316" x2="591" y2="349" stroke="#6FB4E3" stroke-width="2" marker-end="url(#arrowSky)"/>
+            <g>
+              <rect x="364" y="350" width="145" height="80" rx="12" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="436" y="381" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">3-tier Reporting</text>
+              <text x="436" y="403" text-anchor="middle" fill="#6FB4E3" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">BUILT IN-REPO</text>
+            </g>
+            <g>
+              <rect x="519" y="350" width="145" height="80" rx="12" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <text x="591" y="381" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Semantic layer</text>
+              <text x="591" y="403" text-anchor="middle" fill="#6FB4E3" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">BUILT IN-REPO</text>
+            </g>
+            <path d="M664 296 C 702 330, 700 358, 718 368" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.6"/>
+            <path d="M664 300 C 698 398, 700 416, 718 422" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.55"/>
+            <path d="M664 304 C 692 456, 700 470, 718 476" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.5"/>
+            <text x="690" y="332" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="9" opacity="0.85">clone &#8595;</text>
+            <g opacity="0.78">
+              <rect x="720" y="346" width="160" height="44" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="800" y="373" text-anchor="middle" fill="#CFD1D1" font-family="Poppins,sans-serif" font-size="13" font-weight="500">Zendesk &#183; NEXT</text>
+            </g>
+            <g opacity="0.75">
+              <rect x="720" y="400" width="160" height="44" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="800" y="427" text-anchor="middle" fill="#CFD1D1" font-family="Poppins,sans-serif" font-size="13" font-weight="500">NetSuite &#183; DISCOVERY</text>
+            </g>
+            <g opacity="0.55">
+              <rect x="720" y="454" width="160" height="44" rx="10" fill="#0A1929" stroke="#8DA8C4" stroke-width="1.4" stroke-dasharray="6 5"/>
+              <text x="800" y="481" text-anchor="middle" fill="#8DA8C4" font-family="Poppins,sans-serif" font-size="13" font-weight="500">Jira &#183; FUTURE</text>
+            </g>
+            <text x="800" y="524" text-anchor="middle" fill="#8DA8C4" font-family="JetBrains Mono,monospace" font-size="10.5">inherits: identity &#183; audit &#183; reporting &#183; feedback &#183; semantic layer</text>
+          </svg>
+          <div class="arch-legend">
+            <span class="legend-live"><span class="sw" aria-hidden="true"></span> Live &#183; alpha</span>
+            <span class="legend-built"><span class="sw" aria-hidden="true"></span> Built in-repo</span>
+            <span class="legend-future"><span class="sw" aria-hidden="true"></span> Designed &#183; next / future</span>
+          </div>
+          <p class="arch-caption">Build the mold once. Every stamp inherits the governance.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONCEPT SPOTLIGHT: the spike gate -->
+    <section class="s" id="concept">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Concept spotlight</p>
+        <div class="spotlight reveal">
+          <span class="sl-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00B69F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+            Here's the idea
+          </span>
+          <div class="term">The spike gate <span class="mono">(buy information before you buy a build)</span></div>
+          <p class="plain">Before committing to build, the team runs small, pre-committed discovery checks — <strong>spikes</strong>, the hands-on discovery check that answers one question with decision criteria agreed in advance. This week's worked example is NetSuite: <strong>Spike A0</strong> was deliberately split so it needs no admin access and decides the architecture option entirely on its own. Along the way, discovery falsified or corrected <strong>three &ldquo;known facts&rdquo;</strong> from earlier research — a version-upgrade assumption, a security-regression premise, and an open-vulnerabilities claim — before any of them could shape the build. It also surfaced a real constraint: connector calls share the account's unallocated processing pool, caught early enough to turn it into a routine admin request instead of a production surprise.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPIKE GATE WORKED EXAMPLE -->
+    <section class="s">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Worked example</p>
+        <h2 class="reveal">What Spike A0 already caught, before a single line of connector code <span class="badge next">Discovery</span></h2>
+        <p class="reveal">Three assumptions carried from earlier research did not survive contact with the real system. Catching them now — during discovery — is the entire point of the gate.</p>
+        <div class="spikedemo reveal">
+          <div class="spikedemo-row">
+            <div class="spikedemo-col">
+              <span class="spikedemo-tag bad">Assumed</span>
+              <p class="spikedemo-q">A version-upgrade assumption about the target environment.</p>
+              <p class="spikedemo-a">Corrected before it could shape which architecture option gets chosen.</p>
+            </div>
+            <div class="spikedemo-col">
+              <span class="spikedemo-tag bad">Assumed</span>
+              <p class="spikedemo-q">A security-regression premise carried from earlier research.</p>
+              <p class="spikedemo-a">Falsified — the premise did not hold once checked hands-on.</p>
+            </div>
+            <div class="spikedemo-col">
+              <span class="spikedemo-tag bad">Assumed</span>
+              <p class="spikedemo-q">An open-vulnerabilities claim about the connector path.</p>
+              <p class="spikedemo-a">Corrected before it could be designed around unnecessarily.</p>
+            </div>
+          </div>
+          <div class="spikedemo-foot"><span class="badge good" style="color:var(--teal);border:1px solid rgba(0,182,159,0.35);background:rgba(0,182,159,0.12);">New finding</span> Connector calls share the account's unallocated processing pool — caught during discovery, so a dedicated allocation is now a routine admin ask instead of a production surprise.</div>
+        </div>
+        <h3 class="reveal" style="margin-top:2rem;">Why sponsors should care</h3>
+        <p class="reveal">Sponsors see decisions de-risked before money or time is committed — this is the mandate's &ldquo;criteria before work begins&rdquo; posture in action, not after-the-fact damage control.</p>
+        <div class="pipeline reveal">
+          <div class="pipe-node">
+            <div class="pipe-step">&#9312; Question <span class="badge built">Built</span></div>
+            <h4>One question, agreed criteria</h4>
+            <p>Spike A0 answers exactly one question: which architecture option is viable — decided with criteria set before the check began.</p>
+          </div>
+          <span class="pipe-arrow" aria-hidden="true">&rarr;</span>
+          <div class="pipe-node">
+            <div class="pipe-step">&#9313; No dependency <span class="badge built">Built</span></div>
+            <h4>Deliberately split</h4>
+            <p>Split so the check needs no admin access — it can run now, in parallel with everything else.</p>
+          </div>
+          <span class="pipe-arrow" aria-hidden="true">&rarr;</span>
+          <div class="pipe-node">
+            <div class="pipe-step">&#9314; Corrects the record <span class="badge built">Built</span></div>
+            <h4>Facts checked, not assumed</h4>
+            <p>Three stated facts were falsified or corrected before they could shape the build.</p>
+          </div>
+          <span class="pipe-arrow" aria-hidden="true">&rarr;</span>
+          <div class="pipe-node is-next">
+            <div class="pipe-step">&#9315; Admin follow-up <span class="badge next">Designed · Next</span></div>
+            <h4>Batched asks</h4>
+            <p>Sandbox access, the integration record, and a dedicated concurrency allocation — batched into one admin ask.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKSTREAMS / OUTPUTS -->
+    <section class="s" id="outputs">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Workstreams</p>
+        <h2 class="reveal">The moving parts — what's built, what's next</h2>
+        <div class="ws-grid">
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Zendesk connector (#2)</h3><span class="badge next">Designed · Next</span></div>
+            <p>Scoped this week: the existing connector can't scope orgs, filter date ranges, or bulk-pull ticket status. The rebuild adds all three, on the Salesforce chassis. Interim: a support-team analyst's manual report feeds EBRs.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>EBR + GTM platform decision</h3><span class="badge built">Decided</span></div>
+            <p>The EBR and GTM Risk tools get a governed home built into the team's AI platform, with role-based user groups — not a chat tool. 2&ndash;3 weeks of dedicated build time approved.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>NetSuite connector (#3)</h3><span class="badge next">Discovery</span></div>
+            <p>Build repo stood up this week. Discovery corrected three stated facts and surfaced the shared-concurrency-pool constraint before any code — the spike gate working as designed.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Salesforce connector (#1)</h3><span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span></div>
+            <p>Still the live proof point inside the program. The final, cross-team-enriched business-term dictionary lands ~end of this week, ahead of the rollback-safe semantic-layer deploy.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>Connector program operating model</h3><span class="badge built">Locked</span></div>
+            <p>One master record, three connectors, sponsor communications at the program level — execution detail lives on child pages beneath it.</p>
+          </div>
+          <div class="ws-card reveal">
+            <div class="ws-head"><h3>AI Platform Architecture alignment</h3><span class="badge next">Designed · Next</span></div>
+            <p>Validate the current architecture canvas against the CTO's latest platform vision — before a third connector builds further on the current pattern.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE PAYOFF -->
+    <section class="s" id="payoff">
+      <div class="wrap wrap-wide">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> The payoff</p>
+        <h2 class="reveal">Every stamp inherits the mold — that's the whole bet</h2>
+        <div class="panel teal reveal">
+          <h3>The mold thesis</h3>
+          <p>Every governance, identity, reporting, and feedback investment made on Salesforce is inherited by Zendesk and by NetSuite — automatically, not rebuilt per connector. The connector-sequencing decision (see For Your Decision, item 01) decides exactly where that reusable template gets harvested from: Zendesk's rebuild or NetSuite's discovery. Whichever connector goes first on that call becomes the reference implementation the other one is diffed against.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEARN MORE -->
+    <section class="s" style="border-bottom:none;">
+      <div class="wrap">
+        <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Learn more</p>
+        <h2 class="reveal">Go deeper</h2>
+        <div class="links-grid">
+          <a class="link-card feature reveal" href="https://rev4nchist.github.io/ai-enablement-decks/governed-ai-access/" target="_blank" rel="noopener">
+            <span class="lc-text">Governed AI Access deck</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/38776fd7ac8281c7a286ce6ae478b6be" target="_blank" rel="noopener">
+            <span class="lc-text">Connector Ecosystem Master Plan</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/34076fd7ac82805dac89dd26476e2c47" target="_blank" rel="noopener">
+            <span class="lc-text">FourthOS Cockpit</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+          <a class="link-card reveal" href="https://app.notion.com/p/e29dd1c4e6a64e39a45473525a765e5e" target="_blank" rel="noopener">
+            <span class="lc-text">Leadership Portfolio Dashboard</span>
+            <span class="arrow" aria-hidden="true">&#8599;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIER PAGER -->
+    <section class="s" style="border-bottom:none; padding-top:0;">
+      <div class="wrap">
+        <nav class="pager" aria-label="Tier navigation">
+          <a href="/ai-enablement-decks/fourthos/preview/briefing.html">&larr; The Briefing</a>
+          <a href="/ai-enablement-decks/fourthos/preview/">Back to Hub &rarr;</a>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot-grid">
+      <span class="pwr">Powered by <span class="iq">iQ</span></span>
+      <span class="mid">FourthOS &middot; Principal AI Mandate</span>
+      <span class="gen">Generated 2026-07-16</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var bar = document.getElementById('progress');
+      function onScroll() {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+        bar.style.width = p + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+      var items = document.querySelectorAll('.reveal');
+      if (reduce || !('IntersectionObserver' in window)) {
+        items.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      items.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var sel = document.getElementById('weekSwitch');
+      if (!sel) return;
+      var root = location.pathname.split('/fourthos/')[0];
+      var current = "2026-07-16";
+      fetch(root + '/decks.json', { cache: 'no-cache' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var weeks = (data.decks || []).filter(function (d) { return d.section === 'sponsor-updates' && d.date; })
+            .sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+          if (!weeks.length) return;
+          sel.innerHTML = '';
+          weeks.forEach(function (w) {
+            var o = document.createElement('option'); o.value = w.date;
+            o.textContent = (w.meta || w.date) + (w.date === current ? ' (current)' : '');
+            if (w.date === current) o.selected = true; sel.appendChild(o);
+          });
+        }).catch(function () {});
+      sel.addEventListener('change', function () { if (sel.value && sel.value !== current) location.href = root + '/fourthos/' + sel.value + '/'; });
+    })();
+  </script>
+</body>
+</html>
