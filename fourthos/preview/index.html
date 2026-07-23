@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FourthOS — Sponsor Update · 23 July 2026</title>
+  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 23 July 2026. Salesforce's verified business-language layer becomes a shared ecosystem standard, model-routing work is reframed into a governed agent-delivery platform, and two sponsor decisions keep aging.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:#0A1929; --bg-secondary:#0F2A3F; --bg-tertiary:#153650;
+      --bg-midnight:#051526; --bg-card:rgba(15,42,63,0.55);
+      --text-primary:#FFFFFF; --text-secondary:#CFD1D1; --text-muted:#8DA8C4;
+      --accent:#6FB4E3; --teal:#00B69F; --sunrise:#FAA51A; --danger:#D81632; --purple:#9678B6;
+      --fourth-deep-blue:#0C4A7D;
+      --vignette:linear-gradient(25deg,#00B69F 0%,#6FB4E3 40%,#0C4A7D 100%);
+      --border:rgba(111,180,227,0.10); --border-accent:rgba(111,180,227,0.22);
+      --teal-glow:rgba(0,182,159,0.15); --accent-glow:rgba(111,180,227,0.15); --sunrise-glow:rgba(250,165,26,0.12);
+      --font-display:'Poppins',sans-serif; --font-body:'Poppins',sans-serif; --font-mono:'JetBrains Mono',monospace;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+    }
+    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-size:18px; }
+    body { font-family:var(--font-body); background:var(--bg-primary); color:var(--text-primary); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+    a { color:inherit; text-decoration:none; }
+    .wrap { max-width:1140px; margin:0 auto; padding:0 clamp(1.25rem,4vw,2.5rem); width:100%; }
+    :focus-visible { outline:2px solid var(--teal); outline-offset:3px; border-radius:4px; }
+
+    .topbar { position:sticky; top:0; z-index:50; background:rgba(5,21,38,0.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); }
+    .topbar-inner { display:flex; align-items:center; gap:1rem 1.5rem; flex-wrap:wrap; padding:0.7rem 0; }
+    .brand { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; }
+    .brand svg { width:26px; height:26px; flex-shrink:0; display:block; }
+    .brand .wordmark { font-size:1.02rem; }
+    .brand .wordmark b { font-weight:700; }
+    .brand .wordmark .os { color:var(--teal); font-weight:700; }
+    .crumbs { display:flex; align-items:center; gap:0.45rem; font-size:0.82rem; color:var(--text-muted); flex-wrap:wrap; }
+    .crumbs a { color:var(--text-secondary); transition:color .2s; }
+    .crumbs a:hover { color:var(--accent); }
+    .crumbs .sep { color:var(--text-muted); opacity:0.6; }
+    .crumbs .current { color:var(--text-primary); font-weight:500; }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem 1.25rem; flex-wrap:wrap; }
+    .tabs { display:flex; align-items:center; gap:0.25rem; }
+    .tabs a { font-size:0.82rem; font-weight:500; color:var(--text-secondary); padding:0.35rem 0.7rem; border-radius:8px; transition:color .2s, background .2s; }
+    .tabs a:hover { color:var(--text-primary); background:rgba(111,180,227,0.08); }
+    body[data-tier="hub"] .tab-hub { color:var(--teal); background:rgba(0,182,159,0.12); }
+    .wkswitch { position:relative; display:inline-flex; align-items:center; }
+    .wkswitch select { appearance:none; -webkit-appearance:none; font-family:var(--font-body); font-size:0.8rem; font-weight:500; color:var(--text-secondary); background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:999px; padding:0.4rem 2rem 0.4rem 0.95rem; cursor:pointer; transition:border-color .2s, color .2s; }
+    .wkswitch select:hover { color:var(--text-primary); border-color:rgba(0,182,159,0.4); }
+    .wkswitch::after { content:'▾'; position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--accent); font-size:0.7rem; }
+
+    .tab-wrap { position:relative; display:inline-flex; }
+    .tab-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%); min-width:225px; display:none; flex-direction:column; gap:0.1rem; z-index:60; background:rgba(5,21,38,0.97); backdrop-filter:blur(14px); border:1px solid var(--border-accent); border-radius:12px; padding:0.55rem; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
+    .tab-wrap:hover .tab-menu, .tab-wrap:focus-within .tab-menu { display:flex; }
+    .tab-menu .mh { font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); padding:0.3rem 0.7rem 0.2rem; }
+    .tab-menu a { display:block; font-size:0.82rem; font-weight:500; color:var(--text-secondary); padding:0.4rem 0.7rem; border-radius:8px; white-space:nowrap; transition:color .15s, background .15s; }
+    .tab-menu a:hover { color:var(--text-primary); background:rgba(111,180,227,0.10); }
+    #glance, #next, #seeds, #pillars { scroll-margin-top:80px; }
+    @media (max-width:720px) { .tab-menu { display:none !important; } }
+
+    .hero { position:relative; overflow:hidden; background:linear-gradient(160deg,#051526 0%,#0A1929 55%,#0F2A3F 100%); padding:clamp(3rem,7vw,5rem) 0 clamp(2.5rem,5vw,4rem); border-bottom:1px solid var(--border); }
+    .hero::before { content:''; position:absolute; inset:0; background:var(--vignette); opacity:0.12; pointer-events:none; }
+    .hero::after { content:''; position:absolute; width:540px; height:540px; border-radius:50%; filter:blur(120px); background:rgba(0,182,159,0.12); top:-200px; right:-140px; pointer-events:none; }
+    .hero .wrap { position:relative; z-index:1; }
+    .eyebrow { font-size:0.72rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1.1rem; }
+    h1 { font-family:var(--font-display); font-weight:600; line-height:1.08; font-size:clamp(2.3rem,5.2vw,3.8rem); margin-bottom:1.1rem; letter-spacing:-0.01em; max-width:22ch; }
+    h1 .grad { background:var(--vignette); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+    .subhead { font-size:clamp(1.05rem,1.8vw,1.25rem); color:var(--text-secondary); max-width:680px; margin-bottom:1.75rem; }
+    .hero-cta { display:inline-flex; align-items:center; gap:0.55rem; font-weight:600; font-size:0.95rem; color:#04141f; background:var(--teal); padding:0.7rem 1.3rem; border-radius:10px; transition:transform .25s var(--ease), box-shadow .25s var(--ease); }
+    .hero-cta:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,182,159,0.3); }
+    .hero-cta .arrow { transition:transform .3s var(--ease); }
+    .hero-cta:hover .arrow { transform:translateX(4px); }
+    .updated { font-size:0.85rem; color:var(--text-muted); letter-spacing:0.02em; margin-top:1.5rem; }
+
+    .shipped { margin-top:1.75rem; }
+    .shipped .lbl { font-size:0.66rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.7rem; }
+    .ship-row { display:flex; flex-wrap:wrap; gap:0.6rem; }
+    .ship-chip { display:inline-flex; align-items:center; gap:0.55rem; font-size:0.86rem; font-weight:500; color:var(--text-primary); background:var(--bg-secondary); border:1px solid var(--border-accent); border-radius:999px; padding:0.4rem 0.7rem 0.4rem 0.95rem; transition:transform .2s var(--ease), background .2s, border-color .2s; }
+    .ship-chip:hover { transform:translateY(-2px); background:rgba(111,180,227,0.08); border-color:rgba(0,182,159,0.5); }
+    .ship-chip .go { color:var(--text-muted); font-size:0.78rem; }
+
+    .badge { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.6rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:999px; white-space:nowrap; line-height:1.15; }
+    .badge.live { color:var(--teal); background:rgba(0,182,159,0.14); border:1px solid rgba(0,182,159,0.4); }
+    .badge.live .bdot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); flex-shrink:0; }
+    .badge.built { color:var(--accent); background:transparent; border:1px solid rgba(111,180,227,0.4); }
+    .badge.next { color:var(--text-muted); background:transparent; border:1px dashed var(--text-muted); }
+
+    .seeds { margin-top:clamp(2.5rem,5vw,3.5rem); }
+    .seeds-flow { display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem; }
+    .seed-node { flex:1 1 180px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
+    .seed-node .sn-name { display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:0.95rem; color:var(--text-primary); margin-bottom:0.45rem; flex-wrap:wrap; }
+    .seed-node .sn-inh { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-muted); letter-spacing:0.01em; }
+    .seed-arrow { flex:0 0 auto; color:var(--text-muted); font-size:1.2rem; line-height:1; }
+    .seeds-cap { font-size:0.82rem; color:var(--text-muted); margin-top:1rem; }
+    @media (max-width:860px) { .seed-arrow { transform:rotate(90deg); width:100%; text-align:center; } }
+
+    section.body { padding:clamp(2.5rem,5vw,4rem) 0; }
+    .section-label { font-size:0.72rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); margin-bottom:1.25rem; }
+
+    .nav-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+    .nav-card { position:relative; display:flex; flex-direction:column; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:2rem; backdrop-filter:blur(10px); overflow:hidden; transition:transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
+    .nav-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--vignette); opacity:0.85; }
+    .nav-card:hover { transform:translateY(-4px); border-color:rgba(0,182,159,0.4); box-shadow:0 18px 50px rgba(0,0,0,0.35); }
+    .nav-card .kicker { font-size:0.7rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem; }
+    .nav-card h2 { font-family:var(--font-display); font-weight:600; font-size:1.6rem; margin-bottom:0.6rem; display:flex; align-items:center; gap:0.5rem; }
+    .nav-card h2 .arrow { color:var(--teal); transition:transform .3s var(--ease); }
+    .nav-card:hover h2 .arrow { transform:translateX(6px); }
+    .nav-card p { color:var(--text-secondary); font-size:1rem; margin-bottom:1.25rem; flex:1; }
+    .nav-card .readtime { font-family:var(--font-mono); font-size:0.78rem; color:var(--accent); border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.6rem; align-self:flex-start; }
+
+    .glance { margin-top:clamp(2.5rem,5vw,3.5rem); }
+    .lens-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:1.25rem; align-items:start; }
+    .lens { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.4rem 1.5rem; }
+    .lens.needs { border-color:rgba(250,165,26,0.34); background:linear-gradient(160deg,rgba(250,165,26,0.07),var(--bg-secondary) 60%); }
+    .lens.watch { border-color:rgba(216,22,50,0.22); }
+    .lens-head { display:flex; align-items:center; gap:0.55rem; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:1rem; }
+    .lens.needs .lens-head { color:var(--sunrise); }
+    .lens.moved .lens-head { color:var(--teal); }
+    .lens.watch .lens-head { color:var(--danger); }
+    .lens-head .ic { width:8px; height:8px; border-radius:50%; background:currentColor; box-shadow:0 0 8px currentColor; }
+    .lens ul { list-style:none; display:flex; flex-direction:column; gap:0.7rem; }
+    .lens li a { display:flex; gap:0.6rem; align-items:flex-start; color:var(--text-primary); font-size:0.94rem; line-height:1.45; }
+    .lens li a { transition:color .2s; }
+    .lens li a:hover { color:var(--accent); }
+    .lens li .num { flex-shrink:0; width:1.4rem; height:1.4rem; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:var(--sunrise); background:rgba(250,165,26,0.14); }
+    .lens.moved li .tick { color:var(--teal); font-weight:700; flex-shrink:0; }
+    .lens.watch li .warn { color:var(--danger); flex-shrink:0; }
+    .lens li .arrow { margin-left:auto; color:var(--text-muted); font-size:0.8rem; flex-shrink:0; }
+
+    footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
+    .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
+    .foot-grid .pwr { display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; color:var(--text-secondary); }
+    .foot-grid .pwr .iq { color:var(--teal); }
+    .foot-grid .mid, .foot-grid .gen { font-size:0.82rem; color:var(--text-muted); }
+
+    .pillars-sec { margin-top:clamp(2.5rem,5vw,3.5rem); }
+    .pillars-sec h2 { font-family:var(--font-display); font-weight:600; font-size:clamp(1.3rem,2.6vw,1.7rem); line-height:1.25; max-width:32ch; margin-top:0; }
+    .pillars-sec .sec-dek { color:var(--text-secondary); font-size:0.98rem; max-width:64ch; margin-top:0.7rem; }
+    .pillars-sec .sec-source { font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem; }
+    .pillars-sec .sec-source a { color:var(--accent); border-bottom:1px solid rgba(111,180,227,0.35); }
+
+    .balance { margin-top:1.75rem; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:14px; padding:1.35rem 1.5rem; backdrop-filter:blur(8px); display:flex; flex-wrap:wrap; align-items:center; gap:1.5rem 2.25rem; }
+    .balance .bl-item { display:flex; align-items:baseline; gap:0.55rem; }
+    .balance .bl-n { font-family:var(--font-mono); font-size:1.6rem; font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-primary); }
+    .balance .bl-n.zero { color:var(--sunrise); }
+    .balance .bl-label { font-size:0.82rem; color:var(--text-secondary); }
+    .balance .bl-bar { flex:1 1 100%; height:6px; border-radius:999px; background:var(--bg-tertiary); overflow:hidden; display:flex; margin-top:0.25rem; }
+    .balance .bl-bar span { display:block; height:100%; }
+    .balance .bl-bar .seg-1 { background:var(--accent); width:20%; }
+    .balance .bl-bar .seg-2 { background:var(--teal); width:60%; }
+    .balance .bl-bar .seg-3 { background:repeating-linear-gradient(135deg,rgba(250,165,26,0.35),rgba(250,165,26,0.35) 4px,transparent 4px,transparent 8px); width:20%; }
+    .balance .bl-note { flex:1 1 100%; font-size:0.86rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:0.9rem; margin-top:0.15rem; }
+    .balance .bl-note strong { color:var(--sunrise); font-weight:600; }
+
+    .pillar-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-top:1.75rem; align-items:stretch; }
+    .pillar-card { position:relative; overflow:hidden; background:var(--bg-card); border:1px solid var(--border-accent); border-radius:16px; padding:1.6rem 1.5rem 1.5rem; backdrop-filter:blur(10px); display:flex; flex-direction:column; }
+    .pillar-card::before { content:''; position:absolute; left:0; top:0; right:0; height:3px; background:var(--vignette); }
+    .pillar-card.thin::before { background:none; border-top:3px dashed rgba(250,165,26,0.5); }
+    .pc-num { font-family:var(--font-mono); font-size:0.7rem; font-weight:600; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:0.55rem; }
+    .pillar-card h3 { font-family:var(--font-display); font-size:1.15rem; font-weight:600; line-height:1.3; margin-bottom:0.65rem; }
+    .pc-mandate { font-size:0.85rem; color:var(--text-muted); font-style:italic; line-height:1.5; margin-bottom:1.1rem; padding-bottom:1.1rem; border-bottom:1px solid var(--border); }
+    .pc-projects { display:flex; flex-direction:column; gap:0.9rem; flex:1; }
+    .pc-proj .pp-head { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.3rem; }
+    .pc-proj .pp-name { font-size:0.92rem; font-weight:600; color:var(--text-primary); }
+    .rag-pip { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.66rem; font-weight:600; padding:0.14rem 0.5rem; border-radius:999px; border:1px solid; }
+    .rag-pip .d { width:6px; height:6px; border-radius:50%; }
+    .rag-pip.green { color:var(--teal); border-color:rgba(0,182,159,0.4); background:rgba(0,182,159,0.1); }
+    .rag-pip.green .d { background:var(--teal); }
+    .rag-pip.yellow { color:var(--sunrise); border-color:rgba(250,165,26,0.4); background:rgba(250,165,26,0.1); }
+    .rag-pip.yellow .d { background:var(--sunrise); }
+    .pc-proj .pp-why { font-size:0.86rem; color:var(--text-secondary); line-height:1.5; }
+    .pc-empty { flex:1; display:flex; flex-direction:column; justify-content:center; gap:0.6rem; padding:0.75rem 0; }
+    .pc-empty .pe-label { font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--sunrise); }
+    .pc-empty p { font-size:0.86rem; color:var(--text-secondary); line-height:1.55; }
+    .pc-indirect { margin-top:0.9rem; padding-top:0.9rem; border-top:1px dashed var(--border); }
+    .pc-indirect .pi-label { font-size:0.66rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; }
+    .pc-indirect .pi-item { font-size:0.83rem; color:var(--text-muted); margin-bottom:0.3rem; }
+    .pc-indirect .pi-item b { color:var(--text-secondary); font-weight:500; }
+
+    @media (max-width:980px) { .pillar-grid { grid-template-columns:1fr; } }
+    @media (max-width:860px) { .nav-cards { grid-template-columns:1fr; } .lens-grid { grid-template-columns:1fr; } }
+    @media (max-width:720px) { .crumbs { width:100%; order:3; } .topbar-right { width:100%; justify-content:space-between; } .foot-grid { flex-direction:column; align-items:flex-start; } }
+    @media (max-width:560px) { html { font-size:16px; } .balance { flex-direction:column; align-items:flex-start; } }
+  </style>
+</head>
+<body data-tier="hub">
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="/ai-enablement-decks/fourthos/preview/" aria-label="FourthOS Sponsor Update home">
+        <svg viewBox="0 0 32 32" fill="none" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="fos-g" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse"><stop stop-color="#00B69F"/><stop offset="0.5" stop-color="#6FB4E3"/><stop offset="1" stop-color="#0C4A7D"/></linearGradient></defs>
+          <ellipse cx="16" cy="16" rx="13.5" ry="7" transform="rotate(-28 16 16)" stroke="url(#fos-g)" stroke-width="1.6" opacity="0.85"/>
+          <circle cx="16" cy="16" r="3.4" fill="url(#fos-g)"/>
+          <circle cx="26.5" cy="9.5" r="2.1" fill="#00B69F"/>
+          <circle cx="5.5" cy="22.5" r="2.1" fill="#6FB4E3"/>
+          <circle cx="7" cy="8" r="1.6" fill="#FAA51A"/>
+        </svg>
+        <span class="wordmark"><b>Fourth</b><span class="os">OS</span></span>
+      </a>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/ai-enablement-decks/#sponsor-updates">Sponsor Updates</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <a href="/ai-enablement-decks/fourthos/preview/">2026-07-23</a>
+        <span class="sep" aria-hidden="true">&rsaquo;</span>
+        <span class="current">Hub</span>
+      </nav>
+      <div class="topbar-right">
+        <nav class="tabs" aria-label="Sections">
+          <div class="tab-wrap">
+            <a class="tab-hub" href="/ai-enablement-decks/fourthos/preview/">Hub</a>
+            <div class="tab-menu" aria-label="Hub sections">
+              <span class="mh">Hub</span>
+              <a href="/ai-enablement-decks/fourthos/preview/#glance">This week, for you</a>
+              <a href="/ai-enablement-decks/fourthos/preview/#next">Where to next</a>
+              <a href="/ai-enablement-decks/fourthos/preview/#seeds">What this seeds</a>
+              <a href="/ai-enablement-decks/fourthos/preview/#pillars">How this connects</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-briefing" href="/ai-enablement-decks/fourthos/preview/briefing.html">The Briefing</a>
+            <div class="tab-menu" aria-label="Briefing sections">
+              <span class="mh">The Briefing</span>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#sponsor-actions">For your decision</a>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#portfolio">Active portfolio</a>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar">Risk radar</a>
+              <a href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes">Outcomes &amp; evidence</a>
+            </div>
+          </div>
+          <div class="tab-wrap">
+            <a class="tab-deepdive" href="/ai-enablement-decks/fourthos/preview/deep-dive.html">Deep Dive</a>
+            <div class="tab-menu" aria-label="Deep Dive sections">
+              <span class="mh">Deep Dive</span>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#thesis">The thesis</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#architecture">Architecture</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept">Concept spotlight</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#outputs">Workstreams</a>
+              <a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#payoff">The payoff</a>
+            </div>
+          </div>
+        </nav>
+        <label class="wkswitch">
+          <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Switch week</span>
+          <select id="weekSwitch" aria-label="Switch to another week's update">
+            <option value="2026-07-23" selected>23 July 2026 (preview)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <header class="hero">
+      <div class="wrap">
+        <p class="eyebrow">Weekly Sponsor Update &middot; July 23, 2026</p>
+        <h1>One business dictionary — <span class="grad">every connector speaks it.</span></h1>
+        <p class="subhead">The Salesforce connector's verified business-language layer, where every business term is checked correct before the AI can use it, is becoming a shared standard the whole connector team inherits, so Zendesk and NetSuite answer in the same correct terms from day one. Separately, the model-routing work was reframed into a governed agent-delivery platform.</p>
+        <a class="hero-cta" href="/ai-enablement-decks/fourthos/preview/briefing.html#sponsor-actions">See what needs you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+
+        <div class="shipped">
+          <p class="lbl">This week, across the portfolio</p>
+          <div class="ship-row">
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept">
+              Salesforce business-language layer advancing — now framed as a shared ecosystem standard <span class="badge built">In progress</span> <span class="go" aria-hidden="true">&rarr;</span>
+            </a>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes">
+              Model-routing work reframed into a governed agent-delivery platform <span class="badge next">Reframed</span> <span class="go" aria-hidden="true">&rarr;</span>
+            </a>
+            <a class="ship-chip" href="/ai-enablement-decks/fourthos/preview/briefing.html#portfolio">
+              EBR + GTM sections building inside the platform window <span class="badge built">Building</span> <span class="go" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+        <p class="updated">Updated 23 July 2026</p>
+      </div>
+    </header>
+
+    <section class="body">
+      <div class="wrap">
+        <div class="glance" id="glance" style="margin-top:0;">
+          <p class="section-label">This week, for you</p>
+          <div class="lens-grid">
+            <div class="lens needs">
+              <div class="lens-head"><span class="ic" aria-hidden="true"></span> Needs you</div>
+              <ul>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-01"><span class="num">1</span> Confirm connector sequencing and the connector-team ownership model <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-02"><span class="num">2</span> Schedule the architecture review with Christian (now three weeks out) <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-03"><span class="num">3</span> Endorse the EBR deck cutoff when it reaches you (FYI) <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+              </ul>
+            </div>
+            <div class="lens moved">
+              <div class="lens-head"><span class="ic" aria-hidden="true"></span> What moved</div>
+              <ul>
+                <li><a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept"><span class="tick" aria-hidden="true">&#10003;</span> Salesforce business-language layer becoming a shared ecosystem standard <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes"><span class="tick" aria-hidden="true">&#10003;</span> Model-routing work reframed into a governed agent-delivery platform <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#portfolio"><span class="tick" aria-hidden="true">&#10003;</span> EBR and GTM sections building inside the approved platform window <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+              </ul>
+            </div>
+            <div class="lens watch">
+              <div class="lens-head"><span class="ic" aria-hidden="true"></span> Watch</div>
+              <ul>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Architecture review now three weeks unscheduled while connectors keep building on it <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Salesforce semantic-layer deploy still pending; the proof point keeps slipping <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Zendesk EBR data still rides on one analyst's manual report <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <p class="section-label" id="next" style="margin-top:clamp(2.5rem,5vw,3.5rem);">Where to next</p>
+        <div class="nav-cards">
+          <a class="nav-card" href="/ai-enablement-decks/fourthos/preview/briefing.html">
+            <span class="kicker">Tier 1 · Dashboard</span>
+            <h2>The Briefing <span class="arrow" aria-hidden="true">&rarr;</span></h2>
+            <p>Portfolio status, sponsor actions, risk radar, and outcomes — the 30-second executive read.</p>
+            <span class="readtime">~2 min read</span>
+          </a>
+          <a class="nav-card" href="/ai-enablement-decks/fourthos/preview/deep-dive.html">
+            <span class="kicker">Tier 2 · Deep Dive</span>
+            <h2>Flagship Deep Dive <span class="arrow" aria-hidden="true">&rarr;</span></h2>
+            <p>Connector Ecosystem: how one connector's verified business dictionary becomes a shared language the whole connector team speaks, correctly.</p>
+            <span class="readtime">~10 min read</span>
+          </a>
+        </div>
+
+        <div class="seeds" id="seeds">
+          <p class="section-label">What this seeds</p>
+          <div class="seeds-flow">
+            <div class="seed-node">
+              <div class="sn-name">Salesforce semantic-layer deploy</div>
+              <div class="sn-inh">rollback-safe deploy &middot; first dictionary ingest verified against live data</div>
+            </div>
+            <span class="seed-arrow" aria-hidden="true">&rarr;</span>
+            <div class="seed-node">
+              <div class="sn-name">Shared business dictionary extracted</div>
+              <div class="sn-inh">the verified-term layer becomes reusable, not a Salesforce-only feature</div>
+            </div>
+            <span class="seed-arrow" aria-hidden="true">&rarr;</span>
+            <div class="seed-node">
+              <div class="sn-name">Zendesk and NetSuite inherit the language</div>
+              <div class="sn-inh">new connectors answer in the same correct business terms from day one</div>
+            </div>
+          </div>
+          <p class="seeds-cap">What this seeds going forward: a shared business-language layer every connector inherits, so a question means the same thing and returns the same correct answer no matter which system answers it, plus a governed agent-delivery platform that turns the connector ecosystem into a delivery factory rather than a pile of integrations.</p>
+        </div>
+
+        <div class="pillars-sec" id="pillars">
+          <p class="section-label">How This Connects</p>
+          <h2>Where the work sits against the mandate</h2>
+          <p class="sec-dek">The role is built on three pillars of equal strategic weight. This is where this week's active work actually lands against them — not a scorecard, a map.</p>
+          <p class="sec-source">Source: <a href="https://app.notion.com/p/34076fd7ac82805dac89dd26476e2c47" target="_blank" rel="noopener">FourthOS — Principal AI Mandate</a>, Carly's formal role proposal.</p>
+
+          <div class="balance">
+            <div class="bl-item"><span class="bl-n">2</span><span class="bl-label">Research initiatives</span></div>
+            <div class="bl-item"><span class="bl-n">6</span><span class="bl-label">Prototyping initiatives</span></div>
+            <div class="bl-item"><span class="bl-n">2</span><span class="bl-label">Portal initiatives (direct-adjacent)</span></div>
+            <div class="bl-bar" aria-hidden="true"><span class="seg-1"></span><span class="seg-2"></span><span class="seg-3"></span></div>
+            <p class="bl-note">The portfolio is <strong>prototype-heavy by design right now</strong> — the build window and the connector program are where the leverage is this quarter. Research and Portal work are active but thinner, and that's a sequencing choice, not a gap.</p>
+          </div>
+
+          <div class="pillar-grid">
+            <article class="pillar-card">
+              <div class="pc-num">PILLAR 1 OF 3</div>
+              <h3>AI Research &amp; Strategic Intelligence</h3>
+              <p class="pc-mandate">&ldquo;An opinionated point of view on what Fourth should adopt, pilot, or set aside — and why.&rdquo;</p>
+              <div class="pc-projects">
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Fourth Agent Delivery Platform</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Shape</span></div>
+                  <p class="pp-why">Reframed this week into a governed agent-delivery platform: workflow-native agents and reusable Agent Packs, with model routing as the intelligence layer beneath.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">AI Governance &amp; Research Cadence</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Shape</span></div>
+                  <p class="pp-why">The two-track alternating cadence — Governance decides, Research discovers — turns ad-hoc AI chatter into a decision-generating rhythm.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="pillar-card">
+              <div class="pc-num">PILLAR 2 OF 3</div>
+              <h3>Prototyping &amp; POC Development</h3>
+              <p class="pc-mandate">&ldquo;Success criteria set before work begins; an explicit scale, stop, redesign, or defer decision at the end.&rdquo;</p>
+              <div class="pc-projects">
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Salesforce Connector</span><span class="rag-pip green"><span class="d" aria-hidden="true"></span>Green</span></div>
+                  <p class="pp-why">Live in alpha and the mold every other connector stamps from; its verified business-language layer is this week's transferable learning.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Zendesk Connector (#2)</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Yellow</span></div>
+                  <p class="pp-why">The first real test of &ldquo;build the mold once, every connector inherits it&rdquo; — the rebuild is scoped directly on the Salesforce chassis.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">NetSuite Connector (#3)</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Yellow</span></div>
+                  <p class="pp-why">Spike A0 is a textbook example of the mandate's success-criteria-first posture — decide the architecture option before any build commitment.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">Agent-Arch Platform</span><span class="rag-pip green"><span class="d" aria-hidden="true"></span>Green</span></div>
+                  <p class="pp-why">Now building the EBR and GTM Risk sections directly into the governed platform during the approved 2&ndash;3 week window.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">EBR Presentation Suite</span><span class="rag-pip green"><span class="d" aria-hidden="true"></span>Green</span></div>
+                  <p class="pp-why">Tech is ~85&ndash;90% done — the remaining work is scaling, security, governance, and adoption onto the confirmed platform home.</p>
+                </div>
+                <div class="pc-proj">
+                  <div class="pp-head"><span class="pp-name">GTM Risk Intelligence Dashboard</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Yellow</span></div>
+                  <p class="pp-why">Fixing the data layer first — a canonical account-ID list and one master channel — before the platform build absorbs bad inputs.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="pillar-card thin">
+              <div class="pc-num">PILLAR 3 OF 3</div>
+              <h3>External Developer Experience Portal</h3>
+              <p class="pc-mandate">&ldquo;Not documentation wallpaper — a strategic product surface external developers and partners want to build on.&rdquo;</p>
+              <div class="pc-empty">
+                <span class="pe-label">No project is being built as the Portal yet</span>
+                <p>That's sequencing, not neglect. The connector chassis, the governance and sign-in patterns, and the architecture-alignment work below are directly transferable once the Portal externalizes.</p>
+              </div>
+              <div class="pc-indirect">
+                <div class="pi-label">Directly transferable, once it externalizes</div>
+                <div class="pi-item"><b>Connector Ecosystem</b> — the operating model (one master record, three connectors, program-level sponsor comms) an external surface would reuse.</div>
+                <div class="pi-item"><b>AI Platform Architecture Alignment</b> — validates the connection layer external tooling would build against, before more connectors ship on an unconfirmed pattern.</div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot-grid">
+      <span class="pwr">Powered by <span class="iq">iQ</span></span>
+      <span class="mid">FourthOS &middot; Principal AI Mandate</span>
+      <span class="gen">Generated 2026-07-23</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var sel = document.getElementById('weekSwitch');
+      if (!sel) return;
+      var root = location.pathname.split('/fourthos/')[0];
+      var current = "2026-07-23";
+      fetch(root + '/decks.json', { cache: 'no-cache' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var weeks = (data.decks || []).filter(function (d) { return d.section === 'sponsor-updates' && d.date; })
+            .sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+          if (!weeks.length) return;
+          sel.innerHTML = '';
+          weeks.forEach(function (w) {
+            var o = document.createElement('option'); o.value = w.date;
+            o.textContent = (w.meta || w.date) + (w.date === current ? ' (current)' : '');
+            if (w.date === current) o.selected = true; sel.appendChild(o);
+          });
+        }).catch(function () {});
+      sel.addEventListener('change', function () { if (sel.value && sel.value !== current) location.href = root + '/fourthos/' + sel.value + '/'; });
+    })();
+  </script>
+</body>
+</html>
