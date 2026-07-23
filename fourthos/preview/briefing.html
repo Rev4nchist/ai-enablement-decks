@@ -349,7 +349,7 @@
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Biggest decision</div>
-          <div class="t-val">Confirm connector sequencing and the connector-team ownership model</div>
+          <div class="t-val">Decide which connector we rebuild first (so its reusable parts can be copied to the others), and who owns the shared connector work</div>
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Biggest risk</div>
@@ -357,16 +357,16 @@
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Next proof point</div>
-          <div class="t-val">Salesforce semantic-layer deploy (rollback-safe), still the pending proof the business-language layer works end to end</div>
+          <div class="t-val">Turn on the verified-dictionary feature for real users, safely and with a one-click undo. This proves it works end to end. Still pending.</div>
         </div>
         <div class="tile wide">
           <div class="t-label"><span class="b" aria-hidden="true"></span> What changed this week</div>
           <ul>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Salesforce's verified business-language layer advanced and is now framed as a shared ecosystem standard: the verified business-term dictionary any connector can inherit, so a question returns the same correct answer whichever system answers it</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Model-routing work reframed into the Fourth Agent Delivery Platform: a governed factory for workflow-native agents and reusable Agent Packs, with model routing as the intelligence layer beneath</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> EBR and GTM sections building inside the approved platform window: per-customer dashboards with role-based access</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Two sponsor decisions carried a third week without a call: the connector sequencing / ownership decision and the architecture review</li>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> No new formal Decisions &amp; Outputs entries logged for about three weeks; this week's evidence lives in the live project records</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Salesforce now checks each business term against a verified dictionary before it answers, so any team gets the same correct number instead of a confident guess</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> We set a plan to build future AI tools from reusable, pre-approved parts, so new automations ship faster and are all governed the same way</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> The customer-review (EBR) and deal-risk dashboards are moving into one secure home, with access controlled per team</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Two decisions we need from you have now waited three weeks: which connector to rebuild first (and who owns the shared work), and booking the architecture review with Christian</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> We did not log new formal proof entries for about three weeks; this week's evidence lives in the project records</li>
           </ul>
         </div>
       </div>
@@ -387,8 +387,8 @@
           <div class="action-grid">
             <div class="action-card" id="action-01">
               <div class="num">DECISION 01</div>
-              <h3>Confirm connector sequencing and the connector-team ownership model</h3>
-              <div class="row"><span class="k">Recommendation</span><span class="v">Decide which of Zendesk (#2) or NetSuite (#3) harvests the reusable template, and name an owning team.</span></div>
+              <h3>Decide which connector we rebuild first, and who owns the shared connector work</h3>
+              <div class="row"><span class="k">Recommendation</span><span class="v">Pick which connector we rebuild first (Zendesk or NetSuite) so its reusable parts can be copied to the others, and name a team to own the shared connector work.</span></div>
               <div class="row"><span class="k">Decide by</span><span class="v">This week (carried from 16 July)</span></div>
               <div class="row"><span class="k">Cost of waiting</span><span class="v">The reusable mold gets extracted late — or twice — and three connectors drift toward bespoke forks.</span></div>
               <div class="row"><span class="k">Owner</span>
@@ -442,15 +442,15 @@
           <div class="proj-body">
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">The semantic layer — teach the connector Fourth's business language via a governed, verified business-term dictionary.</div>
+              <div class="f-val">Teach the connector Fourth's business language: a verified dictionary of business terms it must check before answering, so every team gets the same correct result. Now being made a shared standard other connectors reuse.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Deploy the semantic layer (rollback-safe) with the first dictionary ingest verified against live data; expand the pilot (~16 testers) to a beta group.</div>
+              <div class="f-val">Turn on the verified-dictionary feature for real users, with a one-click undo and checked against live data first; then widen the pilot to a larger beta group.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">The semantic-layer deploy remains the pending next step (carried). The bigger move this week: the verified business-language layer is being treated as a shared ecosystem standard the other connectors inherit, not a Salesforce-only feature.</div>
+              <div class="f-val">Turning on the verified-dictionary feature for users remains the pending next step (carried). The bigger move this week: that verified dictionary is being treated as a shared standard the other connectors reuse, not a Salesforce-only feature.</div>
             </div>
           </div>
         </div>
@@ -498,7 +498,7 @@
           <div class="proj-body">
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Scope the rebuild on the Salesforce chassis: org scoping, date-range filtering, bulk ticket-status pulls. Interim: a support-team analyst's manual report feeds EBRs — expected to bridge ~2 quarters until the rebuilt connector lands.</div>
+              <div class="f-val">Scope the rebuild reusing the Salesforce connector as the mold: limit results to specific accounts, filter by date range, and pull ticket status in bulk. Interim: a support-team analyst's manual report feeds the customer reviews, expected to bridge ~2 quarters until the rebuilt connector lands.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
@@ -647,11 +647,11 @@
           <div class="proj-body">
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Reframed this week into a governed agent-delivery platform: workflow-native agents, reusable Agent Packs, curated tools, and deterministic validation, with model routing as the intelligence layer beneath. Draws on the open-source software-factory pattern.</div>
+              <div class="f-val">A plan to build future AI tools from reusable, pre-approved building blocks instead of hand-building each one, so new automations ship faster and are all governed the same way. The connectors become the data and actions these tools draw on.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Sponsor brief, a reference architecture, and an Agent Pack specification.</div>
+              <div class="f-val">A sponsor brief, a reference design, and a spec for the first reusable building block.</div>
             </div>
           </div>
         </div>
@@ -711,7 +711,7 @@
               <span class="rag rag-yellow rag-sm" aria-label="Risk severity: Yellow"><span class="pip" aria-hidden="true"></span> Yellow</span>
             </div>
             <div class="r-row"><span class="k">Why it matters</span><span class="v">EBR support data rides on a single analyst's manual report for an expected ~2 quarters.</span></div>
-            <div class="r-row"><span class="k">Mitigation</span><span class="v">Confirmed bridge; the rebuild is scoped on the demonstrated Salesforce chassis.</span></div>
+            <div class="r-row"><span class="k">Mitigation</span><span class="v">Confirmed bridge; the rebuild reuses the proven Salesforce build as the mold.</span></div>
           </div>
           <div class="risk-card reveal">
             <div class="r-top">
@@ -726,7 +726,7 @@
               <h3>Watch (green)</h3>
               <span class="rag rag-green rag-sm" aria-label="Risk severity: Green"><span class="pip" aria-hidden="true"></span> Green</span>
             </div>
-            <div class="r-row"><span class="k">Why it matters</span><span class="v">The semantic-layer deploy has stayed the &ldquo;next&rdquo; step for two-plus weeks; the fiscal-calendar definition (&ldquo;FY26&rdquo;) still awaits confirmation; one pilot user remains blocked on a Salesforce-side identity mapping.</span></div>
+            <div class="r-row"><span class="k">Why it matters</span><span class="v">Turning on the verified-dictionary feature has stayed the &ldquo;next&rdquo; step for two-plus weeks; the fiscal-year definition (&ldquo;FY26&rdquo;) still awaits confirmation; one pilot user remains blocked on a Salesforce-side identity mapping.</span></div>
             <div class="r-row"><span class="k">Mitigation</span><span class="v">Until confirmed, the connector honestly answers &ldquo;not yet defined&rdquo; rather than guessing, by design.</span></div>
           </div>
         </div>
@@ -751,10 +751,10 @@
           </div>
           <div class="outcome-card reveal">
             <div class="oc-head">
-              <h3>Model-routing reframed into the Fourth Agent Delivery Platform</h3>
+              <h3>A faster, governed way to build future AI tools</h3>
               <span class="badge next">Reframed</span>
             </div>
-            <p>A governed factory for workflow-native agents and reusable Agent Packs. Connectors are the tool layer; model routing is the intelligence layer beneath.</p>
+            <p>A plan to build future AI tools from reusable, pre-approved parts, so new automations ship faster and stay governed the same way.</p>
             <span class="oc-type">Type: Strategy · Medium impact</span>
           </div>
           <div class="outcome-card reveal">
