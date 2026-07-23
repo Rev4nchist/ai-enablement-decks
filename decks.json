@@ -41,6 +41,18 @@
   ],
   "decks": [
     {
+      "id": "fourthos-2026-07-23",
+      "section": "sponsor-updates",
+      "tag": "Sponsor Update",
+      "title": "FourthOS — 23 July 2026",
+      "description": "One business dictionary, every connector speaks it — Salesforce's verified business-language layer becomes a shared ecosystem standard, and model-routing is reframed into a governed agent-delivery platform.",
+      "href": "./fourthos/2026-07-23/",
+      "meta": "23 July 2026",
+      "date": "2026-07-23",
+      "status": "shipped",
+      "featured": true
+    },
+    {
       "id": "fourthos-2026-07-16",
       "section": "sponsor-updates",
       "tag": "Sponsor Update",
@@ -50,7 +62,7 @@
       "meta": "July 16, 2026",
       "date": "2026-07-16",
       "status": "shipped",
-      "featured": true
+      "featured": false
     },
     {
       "id": "research-governance-os",
