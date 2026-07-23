@@ -302,7 +302,7 @@
     <div class="wrap">
       <p class="eyebrow">Flagship Deep Dive &middot; Tier 2</p>
       <h1>Flagship Deep Dive — <span class="grad">Connector Ecosystem</span></h1>
-      <p class="state">Yellow. The connector mold now extends from plumbing to meaning: a shared, verified business language every connector inherits. The open item is still architecture validation, not execution.</p>
+      <p class="state">Yellow. The connector mold now extends from plumbing to meaning: a shared, verified business language, now live on Salesforce and inherited by every connector next. The open item is still architecture validation, not execution.</p>
       <div class="hero-meta">
         <span class="rag rag-yellow" role="status" aria-label="Flagship health: Yellow"><span class="pip" aria-hidden="true"></span> Health: Yellow</span>
         <span class="updated">Updated 23 July 2026 &middot; for Carly &amp; Christian</span>
@@ -401,9 +401,9 @@
               <text x="436" y="403" text-anchor="middle" fill="#6FB4E3" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">BUILT IN-REPO</text>
             </g>
             <g>
-              <rect x="519" y="350" width="145" height="80" rx="12" fill="#0F2A3F" stroke="#6FB4E3" stroke-width="1.5"/>
+              <rect x="519" y="350" width="145" height="80" rx="12" fill="#0F2A3F" stroke="#00B69F" stroke-width="1.8"/>
               <text x="591" y="381" text-anchor="middle" fill="#FFFFFF" font-family="Poppins,sans-serif" font-size="13" font-weight="600">Business language</text>
-              <text x="591" y="403" text-anchor="middle" fill="#6FB4E3" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">BUILT IN-REPO</text>
+              <text x="591" y="403" text-anchor="middle" fill="#00B69F" font-family="JetBrains Mono,monospace" font-size="9.5" letter-spacing="1">LIVE</text>
             </g>
             <path d="M664 296 C 702 330, 700 358, 718 368" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.6"/>
             <path d="M664 300 C 698 398, 700 416, 718 422" fill="none" stroke="#8DA8C4" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrowMuted)" opacity="0.55"/>
@@ -443,7 +443,7 @@
             Here's the idea
           </span>
           <div class="term">One business language for the whole team <span class="mono">(verified before the AI can use it)</span></div>
-          <p class="plain">When a pilot user asked the Salesforce connector for &ldquo;top EMEA inbound opportunities by value,&rdquo; it returned confidently wrong numbers. Not a bug: the AI was guessing what Fourth's business terms mean. The fix is a <strong>business-language layer</strong>. Show the AI the real field values in our system, and carry a governed dictionary where every business term is verified correct and permission-checked before the AI can use it. The learning that travels: this layer is not a Salesforce feature, it is an <strong>ecosystem asset</strong>. Build it once and every connector inherits a shared, correct vocabulary, so &ldquo;inbound,&rdquo; &ldquo;EMEA,&rdquo; or &ldquo;FY26&rdquo; means the same thing and returns the same correct answer whether it comes from Salesforce, Zendesk, or NetSuite. A team of connectors that all speak one correct business language.</p>
+          <p class="plain">When a pilot user asked the Salesforce connector for &ldquo;top EMEA inbound opportunities by value,&rdquo; it returned confidently wrong numbers. Not a bug: the AI was guessing what Fourth's business terms mean. The fix is a <strong>business-language layer</strong>. Show the AI the real field values in our system, and carry a governed dictionary where every business term is verified correct and permission-checked before the AI can use it. The learning that travels: this layer is not a Salesforce feature, it is an <strong>ecosystem asset</strong>. Build it once and every connector inherits a shared, correct vocabulary, so &ldquo;inbound,&rdquo; &ldquo;EMEA,&rdquo; or &ldquo;FY26&rdquo; means the same thing and returns the same correct answer whether it comes from Salesforce, Zendesk, or NetSuite. A team of connectors that all speak one correct business language. On Salesforce, that verified dictionary went live this week.</p>
         </div>
       </div>
     </section>
@@ -452,7 +452,7 @@
     <section class="s">
       <div class="wrap wrap-wide">
         <p class="sec-label reveal"><span class="b" aria-hidden="true"></span> Worked example</p>
-        <h2 class="reveal">How one connector's dictionary becomes the whole team's language <span class="badge built">In progress</span></h2>
+        <h2 class="reveal">How one connector's dictionary becomes the whole team's language <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live on Salesforce</span></h2>
         <p class="reveal">The business-language layer built for Salesforce is the transferable learning this week. Here is the wrong answer it fixes, and how the fix carries to the next connector.</p>
         <div class="spikedemo reveal">
           <div class="spikedemo-row">
@@ -489,10 +489,10 @@
             <p>Every business term is verified correct and permission-scoped before the AI is allowed to use it.</p>
           </div>
           <span class="pipe-arrow" aria-hidden="true">&rarr;</span>
-          <div class="pipe-node is-next">
-            <div class="pipe-step">&#9314; Deploy <span class="badge next">Pending</span></div>
-            <h4>Rollback-safe deploy</h4>
-            <p>The pending next step: turn on the verified dictionary for real users, with the first check verified against live data.</p>
+          <div class="pipe-node">
+            <div class="pipe-step">&#9314; Live <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live</span></div>
+            <h4>Live in production</h4>
+            <p>Deployed 22 July and checked against live data: 22 business concepts, with 3 held back until RevOps confirms them.</p>
           </div>
           <span class="pipe-arrow" aria-hidden="true">&rarr;</span>
           <div class="pipe-node is-next">
@@ -512,7 +512,7 @@
         <div class="ws-grid">
           <div class="ws-card reveal">
             <div class="ws-head"><h3>Salesforce connector (#1)</h3><span class="badge live"><span class="bdot" aria-hidden="true"></span>Live · Alpha</span></div>
-            <p>The live proof point inside the program. Its verified business-language layer is this week's transferable learning; turning it on for real users (safely, with a one-click undo) is the pending next step.</p>
+            <p>The live proof point inside the program. Its verified business-language layer went live 22 July, checked against live data (22 business concepts; rev 0000025). This week's transferable learning; next is opening the same governed access to more tools.</p>
           </div>
           <div class="ws-card reveal">
             <div class="ws-head"><h3>Shared business-language standard</h3><span class="badge next">Designed · Next</span></div>

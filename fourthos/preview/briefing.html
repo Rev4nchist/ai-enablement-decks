@@ -357,12 +357,12 @@
         </div>
         <div class="tile">
           <div class="t-label"><span class="b" aria-hidden="true"></span> Next proof point</div>
-          <div class="t-val">Turn on the verified-dictionary feature for real users, safely and with a one-click undo. This proves it works end to end. Still pending.</div>
+          <div class="t-val">The verified dictionary is now live on Salesforce. Next: extend the same governed access to more tools (a Cursor/IDE check) and to the next connector.</div>
         </div>
         <div class="tile wide">
           <div class="t-label"><span class="b" aria-hidden="true"></span> What changed this week</div>
           <ul>
-            <li><span class="tick" aria-hidden="true">&#10003;</span> Salesforce now checks each business term against a verified dictionary before it answers, so any team gets the same correct number instead of a confident guess</li>
+            <li><span class="tick" aria-hidden="true">&#10003;</span> Salesforce's verified-dictionary feature went live: the connector now checks each business term against a verified dictionary before answering, so any team gets the same correct number instead of a guess</li>
             <li><span class="tick" aria-hidden="true">&#10003;</span> We set a plan to build future AI tools from reusable, pre-approved parts, so new automations ship faster and are all governed the same way</li>
             <li><span class="tick" aria-hidden="true">&#10003;</span> The customer-review (EBR) and deal-risk dashboards are moving into one secure home, with access controlled per team</li>
             <li><span class="tick" aria-hidden="true">&#10003;</span> Two decisions we need from you have now waited three weeks: which connector to rebuild first (and who owns the shared work), and booking the architecture review with Christian</li>
@@ -442,15 +442,15 @@
           <div class="proj-body">
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Current focus</div>
-              <div class="f-val">Teach the connector Fourth's business language: a verified dictionary of business terms it must check before answering, so every team gets the same correct result. Now being made a shared standard other connectors reuse.</div>
+              <div class="f-val">The verified-dictionary feature is now live in production: the connector returns Fourth's correct fields (segment, revenue, deal value) instead of guessing, so every team gets the same correct result. Now being made a shared standard other connectors reuse.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Next milestone</div>
-              <div class="f-val">Turn on the verified-dictionary feature for real users, with a one-click undo and checked against live data first; then widen the pilot to a larger beta group.</div>
+              <div class="f-val">Open the same governed connector to more tools (a Cursor/IDE check next); RevOps to confirm a few held-back business terms and the fiscal-year definition.</div>
             </div>
             <div class="field">
               <div class="f-label"><span class="b" aria-hidden="true"></span> Latest update</div>
-              <div class="f-val">Turning on the verified-dictionary feature for users remains the pending next step (carried). The bigger move this week: that verified dictionary is being treated as a shared standard the other connectors reuse, not a Salesforce-only feature.</div>
+              <div class="f-val">Went live 22 July: the verified dictionary is deployed and checked against live data (22 business concepts). The live check even caught 3 terms that did not hold; those are held back until RevOps confirms them, the governance working as intended.</div>
             </div>
           </div>
         </div>
@@ -726,7 +726,7 @@
               <h3>Watch (green)</h3>
               <span class="rag rag-green rag-sm" aria-label="Risk severity: Green"><span class="pip" aria-hidden="true"></span> Green</span>
             </div>
-            <div class="r-row"><span class="k">Why it matters</span><span class="v">Turning on the verified-dictionary feature has stayed the &ldquo;next&rdquo; step for two-plus weeks; the fiscal-year definition (&ldquo;FY26&rdquo;) still awaits confirmation; one pilot user remains blocked on a Salesforce-side identity mapping.</span></div>
+            <div class="r-row"><span class="k">Why it matters</span><span class="v">A few business terms were caught as not-yet-correct during live checks and are held back until RevOps confirms them; the fiscal-year definition (&ldquo;FY26&rdquo;) still awaits confirmation; one pilot user remains blocked on a Salesforce-side identity mapping.</span></div>
             <div class="r-row"><span class="k">Mitigation</span><span class="v">Until confirmed, the connector honestly answers &ldquo;not yet defined&rdquo; rather than guessing, by design.</span></div>
           </div>
         </div>
@@ -743,11 +743,11 @@
         <div class="outcome-grid">
           <div class="outcome-card reveal">
             <div class="oc-head">
-              <h3>Salesforce business-language layer becomes a shared standard</h3>
-              <span class="badge built">In progress</span>
+              <h3>Salesforce's verified business dictionary went live</h3>
+              <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live</span>
             </div>
-            <p>The verified business-term dictionary is reframed as a reusable ecosystem asset, not a Salesforce-only feature: a team of connectors that answer in the same, correct business terms.</p>
-            <span class="oc-type">Type: Learning · High impact</span>
+            <p>The connector now answers using 22 verified business concepts checked against live data, so every team gets the same correct number instead of a guess. The live check even caught 3 terms to hold back until RevOps confirms them.</p>
+            <span class="oc-type">Type: Shipped · High impact</span>
           </div>
           <div class="outcome-card reveal">
             <div class="oc-head">

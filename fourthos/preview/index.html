@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FourthOS — Sponsor Update · 23 July 2026</title>
-  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 23 July 2026. Salesforce's verified business-language layer becomes a shared ecosystem standard, model-routing work is reframed into a governed agent-delivery platform, and two sponsor decisions keep aging.">
+  <meta name="description" content="FourthOS weekly sponsor update for Carly and Christian — 23 July 2026. Salesforce's verified business dictionary went live, it becomes a shared standard the next connectors inherit, and two sponsor decisions keep aging.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -110,23 +110,31 @@
     .nav-card .readtime { font-family:var(--font-mono); font-size:0.78rem; color:var(--accent); border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.6rem; align-self:flex-start; }
 
     .glance { margin-top:clamp(2.5rem,5vw,3.5rem); }
-    .lens-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:1.25rem; align-items:start; }
-    .lens { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:1.4rem 1.4rem 1.5rem; }
-    .lens.needs { border-color:rgba(250,165,26,0.34); background:linear-gradient(160deg,rgba(250,165,26,0.07),var(--bg-secondary) 60%); }
-    .lens.watch { border-color:rgba(216,22,50,0.22); }
-    .lens-head { display:flex; align-items:center; gap:0.55rem; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:1rem; }
-    .lens.needs .lens-head { color:var(--sunrise); }
-    .lens.moved .lens-head { color:var(--teal); }
-    .lens.watch .lens-head { color:var(--danger); }
-    .lens-head .ic { width:8px; height:8px; border-radius:50%; background:currentColor; box-shadow:0 0 8px currentColor; }
-    .lens ul { list-style:none; display:flex; flex-direction:column; gap:0.7rem; }
-    .lens li a { display:flex; gap:0.6rem; align-items:flex-start; color:var(--text-primary); font-size:0.94rem; line-height:1.45; }
-    .lens li a { transition:color .2s; }
-    .lens li a:hover { color:var(--accent); }
-    .lens li .num { flex-shrink:0; width:1.4rem; height:1.4rem; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:var(--sunrise); background:rgba(250,165,26,0.14); }
-    .lens.moved li .tick { color:var(--teal); font-weight:700; flex-shrink:0; }
-    .lens.watch li .warn { color:var(--danger); flex-shrink:0; }
-    .lens li .arrow { margin-left:auto; color:var(--text-muted); font-size:0.8rem; flex-shrink:0; }
+    /* Needs-you decision band (dominant) */
+    .glance-needs { background:linear-gradient(160deg,rgba(250,165,26,0.10),var(--bg-secondary) 62%); border:1px solid rgba(250,165,26,0.34); border-radius:16px; padding:1.5rem 1.6rem; }
+    .glance-needs .gn-head { display:flex; align-items:center; gap:0.6rem; font-size:0.72rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--sunrise); margin-bottom:1.1rem; }
+    .glance-needs .gn-head .ic { width:9px; height:9px; border-radius:50%; background:var(--sunrise); box-shadow:0 0 8px var(--sunrise); flex-shrink:0; }
+    .needs-list { list-style:none; display:grid; gap:0.7rem; }
+    .needs-list li a { display:flex; gap:0.9rem; align-items:center; padding:0.85rem 1rem; background:rgba(15,42,63,0.5); border:1px solid var(--border); border-radius:11px; color:var(--text-primary); font-size:1rem; line-height:1.4; transition:border-color .2s, background .2s, transform .2s; }
+    .needs-list li a:hover { border-color:rgba(250,165,26,0.5); background:rgba(250,165,26,0.06); transform:translateX(3px); }
+    .needs-list .num { flex-shrink:0; width:1.7rem; height:1.7rem; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700; color:#04141f; background:var(--sunrise); }
+    .needs-list .gn-text { flex:1; }
+    .needs-list .arrow { margin-left:0.25rem; color:var(--text-muted); flex-shrink:0; transition:color .2s, transform .2s; }
+    .needs-list li a:hover .arrow { color:var(--sunrise); transform:translateX(3px); }
+    /* Secondary context columns (lighter) */
+    .glance-secondary { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-top:1.25rem; }
+    .glance-col { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:1.25rem 1.35rem; }
+    .glance-col.watch { border-color:rgba(216,22,50,0.20); }
+    .glance-col .gc-head { display:flex; align-items:center; gap:0.5rem; font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:0.9rem; }
+    .glance-col.moved .gc-head { color:var(--teal); }
+    .glance-col.watch .gc-head { color:var(--danger); }
+    .glance-col .gc-head .ic { width:7px; height:7px; border-radius:50%; background:currentColor; box-shadow:0 0 7px currentColor; flex-shrink:0; }
+    .glance-col ul { list-style:none; display:flex; flex-direction:column; gap:0.65rem; }
+    .glance-col li a { display:flex; gap:0.55rem; align-items:flex-start; color:var(--text-secondary); font-size:0.9rem; line-height:1.45; transition:color .2s; }
+    .glance-col li a:hover { color:var(--text-primary); }
+    .glance-col.moved .tick { color:var(--teal); font-weight:700; flex-shrink:0; }
+    .glance-col.watch .warn { color:var(--danger); flex-shrink:0; }
+    @media (max-width:760px) { .glance-secondary { grid-template-columns:1fr; } }
 
     footer { border-top:1px solid var(--border); padding:2.25rem 0 2.75rem; background:var(--bg-midnight); margin-top:3rem; }
     .foot-grid { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; }
@@ -254,14 +262,14 @@
       <div class="wrap">
         <p class="eyebrow">Weekly Sponsor Update &middot; July 23, 2026</p>
         <h1>One business dictionary — <span class="grad">every connector speaks it.</span></h1>
-        <p class="subhead">The Salesforce connector now checks every business term against a verified dictionary before it answers, so any team gets the same correct number instead of a confident guess. That dictionary is becoming a shared standard the next connectors inherit, so they start out speaking the same correct language. Separately, we set a plan to build future AI tools from reusable, pre-approved parts, so they ship faster and stay governed the same way.</p>
+        <p class="subhead">Fourth's Salesforce AI now answers using a verified dictionary of business terms instead of guessing, so every team gets the same correct number. That dictionary went live this week, and it becomes the shared standard the next connectors inherit.</p>
         <a class="hero-cta" href="/ai-enablement-decks/fourthos/preview/briefing.html#sponsor-actions">See what needs you <span class="arrow" aria-hidden="true">&rarr;</span></a>
 
         <div class="shipped">
           <p class="lbl">This week, across the portfolio</p>
           <div class="ship-row">
             <a class="ship-chip" href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept">
-              Any team now gets the same correct answer from Salesforce, not a guess <span class="badge built">In progress</span> <span class="go" aria-hidden="true">&rarr;</span>
+              Any team now gets the same correct answer from Salesforce, not a guess <span class="badge live"><span class="bdot" aria-hidden="true"></span>Live</span> <span class="go" aria-hidden="true">&rarr;</span>
             </a>
             <a class="ship-chip" href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes">
               Plan set: build future AI tools from reusable, governed parts <span class="badge next">Reframed</span> <span class="go" aria-hidden="true">&rarr;</span>
@@ -279,29 +287,29 @@
       <div class="wrap">
         <div class="glance" id="glance" style="margin-top:0;">
           <p class="section-label">This week, for you</p>
-          <div class="lens-grid">
-            <div class="lens needs">
-              <div class="lens-head"><span class="ic" aria-hidden="true"></span> Needs you</div>
+          <div class="glance-needs">
+            <div class="gn-head"><span class="ic" aria-hidden="true"></span> Needs you &mdash; decisions</div>
+            <ul class="needs-list">
+              <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-01"><span class="num">1</span><span class="gn-text">Decide which connector we rebuild first, and who owns the shared connector work</span><span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+              <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-02"><span class="num">2</span><span class="gn-text">Book the architecture review with Christian (now three weeks out)</span><span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+              <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-03"><span class="num">3</span><span class="gn-text">Endorse the customer-review deck cutoff when it reaches you (FYI)</span><span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+          </div>
+          <div class="glance-secondary">
+            <div class="glance-col moved">
+              <div class="gc-head"><span class="ic" aria-hidden="true"></span> What moved</div>
               <ul>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-01"><span class="num">1</span> Confirm connector sequencing and the connector-team ownership model <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-02"><span class="num">2</span> Schedule the architecture review with Christian (now three weeks out) <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#action-03"><span class="num">3</span> Endorse the EBR deck cutoff when it reaches you (FYI) <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept"><span class="tick" aria-hidden="true">&#10003;</span> Salesforce now gives every team the same correct answer, not a guess</a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes"><span class="tick" aria-hidden="true">&#10003;</span> Plan set to build future AI tools from reusable, governed parts</a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#portfolio"><span class="tick" aria-hidden="true">&#10003;</span> Customer-review and risk dashboards moving into one secure home</a></li>
               </ul>
             </div>
-            <div class="lens moved">
-              <div class="lens-head"><span class="ic" aria-hidden="true"></span> What moved</div>
+            <div class="glance-col watch">
+              <div class="gc-head"><span class="ic" aria-hidden="true"></span> Watch</div>
               <ul>
-                <li><a href="/ai-enablement-decks/fourthos/preview/deep-dive.html#concept"><span class="tick" aria-hidden="true">&#10003;</span> Salesforce now gives every team the same correct answer, not a guess <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#outcomes"><span class="tick" aria-hidden="true">&#10003;</span> Plan set to build future AI tools from reusable, governed parts <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#portfolio"><span class="tick" aria-hidden="true">&#10003;</span> Customer-review and risk dashboards moving into one secure home <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-              </ul>
-            </div>
-            <div class="lens watch">
-              <div class="lens-head"><span class="ic" aria-hidden="true"></span> Watch</div>
-              <ul>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Architecture review now three weeks unscheduled while connectors keep building on it <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> The verified-dictionary feature is still not switched on for users; the proof point keeps slipping <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
-                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Zendesk EBR data still rides on one analyst's manual report <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Architecture review now three weeks unscheduled while connectors keep building on it</a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> A few business terms await RevOps sign-off; the connector says "not yet defined" for those</a></li>
+                <li><a href="/ai-enablement-decks/fourthos/preview/briefing.html#risk-radar"><span class="warn" aria-hidden="true">&#9888;</span> Zendesk customer-review data still rides on one analyst's manual report</a></li>
               </ul>
             </div>
           </div>
@@ -327,8 +335,8 @@
           <p class="section-label">What this seeds</p>
           <div class="seeds-flow">
             <div class="seed-node">
-              <div class="sn-name">Switch on the verified dictionary</div>
-              <div class="sn-inh">turn it on for users with a one-click undo &middot; first check verified against live data</div>
+              <div class="sn-name">Verified dictionary now live (Salesforce)</div>
+              <div class="sn-inh">22 business concepts, each checked against live data before turn-on</div>
             </div>
             <span class="seed-arrow" aria-hidden="true">&rarr;</span>
             <div class="seed-node">
@@ -382,7 +390,7 @@
               <div class="pc-projects">
                 <div class="pc-proj">
                   <div class="pp-head"><span class="pp-name">Salesforce Connector</span><span class="rag-pip green"><span class="d" aria-hidden="true"></span>Green</span></div>
-                  <p class="pp-why">Live in alpha and the mold every other connector stamps from; its verified business-language layer is this week's transferable learning.</p>
+                  <p class="pp-why">Live in alpha and now answering with a verified business dictionary in production; that layer is this week's transferable learning for every other connector.</p>
                 </div>
                 <div class="pc-proj">
                   <div class="pp-head"><span class="pp-name">Zendesk Connector (#2)</span><span class="rag-pip yellow"><span class="d" aria-hidden="true"></span>Yellow</span></div>
